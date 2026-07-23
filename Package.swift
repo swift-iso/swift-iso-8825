@@ -20,7 +20,7 @@ let package = Package(
     dependencies: [
         // -> canonical URL at publication (swift-iso-8824 has no remote yet;
         //    path dep to the sibling publication tree per [PKG-DEP] pre-publish form)
-        .package(path: "../swift-iso-8824"),
+        .package(url: "https://github.com/swift-iso/swift-iso-8824.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-byte-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-standard-library-extensions.git", branch: "main")
     ],
