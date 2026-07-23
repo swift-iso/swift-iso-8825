@@ -11,7 +11,8 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 //===----------------------------------------------------------------------===//
-import SwiftASN1
+import ISO_8824
+import ISO_8825
 
 // For private keys, SEC 1 uses:
 //
@@ -21,78 +22,78 @@ import SwiftASN1
 //   parameters [0] EXPLICIT ECDomainParameters OPTIONAL,
 //   publicKey [1] EXPLICIT BIT STRING OPTIONAL
 // }
-struct SEC1PrivateKey: DERImplicitlyTaggable, PEMRepresentable {
-    static let defaultPEMDiscriminator: String = "EC PRIVATE KEY"
-
-    static var defaultIdentifier: ASN1Identifier {
+// -> RFC 7468: the PEMRepresentable conformance and defaultPEMDiscriminator move to
+// the future swift-ietf/swift-rfc-7468 with the PEM codec (lead PEM-home ruling).
+struct SEC1PrivateKey: ISO_8825.DER.ImplicitlyTaggable {
+    static var defaultIdentifier: ISO_8824.Identifier {
         return .sequence
     }
 
     var algorithm: RFC5480AlgorithmIdentifier?
 
-    var privateKey: ASN1OctetString
+    var privateKey: ISO_8824.OctetString
 
-    var publicKey: ASN1BitString?
+    var publicKey: ISO_8824.BitString?
 
-    init(derEncoded rootNode: ASN1Node, withIdentifier identifier: ASN1Identifier) throws {
-        self = try DER.sequence(rootNode, identifier: identifier) { nodes in
+    init(derEncoded rootNode: ISO_8825.Node, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+        self = try ISO_8825.DER.sequence(rootNode, identifier: identifier) { (nodes) throws(ISO_8824.Error) in
             let version = try Int(derEncoded: &nodes)
             guard 1 == version else {
-                throw ASN1Error.invalidASN1Object(reason: "Invalid version")
+                throw ISO_8824.Error.invalidASN1Object(reason: "Invalid version")
             }
 
-            let privateKey = try ASN1OctetString(derEncoded: &nodes)
-            let parameters = try DER.optionalExplicitlyTagged(&nodes, tagNumber: 0, tagClass: .contextSpecific) {
-                node in
-                return try ASN1ObjectIdentifier(derEncoded: node)
+            let privateKey = try ISO_8824.OctetString(derEncoded: &nodes)
+            let parameters = try ISO_8825.DER.optionalExplicitlyTagged(&nodes, tagNumber: 0, tagClass: .contextSpecific) {
+                (node) throws(ISO_8824.Error) in
+                return try ISO_8824.ObjectIdentifier(derEncoded: node)
             }
-            let publicKey = try DER.optionalExplicitlyTagged(&nodes, tagNumber: 1, tagClass: .contextSpecific) { node in
-                return try ASN1BitString(derEncoded: node)
+            let publicKey = try ISO_8825.DER.optionalExplicitlyTagged(&nodes, tagNumber: 1, tagClass: .contextSpecific) { (node) throws(ISO_8824.Error) in
+                return try ISO_8824.BitString(derEncoded: node)
             }
 
             return try .init(privateKey: privateKey, algorithm: parameters, publicKey: publicKey)
         }
     }
 
-    private init(privateKey: ASN1OctetString, algorithm: ASN1ObjectIdentifier?, publicKey: ASN1BitString?) throws {
+    private init(privateKey: ISO_8824.OctetString, algorithm: ISO_8824.ObjectIdentifier?, publicKey: ISO_8824.BitString?) throws(ISO_8824.Error) {
         self.privateKey = privateKey
         self.publicKey = publicKey
-        self.algorithm = try algorithm.map { algorithmOID in
+        self.algorithm = try algorithm.map { (algorithmOID) throws(ISO_8824.Error) in
             switch algorithmOID {
-            case ASN1ObjectIdentifier.NamedCurves.secp256r1:
+            case ISO_8824.ObjectIdentifier.NamedCurves.secp256r1:
                 return .ecdsaP256
-            case ASN1ObjectIdentifier.NamedCurves.secp384r1:
+            case ISO_8824.ObjectIdentifier.NamedCurves.secp384r1:
                 return .ecdsaP384
-            case ASN1ObjectIdentifier.NamedCurves.secp521r1:
+            case ISO_8824.ObjectIdentifier.NamedCurves.secp521r1:
                 return .ecdsaP521
             default:
-                throw ASN1Error.invalidASN1Object(reason: "Invalid algorithm ID")
+                throw ISO_8824.Error.invalidASN1Object(reason: "Invalid algorithm ID")
             }
         }
     }
 
     init(privateKey: [UInt8], algorithm: RFC5480AlgorithmIdentifier?, publicKey: [UInt8]) {
-        self.privateKey = ASN1OctetString(contentBytes: privateKey[...])
+        self.privateKey = ISO_8824.OctetString(contentBytes: privateKey[...])
         self.algorithm = algorithm
-        self.publicKey = ASN1BitString(bytes: publicKey[...])
+        self.publicKey = ISO_8824.BitString(bytes: publicKey[...])
     }
 
-    func serialize(into coder: inout DER.Serializer, withIdentifier identifier: ASN1Identifier) throws {
-        try coder.appendConstructedNode(identifier: identifier) { coder in
+    func serialize(into coder: inout ISO_8825.DER.Serializer, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+        try coder.appendConstructedNode(identifier: identifier) { (coder) throws(ISO_8824.Error) in
             try coder.serialize(1)  // version
             try coder.serialize(self.privateKey)
 
             if let algorithm = self.algorithm {
-                let oid: ASN1ObjectIdentifier
+                let oid: ISO_8824.ObjectIdentifier
                 switch algorithm {
                 case .ecdsaP256:
-                    oid = ASN1ObjectIdentifier.NamedCurves.secp256r1
+                    oid = ISO_8824.ObjectIdentifier.NamedCurves.secp256r1
                 case .ecdsaP384:
-                    oid = ASN1ObjectIdentifier.NamedCurves.secp384r1
+                    oid = ISO_8824.ObjectIdentifier.NamedCurves.secp384r1
                 case .ecdsaP521:
-                    oid = ASN1ObjectIdentifier.NamedCurves.secp521r1
+                    oid = ISO_8824.ObjectIdentifier.NamedCurves.secp521r1
                 default:
-                    throw ASN1Error.invalidASN1Object(reason: "Unsupported algorithm")
+                    throw ISO_8824.Error.invalidASN1Object(reason: "Unsupported algorithm")
                 }
 
                 try coder.serialize(oid, explicitlyTaggedWithTagNumber: 0, tagClass: .contextSpecific)

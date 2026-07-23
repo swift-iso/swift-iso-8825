@@ -1,0 +1,11 @@
+# .github/metadata.yaml
+description: "Swift implementation of ISO/IEC 8825: ASN.1 encoding rules — Basic Encoding Rules (BER) and Distinguished Encoding Rules (DER)."
+topics:
+  - standards
+  - iso
+  - iso-8825
+  - asn1
+  - der
+homepage: "https://swift-institute.org"
+readme:
+  family: E

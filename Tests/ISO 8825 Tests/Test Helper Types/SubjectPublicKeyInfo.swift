@@ -11,65 +11,66 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 //===----------------------------------------------------------------------===//
-import SwiftASN1
+import ISO_8824
+import ISO_8825
 
-struct SubjectPublicKeyInfo: DERImplicitlyTaggable, Hashable {
-    static var defaultIdentifier: ASN1Identifier {
+struct SubjectPublicKeyInfo: ISO_8825.DER.ImplicitlyTaggable, Hashable {
+    static var defaultIdentifier: ISO_8824.Identifier {
         .sequence
     }
 
     var algorithmIdentifier: RFC5480AlgorithmIdentifier
 
-    var key: ASN1BitString
+    var key: ISO_8824.BitString
 
-    init(derEncoded rootNode: ASN1Node, withIdentifier identifier: ASN1Identifier) throws {
+    init(derEncoded rootNode: ISO_8825.Node, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
         // The SPKI block looks like this:
         //
         // SubjectPublicKeyInfo  ::=  SEQUENCE  {
         //   algorithm         AlgorithmIdentifier,
         //   subjectPublicKey  BIT STRING
         // }
-        self = try DER.sequence(rootNode, identifier: identifier) { nodes in
+        self = try ISO_8825.DER.sequence(rootNode, identifier: identifier) { (nodes) throws(ISO_8824.Error) in
             let algorithmIdentifier = try RFC5480AlgorithmIdentifier(derEncoded: &nodes)
-            let key = try ASN1BitString(derEncoded: &nodes)
+            let key = try ISO_8824.BitString(derEncoded: &nodes)
 
             return SubjectPublicKeyInfo(algorithmIdentifier: algorithmIdentifier, key: key)
         }
     }
 
-    private init(algorithmIdentifier: RFC5480AlgorithmIdentifier, key: ASN1BitString) {
+    private init(algorithmIdentifier: RFC5480AlgorithmIdentifier, key: ISO_8824.BitString) {
         self.algorithmIdentifier = algorithmIdentifier
         self.key = key
     }
 
     internal init(algorithmIdentifier: RFC5480AlgorithmIdentifier, key: [UInt8]) {
         self.algorithmIdentifier = algorithmIdentifier
-        self.key = ASN1BitString(bytes: key[...])
+        self.key = ISO_8824.BitString(bytes: key[...])
     }
 
-    func serialize(into coder: inout DER.Serializer, withIdentifier identifier: ASN1Identifier) throws {
-        try coder.appendConstructedNode(identifier: identifier) { coder in
+    func serialize(into coder: inout ISO_8825.DER.Serializer, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+        try coder.appendConstructedNode(identifier: identifier) { (coder) throws(ISO_8824.Error) in
             try coder.serialize(self.algorithmIdentifier)
             try coder.serialize(self.key)
         }
     }
 }
 
-struct RFC5480AlgorithmIdentifier: DERImplicitlyTaggable, Hashable {
-    static var defaultIdentifier: ASN1Identifier {
+struct RFC5480AlgorithmIdentifier: ISO_8825.DER.ImplicitlyTaggable, Hashable {
+    static var defaultIdentifier: ISO_8824.Identifier {
         .sequence
     }
 
-    var algorithm: ASN1ObjectIdentifier
+    var algorithm: ISO_8824.ObjectIdentifier
 
-    var parameters: ASN1Any?
+    var parameters: ISO_8825.`Any`?
 
-    init(algorithm: ASN1ObjectIdentifier, parameters: ASN1Any?) {
+    init(algorithm: ISO_8824.ObjectIdentifier, parameters: ISO_8825.`Any`?) {
         self.algorithm = algorithm
         self.parameters = parameters
     }
 
-    init(derEncoded rootNode: ASN1Node, withIdentifier identifier: ASN1Identifier) throws {
+    init(derEncoded rootNode: ISO_8825.Node, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
         // The AlgorithmIdentifier block looks like this.
         //
         // AlgorithmIdentifier  ::=  SEQUENCE  {
@@ -84,17 +85,17 @@ struct RFC5480AlgorithmIdentifier: DERImplicitlyTaggable, Hashable {
         // }
         //
         // We don't bother with helpers: we just try to decode it directly.
-        self = try DER.sequence(rootNode, identifier: identifier) { nodes in
-            let algorithmOID = try ASN1ObjectIdentifier(derEncoded: &nodes)
+        self = try ISO_8825.DER.sequence(rootNode, identifier: identifier) { (nodes) throws(ISO_8824.Error) in
+            let algorithmOID = try ISO_8824.ObjectIdentifier(derEncoded: &nodes)
 
-            let parameters = nodes.next().map { ASN1Any(derEncoded: $0) }
+            let parameters = nodes.next().map { ISO_8825.`Any`(derEncoded: $0) }
 
             return .init(algorithm: algorithmOID, parameters: parameters)
         }
     }
 
-    func serialize(into coder: inout DER.Serializer, withIdentifier identifier: ASN1Identifier) throws {
-        try coder.appendConstructedNode(identifier: identifier) { coder in
+    func serialize(into coder: inout ISO_8825.DER.Serializer, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+        try coder.appendConstructedNode(identifier: identifier) { (coder) throws(ISO_8824.Error) in
             try coder.serialize(self.algorithm)
             if let parameters = self.parameters {
                 try coder.serialize(parameters)
@@ -107,16 +108,16 @@ struct RFC5480AlgorithmIdentifier: DERImplicitlyTaggable, Hashable {
 extension RFC5480AlgorithmIdentifier {
     static let ecdsaP256 = RFC5480AlgorithmIdentifier(
         algorithm: .AlgorithmIdentifier.idEcPublicKey,
-        parameters: try! .init(erasing: ASN1ObjectIdentifier.NamedCurves.secp256r1)
+        parameters: try! .init(erasing: ISO_8824.ObjectIdentifier.NamedCurves.secp256r1)
     )
 
     static let ecdsaP384 = RFC5480AlgorithmIdentifier(
         algorithm: .AlgorithmIdentifier.idEcPublicKey,
-        parameters: try! .init(erasing: ASN1ObjectIdentifier.NamedCurves.secp384r1)
+        parameters: try! .init(erasing: ISO_8824.ObjectIdentifier.NamedCurves.secp384r1)
     )
 
     static let ecdsaP521 = RFC5480AlgorithmIdentifier(
         algorithm: .AlgorithmIdentifier.idEcPublicKey,
-        parameters: try! .init(erasing: ASN1ObjectIdentifier.NamedCurves.secp521r1)
+        parameters: try! .init(erasing: ISO_8824.ObjectIdentifier.NamedCurves.secp521r1)
     )
 }

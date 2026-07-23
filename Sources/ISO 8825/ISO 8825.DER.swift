@@ -12,37 +12,35 @@
 //
 //===----------------------------------------------------------------------===//
 
-/// ``DER`` defines a namespace that is used to store a number of helper methods and types
-/// for DER encoding and decoding.
-public enum DER {}
+public import ISO_8824
 
-@available(*, unavailable)
-extension DER: Sendable {}
-
-// MARK: - Parser Node
-extension DER {
-    @usableFromInline
-    typealias ParserNode = ASN1.ParserNode
+extension ISO_8825 {
+    /// ``ISO_8825/DER`` defines a namespace that is used to store a number of helper methods and types
+    /// for DER encoding and decoding.
+    public enum DER {}
 }
 
+@available(*, unavailable)
+extension ISO_8825.DER: Sendable {}
+
 // MARK: - Sequence, SequenceOf, Set and SetOf
-extension DER {
+extension ISO_8825.DER {
     /// Parse the node as an ASN.1 SEQUENCE.
     ///
     /// The "child" elements in the sequence will be exposed as an iterator to `builder`.
     ///
     /// - parameters:
-    ///     - node: The ``ASN1Node`` to parse
-    ///     - identifier: The ``ASN1Identifier`` that the SEQUENCE is expected to have.
+    ///     - node: The ``ISO_8825.Node`` to parse
+    ///     - identifier: The ``ISO_8824.Identifier`` that the SEQUENCE is expected to have.
     ///     - builder: A closure that will be called with the collection of nodes within the sequence.
     @inlinable
     public static func sequence<T>(
-        _ node: ASN1Node,
-        identifier: ASN1Identifier,
-        _ builder: (inout ASN1NodeCollection.Iterator) throws -> T
-    ) throws -> T {
+        _ node: ISO_8825.Node,
+        identifier: ISO_8824.Identifier,
+        _ builder: (inout ISO_8825.Node.Collection.Iterator) throws(ISO_8824.Error) -> T
+    ) throws(ISO_8824.Error) -> T {
         guard node.identifier == identifier, case .constructed(let nodes) = node.content else {
-            throw ASN1Error.unexpectedFieldType(node.identifier)
+            throw ISO_8824.Error.unexpectedFieldType(node.identifier)
         }
 
         var iterator = nodes.makeIterator()
@@ -50,7 +48,7 @@ extension DER {
         let result = try builder(&iterator)
 
         guard iterator.next() == nil else {
-            throw ASN1Error.invalidASN1Object(reason: "Unconsumed sequence nodes")
+            throw ISO_8824.Error.invalidASN1Object(reason: "Unconsumed sequence nodes")
         }
 
         return result
@@ -62,20 +60,20 @@ extension DER {
     ///
     /// - parameters:
     ///     - of: An optional parameter to express the type to decode.
-    ///     - identifier: The ``ASN1Identifier`` that the SEQUENCE OF is expected to have.
-    ///     - rootNode: The ``ASN1Node`` to parse
+    ///     - identifier: The ``ISO_8824.Identifier`` that the SEQUENCE OF is expected to have.
+    ///     - rootNode: The ``ISO_8825.Node`` to parse
     /// - returns: An array of elements representing the elements in the sequence.
     @inlinable
-    public static func sequence<T: DERParseable>(
+    public static func sequence<T: ISO_8825.DER.Parseable>(
         of: T.Type = T.self,
-        identifier: ASN1Identifier,
-        rootNode: ASN1Node
-    ) throws -> [T] {
+        identifier: ISO_8824.Identifier,
+        rootNode: ISO_8825.Node
+    ) throws(ISO_8824.Error) -> [T] {
         guard rootNode.identifier == identifier, case .constructed(let nodes) = rootNode.content else {
-            throw ASN1Error.unexpectedFieldType(rootNode.identifier)
+            throw ISO_8824.Error.unexpectedFieldType(rootNode.identifier)
         }
 
-        return try nodes.map { try T(derEncoded: $0) }
+        return try nodes.map { (node: ISO_8825.Node) throws(ISO_8824.Error) -> T in try T(derEncoded: node) }
     }
 
     /// Parse the node as an ASN.1 SEQUENCE OF.
@@ -84,18 +82,18 @@ extension DER {
     ///
     /// - parameters:
     ///     - of: An optional parameter to express the type to decode.
-    ///     - identifier: The ``ASN1Identifier`` that the SEQUENCE OF is expected to have.
-    ///     - nodes: An ``ASN1NodeCollection/Iterator`` of nodes to parse.
+    ///     - identifier: The ``ISO_8824.Identifier`` that the SEQUENCE OF is expected to have.
+    ///     - nodes: An ``ISO_8825.Node.Collection/Iterator`` of nodes to parse.
     /// - returns: An array of elements representing the elements in the sequence.
     @inlinable
-    public static func sequence<T: DERParseable>(
+    public static func sequence<T: ISO_8825.DER.Parseable>(
         of: T.Type = T.self,
-        identifier: ASN1Identifier,
-        nodes: inout ASN1NodeCollection.Iterator
-    ) throws -> [T] {
+        identifier: ISO_8824.Identifier,
+        nodes: inout ISO_8825.Node.Collection.Iterator
+    ) throws(ISO_8824.Error) -> [T] {
         guard let node = nodes.next() else {
             // Not present, throw.
-            throw ASN1Error.invalidASN1Object(
+            throw ISO_8824.Error.invalidASN1Object(
                 reason: "No sequence node available for \(T.self) and identifier \(identifier)"
             )
         }
@@ -108,15 +106,15 @@ extension DER {
     /// The "child" elements in the sequence will be exposed as an iterator to `builder`.
     ///
     /// - parameters:
-    ///     - node: The ``ASN1Node`` to parse
-    ///     - identifier: The ``ASN1Identifier`` that the SET is expected to have.
+    ///     - node: The ``ISO_8825.Node`` to parse
+    ///     - identifier: The ``ISO_8824.Identifier`` that the SET is expected to have.
     ///     - builder: A closure that will be called with the collection of nodes within the set.
     @inlinable
     public static func set<T>(
-        _ node: ASN1Node,
-        identifier: ASN1Identifier,
-        _ builder: (inout ASN1NodeCollection.Iterator) throws -> T
-    ) throws -> T {
+        _ node: ISO_8825.Node,
+        identifier: ISO_8824.Identifier,
+        _ builder: (inout ISO_8825.Node.Collection.Iterator) throws(ISO_8824.Error) -> T
+    ) throws(ISO_8824.Error) -> T {
         // Shhhh these two are secretly the same with identifier.
         return try sequence(node, identifier: identifier, builder)
     }
@@ -127,18 +125,18 @@ extension DER {
     ///
     /// - parameters:
     ///     - of: An optional parameter to express the type to decode.
-    ///     - identifier: The ``ASN1Identifier`` that the SET OF is expected to have.
-    ///     - nodes: An ``ASN1NodeCollection/Iterator`` of nodes to parse.
+    ///     - identifier: The ``ISO_8824.Identifier`` that the SET OF is expected to have.
+    ///     - nodes: An ``ISO_8825.Node.Collection/Iterator`` of nodes to parse.
     /// - returns: An array of elements representing the elements in the set.
     @inlinable
-    public static func set<T: DERParseable>(
+    public static func set<T: ISO_8825.DER.Parseable>(
         of: T.Type = T.self,
-        identifier: ASN1Identifier,
-        nodes: inout ASN1NodeCollection.Iterator
-    ) throws -> [T] {
+        identifier: ISO_8824.Identifier,
+        nodes: inout ISO_8825.Node.Collection.Iterator
+    ) throws(ISO_8824.Error) -> [T] {
         guard let node = nodes.next() else {
             // Not present, throw.
-            throw ASN1Error.invalidASN1Object(
+            throw ISO_8824.Error.invalidASN1Object(
                 reason: "No set node available for \(T.self) and identifier \(identifier)"
             )
         }
@@ -152,16 +150,17 @@ extension DER {
     ///
     /// - parameters:
     ///     - type: An optional parameter to express the type to decode.
-    ///     - identifier: The ``ASN1Identifier`` that the SET OF is expected to have.
-    ///     - rootNode: The ``ASN1Node`` to parse
+    ///     - identifier: The ``ISO_8824.Identifier`` that the SET OF is expected to have.
+    ///     - rootNode: The ``ISO_8825.Node`` to parse
     /// - returns: An array of elements representing the elements in the sequence.
     @inlinable
-    public static func set<T: DERParseable>(
+    public static func set<T: ISO_8825.DER.Parseable>(
         of type: T.Type = T.self,
-        identifier: ASN1Identifier,
-        rootNode: ASN1Node
-    ) throws -> [T] {
-        try self.lazySet(of: type, identifier: identifier, rootNode: rootNode).map { try $0.get() }
+        identifier: ISO_8824.Identifier,
+        rootNode: ISO_8825.Node
+    ) throws(ISO_8824.Error) -> [T] {
+        try self.lazySet(of: type, identifier: identifier, rootNode: rootNode)
+            .map { (element: Result<T, ISO_8824.Error>) throws(ISO_8824.Error) -> T in try element.get() }
     }
 
     /// Parse the node as an ASN.1 SET OF lazily.
@@ -170,39 +169,39 @@ extension DER {
     ///
     /// - parameters:
     ///     - of: An optional parameter to express the type to decode.
-    ///     - identifier: The ``ASN1Identifier`` that the SET OF is expected to have.
-    ///     - rootNode: The ``ASN1Node`` to parse
+    ///     - identifier: The ``ISO_8824.Identifier`` that the SET OF is expected to have.
+    ///     - rootNode: The ``ISO_8825.Node`` to parse
     /// - returns: A `Sequence` of elements representing the `Result` of parsing the elements in the sequence.
     @inlinable
-    public static func lazySet<T: DERParseable>(
+    public static func lazySet<T: ISO_8825.DER.Parseable>(
         of: T.Type = T.self,
-        identifier: ASN1Identifier,
-        rootNode: ASN1Node
-    ) throws -> DER.LazySetOfSequence<T> {
+        identifier: ISO_8824.Identifier,
+        rootNode: ISO_8825.Node
+    ) throws(ISO_8824.Error) -> ISO_8825.DER.LazySetOfSequence<T> {
         guard rootNode.identifier == identifier, case .constructed(let nodes) = rootNode.content else {
-            throw ASN1Error.unexpectedFieldType(rootNode.identifier)
+            throw ISO_8824.Error.unexpectedFieldType(rootNode.identifier)
         }
 
         guard nodes.isOrderedAccordingToSetOfSemantics() else {
-            throw ASN1Error.invalidASN1Object(reason: "SET OF fields are not lexicographically ordered")
+            throw ISO_8824.Error.invalidASN1Object(reason: "SET OF fields are not lexicographically ordered")
         }
 
-        return .init(nodes.lazy.map { node in Result { try T(derEncoded: node) } })
+        return .init(nodes.lazy.map { node in Result { () throws(ISO_8824.Error) -> T in try T(derEncoded: node) } })
     }
 }
 
 // MARK: - LazySetOfSequence
 
-extension DER {
-    public typealias LazySetOfSequence = ASN1.LazySetOfSequence
+extension ISO_8825.DER {
+    public typealias LazySetOfSequence = ISO_8825.LazySetOfSequence
 }
 
 // MARK: - Optional explicitly tagged
-extension DER {
+extension ISO_8825.DER {
     /// Parses an optional explicitly tagged element.
     ///
     /// - parameters:
-    ///     - nodes: The ``ASN1NodeCollection/Iterator`` to parse this element out of.
+    ///     - nodes: The ``ISO_8825.Node.Collection/Iterator`` to parse this element out of.
     ///     - tagNumber: The number of the explicit tag.
     ///     - tagClass: The class of the explicit tag.
     ///     - builder: A closure that will be called with the node for the element, if the element is present.
@@ -210,18 +209,18 @@ extension DER {
     /// - returns: The result of `builder` if the element was present, or `nil` if it was not.
     @inlinable
     public static func optionalExplicitlyTagged<T>(
-        _ nodes: inout ASN1NodeCollection.Iterator,
+        _ nodes: inout ISO_8825.Node.Collection.Iterator,
         tagNumber: UInt,
-        tagClass: ASN1Identifier.TagClass,
-        _ builder: (ASN1Node) throws -> T
-    ) throws -> T? {
+        tagClass: ISO_8824.Identifier.Class,
+        _ builder: (ISO_8825.Node) throws(ISO_8824.Error) -> T
+    ) throws(ISO_8824.Error) -> T? {
         var localNodesCopy = nodes
         guard let node = localNodesCopy.next() else {
             // Node not present, return nil.
             return nil
         }
 
-        let expectedNodeID = ASN1Identifier(tagWithNumber: tagNumber, tagClass: tagClass)
+        let expectedNodeID = ISO_8824.Identifier(tagWithNumber: tagNumber, tagClass: tagClass)
         //        assert(expectedNodeID.constructed)
         guard node.identifier == expectedNodeID else {
             // Node is a mismatch, with the wrong tag. Our optional isn't present.
@@ -233,14 +232,14 @@ extension DER {
 
         // We expect a single child.
         guard case .constructed(let nodes) = node.content else {
-            throw ASN1Error.invalidASN1Object(
+            throw ISO_8824.Error.invalidASN1Object(
                 reason: "Explicit tags should always be constructed, got \(node.identifier) which is not."
             )
         }
 
         var nodeIterator = nodes.makeIterator()
         guard let child = nodeIterator.next(), nodeIterator.next() == nil else {
-            throw ASN1Error.invalidASN1Object(
+            throw ISO_8824.Error.invalidASN1Object(
                 reason: "Too many child nodes in optionally tagged node of \(T.self) with identifier \(expectedNodeID)"
             )
         }
@@ -250,19 +249,19 @@ extension DER {
 }
 
 // MARK: - Optional implicitly tagged
-extension DER {
+extension ISO_8825.DER {
     /// Parses an optional implicitly tagged element.
     ///
     /// - parameters:
-    ///     - nodes: The ``ASN1NodeCollection/Iterator`` to parse this element out of.
+    ///     - nodes: The ``ISO_8825.Node.Collection/Iterator`` to parse this element out of.
     ///     - tag: The implicit tag. Defaults to the default tag for the element.
     ///
     /// - returns: The parsed element, if it was present, or `nil` if it was not.
     @inlinable
-    public static func optionalImplicitlyTagged<T: DERImplicitlyTaggable>(
-        _ nodes: inout ASN1NodeCollection.Iterator,
-        tag: ASN1Identifier = T.defaultIdentifier
-    ) throws -> T? {
+    public static func optionalImplicitlyTagged<T: ISO_8825.DER.ImplicitlyTaggable>(
+        _ nodes: inout ISO_8825.Node.Collection.Iterator,
+        tag: ISO_8824.Identifier = T.defaultIdentifier
+    ) throws(ISO_8824.Error) -> T? {
         var localNodesCopy = nodes
         guard let node = localNodesCopy.next() else {
             // Node not present, return nil.
@@ -281,26 +280,26 @@ extension DER {
     /// Parses an optional implicitly tagged element.
     ///
     /// - parameters:
-    ///     - nodes: The ``ASN1NodeCollection/Iterator`` to parse this element out of.
+    ///     - nodes: The ``ISO_8825.Node.Collection/Iterator`` to parse this element out of.
     ///     - tagNumber: The number of the explicit tag.
     ///     - tagClass: The class of the explicit tag.
     ///     - builder: A closure that will be called with the node for the element, if the element is present.
     ///
     /// - returns: The result of `builder` if the element was present, or `nil` if it was not.
     @inlinable
-    public static func optionalImplicitlyTagged<Result>(
-        _ nodes: inout ASN1NodeCollection.Iterator,
+    public static func optionalImplicitlyTagged<Result, E: Swift.Error>(
+        _ nodes: inout ISO_8825.Node.Collection.Iterator,
         tagNumber: UInt,
-        tagClass: ASN1Identifier.TagClass,
-        _ builder: (ASN1Node) throws -> Result
-    ) rethrows -> Result? {
+        tagClass: ISO_8824.Identifier.Class,
+        _ builder: (ISO_8825.Node) throws(E) -> Result
+    ) throws(E) -> Result? {
         var localNodesCopy = nodes
         guard let node = localNodesCopy.next() else {
             // Node not present, return nil.
             return nil
         }
 
-        let expectedNodeID = ASN1Identifier(tagWithNumber: tagNumber, tagClass: tagClass)
+        let expectedNodeID = ISO_8824.Identifier(tagWithNumber: tagNumber, tagClass: tagClass)
         guard node.identifier == expectedNodeID else {
             // Node is a mismatch, with the wrong tag. Our optional isn't present.
             return nil
@@ -315,25 +314,25 @@ extension DER {
 }
 
 // MARK: - DEFAULT
-extension DER {
+extension ISO_8825.DER {
     /// Parses a value that is encoded with a DEFAULT.
     ///
     /// Such a value is optional, and if absent will be replaced with its default.
     ///
     /// - parameters:
-    ///     - nodes: The ``ASN1NodeCollection/Iterator`` to parse this element out of.
+    ///     - nodes: The ``ISO_8825.Node.Collection/Iterator`` to parse this element out of.
     ///     - identifier: The implicit tag. Defaults to the default tag for the element.
     ///     - defaultValue: The default value to use if there was no encoded value.
     ///     - builder: A closure that will be called with the node for the element, if the element is present.
     ///
     /// - returns: The parsed element, if it was present, or the default if it was not.
     @inlinable
-    public static func decodeDefault<T: DERParseable & Equatable>(
-        _ nodes: inout ASN1NodeCollection.Iterator,
-        identifier: ASN1Identifier,
+    public static func decodeDefault<T: ISO_8825.DER.Parseable & Equatable>(
+        _ nodes: inout ISO_8825.Node.Collection.Iterator,
+        identifier: ISO_8824.Identifier,
         defaultValue: T,
-        _ builder: (ASN1Node) throws -> T
-    ) throws -> T {
+        _ builder: (ISO_8825.Node) throws(ISO_8824.Error) -> T
+    ) throws(ISO_8824.Error) -> T {
         // A weird trick here: we only want to consume the next node _if_ it has the right tag. To achieve that,
         // we work on a copy.
         var localNodesCopy = nodes
@@ -354,7 +353,7 @@ extension DER {
         // DER forbids encoding DEFAULT values at their default state.
         // We can lift this in BER.
         guard parsed != defaultValue else {
-            throw ASN1Error.invalidASN1Object(
+            throw ISO_8824.Error.invalidASN1Object(
                 reason:
                     "DEFAULT for \(T.self) with identifier \(identifier) present in DER but encoded at default value \(defaultValue)"
             )
@@ -367,22 +366,22 @@ extension DER {
     ///
     /// Such a value is optional, and if absent will be replaced with its default. This function is
     /// a helper wrapper for ``decodeDefault(_:identifier:defaultValue:_:)`` that automatically invokes
-    /// ``DERParseable/init(derEncoded:)-7tumk`` on `T`.
+    /// ``ISO_8825.DER.Parseable/init(derEncoded:)-7tumk`` on `T`.
     ///
     /// - parameters:
-    ///     - nodes: The ``ASN1NodeCollection/Iterator`` to parse this element out of.
+    ///     - nodes: The ``ISO_8825.Node.Collection/Iterator`` to parse this element out of.
     ///     - identifier: The implicit tag. Defaults to the default tag for the element.
     ///     - defaultValue: The default value to use if there was no encoded value.
     ///
     /// - returns: The parsed element, if it was present, or the default if it was not.
     @inlinable
-    public static func decodeDefault<T: DERParseable & Equatable>(
-        _ nodes: inout ASN1NodeCollection.Iterator,
-        identifier: ASN1Identifier,
+    public static func decodeDefault<T: ISO_8825.DER.Parseable & Equatable>(
+        _ nodes: inout ISO_8825.Node.Collection.Iterator,
+        identifier: ISO_8824.Identifier,
         defaultValue: T
-    ) throws -> T {
-        return try Self.decodeDefault(&nodes, identifier: identifier, defaultValue: defaultValue) {
-            try T(derEncoded: $0)
+    ) throws(ISO_8824.Error) -> T {
+        return try Self.decodeDefault(&nodes, identifier: identifier, defaultValue: defaultValue) { (node: ISO_8825.Node) throws(ISO_8824.Error) -> T in
+            try T(derEncoded: node)
         }
     }
 
@@ -390,18 +389,18 @@ extension DER {
     ///
     /// Such a value is optional, and if absent will be replaced with its default. This function is
     /// a helper wrapper for ``decodeDefault(_:identifier:defaultValue:_:)`` that automatically invokes
-    /// ``DERImplicitlyTaggable/init(derEncoded:withIdentifier:)-7e88k`` on `T` using ``DERImplicitlyTaggable/defaultIdentifier``.
+    /// ``ISO_8825.DER.ImplicitlyTaggable/init(derEncoded:withIdentifier:)-7e88k`` on `T` using ``ISO_8825.DER.ImplicitlyTaggable/defaultIdentifier``.
     ///
     /// - parameters:
-    ///     - nodes: The ``ASN1NodeCollection/Iterator`` to parse this element out of.
+    ///     - nodes: The ``ISO_8825.Node.Collection/Iterator`` to parse this element out of.
     ///     - defaultValue: The default value to use if there was no encoded value.
     ///
     /// - returns: The parsed element, if it was present, or the default if it was not.
     @inlinable
-    public static func decodeDefault<T: DERImplicitlyTaggable & Equatable>(
-        _ nodes: inout ASN1NodeCollection.Iterator,
+    public static func decodeDefault<T: ISO_8825.DER.ImplicitlyTaggable & Equatable>(
+        _ nodes: inout ISO_8825.Node.Collection.Iterator,
         defaultValue: T
-    ) throws -> T {
+    ) throws(ISO_8824.Error) -> T {
         return try Self.decodeDefault(&nodes, identifier: T.defaultIdentifier, defaultValue: defaultValue)
     }
 
@@ -410,7 +409,7 @@ extension DER {
     /// Such a value is optional, and if absent will be replaced with its default.
     ///
     /// - parameters:
-    ///     - nodes: The ``ASN1NodeCollection/Iterator`` to parse this element out of.
+    ///     - nodes: The ``ISO_8825.Node.Collection/Iterator`` to parse this element out of.
     ///     - tagNumber: The number of the explicit tag.
     ///     - tagClass: The class of the explicit tag.
     ///     - defaultValue: The default value to use if there was no encoded value.
@@ -418,13 +417,13 @@ extension DER {
     ///
     /// - returns: The parsed element, if it was present, or the default if it was not.
     @inlinable
-    public static func decodeDefaultExplicitlyTagged<T: DERParseable & Equatable>(
-        _ nodes: inout ASN1NodeCollection.Iterator,
+    public static func decodeDefaultExplicitlyTagged<T: ISO_8825.DER.Parseable & Equatable>(
+        _ nodes: inout ISO_8825.Node.Collection.Iterator,
         tagNumber: UInt,
-        tagClass: ASN1Identifier.TagClass,
+        tagClass: ISO_8824.Identifier.Class,
         defaultValue: T,
-        _ builder: (ASN1Node) throws -> T
-    ) throws -> T {
+        _ builder: (ISO_8825.Node) throws(ISO_8824.Error) -> T
+    ) throws(ISO_8824.Error) -> T {
         guard let result = try optionalExplicitlyTagged(&nodes, tagNumber: tagNumber, tagClass: tagClass, builder)
         else {
             return defaultValue
@@ -432,7 +431,7 @@ extension DER {
         guard result != defaultValue else {
             // DER forbids encoding DEFAULT values at their default state.
             // We can lift this in BER.
-            throw ASN1Error.invalidASN1Object(
+            throw ISO_8824.Error.invalidASN1Object(
                 reason:
                     "DEFAULT for \(T.self) with tag number \(tagNumber) and class \(tagClass) present in DER but encoded at default value \(defaultValue)"
             )
@@ -445,39 +444,39 @@ extension DER {
     ///
     /// Such a value is optional, and if absent will be replaced with its default. This function is
     /// a helper wrapper for ``decodeDefaultExplicitlyTagged(_:tagNumber:tagClass:defaultValue:_:)`` that automatically invokes
-    /// ``DERParseable/init(derEncoded:)-7tumk`` on `T`.
+    /// ``ISO_8825.DER.Parseable/init(derEncoded:)-7tumk`` on `T`.
     ///
     /// - parameters:
-    ///     - nodes: The ``ASN1NodeCollection/Iterator`` to parse this element out of.
+    ///     - nodes: The ``ISO_8825.Node.Collection/Iterator`` to parse this element out of.
     ///     - tagNumber: The number of the explicit tag.
     ///     - tagClass: The class of the explicit tag.
     ///     - defaultValue: The default value to use if there was no encoded value.
     ///
     /// - returns: The parsed element, if it was present, or the default if it was not.
     @inlinable
-    public static func decodeDefaultExplicitlyTagged<T: DERParseable & Equatable>(
-        _ nodes: inout ASN1NodeCollection.Iterator,
+    public static func decodeDefaultExplicitlyTagged<T: ISO_8825.DER.Parseable & Equatable>(
+        _ nodes: inout ISO_8825.Node.Collection.Iterator,
         tagNumber: UInt,
-        tagClass: ASN1Identifier.TagClass,
+        tagClass: ISO_8824.Identifier.Class,
         defaultValue: T
-    ) throws -> T {
+    ) throws(ISO_8824.Error) -> T {
         return try Self.decodeDefaultExplicitlyTagged(
             &nodes,
             tagNumber: tagNumber,
             tagClass: tagClass,
             defaultValue: defaultValue
-        ) {
-            try T(derEncoded: $0)
+        ) { (node: ISO_8825.Node) throws(ISO_8824.Error) -> T in
+            try T(derEncoded: node)
         }
     }
 }
 
 // MARK: - Ordinary, explicit tagging
-extension DER {
+extension ISO_8825.DER {
     /// Parses an explicitly tagged element.
     ///
     /// - parameters:
-    ///     - nodes: The ``ASN1NodeCollection/Iterator`` to parse this element out of.
+    ///     - nodes: The ``ISO_8825.Node.Collection/Iterator`` to parse this element out of.
     ///     - tagNumber: The number of the explicit tag.
     ///     - tagClass: The class of the explicit tag.
     ///     - builder: A closure that will be called with the node for the element.
@@ -485,14 +484,14 @@ extension DER {
     /// - returns: The result of `builder`.
     @inlinable
     public static func explicitlyTagged<T>(
-        _ nodes: inout ASN1NodeCollection.Iterator,
+        _ nodes: inout ISO_8825.Node.Collection.Iterator,
         tagNumber: UInt,
-        tagClass: ASN1Identifier.TagClass,
-        _ builder: (ASN1Node) throws -> T
-    ) throws -> T {
+        tagClass: ISO_8824.Identifier.Class,
+        _ builder: (ISO_8825.Node) throws(ISO_8824.Error) -> T
+    ) throws(ISO_8824.Error) -> T {
         guard let node = nodes.next() else {
             // Node not present, throw.
-            throw ASN1Error.invalidASN1Object(
+            throw ISO_8824.Error.invalidASN1Object(
                 reason:
                     "Explicitly tagged node for \(T.self) with tag number \(tagNumber) and class \(tagClass) not present"
             )
@@ -504,7 +503,7 @@ extension DER {
     /// Parses an explicitly tagged element.
     ///
     /// - parameters:
-    ///     - node: The ``ASN1Node`` to parse this element out of.
+    ///     - node: The ``ISO_8825.Node`` to parse this element out of.
     ///     - tagNumber: The number of the explicit tag.
     ///     - tagClass: The class of the explicit tag.
     ///     - builder: A closure that will be called with the node for the element.
@@ -512,25 +511,25 @@ extension DER {
     /// - returns: The result of `builder`.
     @inlinable
     public static func explicitlyTagged<T>(
-        _ node: ASN1Node,
+        _ node: ISO_8825.Node,
         tagNumber: UInt,
-        tagClass: ASN1Identifier.TagClass,
-        _ builder: (ASN1Node) throws -> T
-    ) throws -> T {
-        let expectedNodeID = ASN1Identifier(tagWithNumber: tagNumber, tagClass: tagClass)
+        tagClass: ISO_8824.Identifier.Class,
+        _ builder: (ISO_8825.Node) throws(ISO_8824.Error) -> T
+    ) throws(ISO_8824.Error) -> T {
+        let expectedNodeID = ISO_8824.Identifier(tagWithNumber: tagNumber, tagClass: tagClass)
         guard node.identifier == expectedNodeID else {
             // Node is a mismatch, with the wrong tag.
-            throw ASN1Error.unexpectedFieldType(node.identifier)
+            throw ISO_8824.Error.unexpectedFieldType(node.identifier)
         }
 
         // We expect a single child.
         guard case .constructed(let nodes) = node.content else {
-            throw ASN1Error.invalidASN1Object(reason: "Explicit tag \(expectedNodeID) for \(T.self) is primitive")
+            throw ISO_8824.Error.invalidASN1Object(reason: "Explicit tag \(expectedNodeID) for \(T.self) is primitive")
         }
 
         var nodeIterator = nodes.makeIterator()
         guard let child = nodeIterator.next(), nodeIterator.next() == nil else {
-            throw ASN1Error.invalidASN1Object(
+            throw ISO_8824.Error.invalidASN1Object(
                 reason: "Invalid number of child nodes for explicit tag \(expectedNodeID) for \(T.self)"
             )
         }
@@ -540,75 +539,69 @@ extension DER {
 }
 
 // MARK: - Parsing
-extension DER {
-    /// A parsed representation of ASN.1.
-    @usableFromInline
-    typealias ParseResult = ASN1.ParseResult
-}
-
-extension DER {
+extension ISO_8825.DER {
     /// Parses an array of bytes as DER-encoded ASN.1 bytes.
     ///
-    /// This function does not produce a complete decoded representation. Instead it produces a tree of ``ASN1Node`` objects,
+    /// This function does not produce a complete decoded representation. Instead it produces a tree of ``ISO_8825.Node`` objects,
     /// each representing a single ASN.1 object. The leaves of the tree are primitive ASN.1 objects, and the intermediate nodes are
     /// constructed.
     ///
-    /// In general this function is not called by users directly. Prefer using ``DERParseable/init(derEncoded:)-i2rf``, which encapsulates
+    /// In general this function is not called by users directly. Prefer using ``ISO_8825.DER.Parseable/init(derEncoded:)-i2rf``, which encapsulates
     /// the use of this function and immediately returns a strongly typed, fully-parsed object.
     ///
     /// - parameters:
     ///     - data: The DER-encoded bytes to parse.
     /// - returns: The root node in the ASN.1 tree.
     @inlinable
-    public static func parse(_ data: [UInt8]) throws -> ASN1Node {
+    public static func parse(_ data: [UInt8]) throws(ISO_8824.Error) -> ISO_8825.Node {
         return try parse(data[...])
     }
 
     /// Parses an array of bytes as DER-encoded ASN.1 bytes.
     ///
-    /// This function does not produce a complete decoded representation. Instead it produces a tree of ``ASN1Node`` objects,
+    /// This function does not produce a complete decoded representation. Instead it produces a tree of ``ISO_8825.Node`` objects,
     /// each representing a single ASN.1 object. The leaves of the tree are primitive ASN.1 objects, and the intermediate nodes are
     /// constructed.
     ///
-    /// In general this function is not called by users directly. Prefer using ``DERParseable/init(derEncoded:)-8yeds``, which encapsulates
+    /// In general this function is not called by users directly. Prefer using ``ISO_8825.DER.Parseable/init(derEncoded:)-8yeds``, which encapsulates
     /// the use of this function and immediately returns a strongly typed, fully-parsed object.
     ///
     /// - parameters:
     ///     - data: The DER-encoded bytes to parse.
     /// - returns: The root node in the ASN.1 tree.
     @inlinable
-    public static func parse(_ data: ArraySlice<UInt8>) throws -> ASN1Node {
-        var result = try ParseResult.parse(data, encoding: .distinguished)
+    public static func parse(_ data: ArraySlice<UInt8>) throws(ISO_8824.Error) -> ISO_8825.Node {
+        var result = try ISO_8825.TLV.Parser.parse(data, encoding: .distinguished)
 
         // There will always be at least one node if the above didn't throw, so we can safely just removeFirst here.
         let firstNode = result.nodes.removeFirst()
 
-        let rootNode: ASN1Node
+        let rootNode: ISO_8825.Node
         if firstNode.isConstructed {
             // We need to feed it the next set of nodes.
             let nodeCollection = result.nodes.prefix { $0.depth > firstNode.depth }
             result.nodes = result.nodes.dropFirst(nodeCollection.count)
-            rootNode = ASN1Node(
+            rootNode = ISO_8825.Node(
                 identifier: firstNode.identifier,
                 content: .constructed(.init(nodes: nodeCollection, depth: firstNode.depth)),
                 encodedBytes: firstNode.encodedBytes
             )
         } else {
-            rootNode = ASN1Node(
+            rootNode = ISO_8825.Node(
                 identifier: firstNode.identifier,
                 content: .primitive(firstNode.dataBytes!),
                 encodedBytes: firstNode.encodedBytes
             )
         }
 
-        precondition(result.nodes.count == 0, "ASN1ParseResult unexpectedly allowed multiple root nodes")
+        precondition(result.nodes.count == 0, "ISO_8825.TLV.Parser unexpectedly allowed multiple root nodes")
 
         return rootNode
     }
 }
 
 // MARK: - Serializing
-extension DER {
+extension ISO_8825.DER {
     /// An object that can serialize ASN.1 bytes.
     ///
     /// ``Serializer`` is a copy-on-write value type.
@@ -617,6 +610,9 @@ extension DER {
         var _serializedBytes: [UInt8]
 
         /// The bytes that have been serialized by this serializer.
+        // -> Byte discipline: [UInt8] output substrate retained pending a compile-gated
+        //    [API-BYTE-004] migration (serializer mixes byte writes with length
+        //    arithmetic); judgment deferred to the lead.
         @inlinable
         public var serializedBytes: [UInt8] {
             self._serializedBytes
@@ -638,11 +634,13 @@ extension DER {
         ///      - identifier: The tag for this ASN.1 node
         ///      - contentWriter: A callback that will be invoked that allows users to write their bytes into the output stream.
         @inlinable
-        public mutating func appendPrimitiveNode(
-            identifier: ASN1Identifier,
-            _ contentWriter: (inout [UInt8]) throws -> Void
-        ) rethrows {
-            try self._appendNode(identifier: identifier, constructed: false) { try contentWriter(&$0._serializedBytes) }
+        public mutating func appendPrimitiveNode<E: Swift.Error>(
+            identifier: ISO_8824.Identifier,
+            _ contentWriter: (inout [UInt8]) throws(E) -> Void
+        ) throws(E) {
+            try self._appendNode(identifier: identifier, constructed: false) { (serializer: inout Serializer) throws(E) -> Void in
+                try contentWriter(&serializer._serializedBytes)
+            }
         }
 
         /// Appends a single constructed node to the content.
@@ -654,10 +652,10 @@ extension DER {
         ///      - identifier: The tag for this ASN.1 node
         ///      - contentWriter: A callback that will be invoked that allows users to write the objects contained within this constructed node.
         @inlinable
-        public mutating func appendConstructedNode(
-            identifier: ASN1Identifier,
-            _ contentWriter: (inout Serializer) throws -> Void
-        ) rethrows {
+        public mutating func appendConstructedNode<E: Swift.Error>(
+            identifier: ISO_8824.Identifier,
+            _ contentWriter: (inout Serializer) throws(E) -> Void
+        ) throws(E) {
             try self._appendNode(identifier: identifier, constructed: true, contentWriter)
         }
 
@@ -666,7 +664,7 @@ extension DER {
         /// - parameters:
         ///     node: The node to be serialized.
         @inlinable
-        public mutating func serialize<T: DERSerializable>(_ node: T) throws {
+        public mutating func serialize<T: ISO_8825.DER.Serializable>(_ node: T) throws(ISO_8824.Error) {
             try node.serialize(into: &self)
         }
 
@@ -680,12 +678,12 @@ extension DER {
         ///     tagNumber: The number of the explicit tag.
         ///     tagClass: The number of the explicit tag.
         @inlinable
-        public mutating func serialize<T: DERSerializable>(
+        public mutating func serialize<T: ISO_8825.DER.Serializable>(
             _ node: T,
             explicitlyTaggedWithTagNumber tagNumber: UInt,
-            tagClass: ASN1Identifier.TagClass
-        ) throws {
-            let identifier = ASN1Identifier(tagWithNumber: tagNumber, tagClass: tagClass)
+            tagClass: ISO_8824.Identifier.Class
+        ) throws(ISO_8824.Error) {
+            let identifier = ISO_8824.Identifier(tagWithNumber: tagNumber, tagClass: tagClass)
             return try self.serialize(node, explicitlyTaggedWithIdentifier: identifier)
         }
 
@@ -695,11 +693,11 @@ extension DER {
         ///     node: The node to be serialized.
         ///     identifier: The explicit ASN.1 tag to apply.
         @inlinable
-        public mutating func serialize<T: DERSerializable>(
+        public mutating func serialize<T: ISO_8825.DER.Serializable>(
             _ node: T,
-            explicitlyTaggedWithIdentifier identifier: ASN1Identifier
-        ) throws {
-            try self.appendConstructedNode(identifier: identifier) { coder in
+            explicitlyTaggedWithIdentifier identifier: ISO_8824.Identifier
+        ) throws(ISO_8824.Error) {
+            try self.appendConstructedNode(identifier: identifier) { (coder: inout Serializer) throws(ISO_8824.Error) -> Void in
                 try coder.serialize(node)
             }
         }
@@ -713,7 +711,7 @@ extension DER {
         /// - parameters:
         ///     node: The node to be serialized.
         @inlinable
-        public mutating func serializeOptionalImplicitlyTagged<T: DERSerializable>(_ node: T?) throws {
+        public mutating func serializeOptionalImplicitlyTagged<T: ISO_8825.DER.Serializable>(_ node: T?) throws(ISO_8824.Error) {
             if let node = node {
                 try self.serialize(node)
             }
@@ -727,10 +725,10 @@ extension DER {
         ///     node: The node to be serialized.
         ///     identifier: The implicit ASN.1 tag to apply.
         @inlinable
-        public mutating func serializeOptionalImplicitlyTagged<T: DERImplicitlyTaggable>(
+        public mutating func serializeOptionalImplicitlyTagged<T: ISO_8825.DER.ImplicitlyTaggable>(
             _ node: T?,
-            withIdentifier identifier: ASN1Identifier
-        ) throws {
+            withIdentifier identifier: ISO_8824.Identifier
+        ) throws(ISO_8824.Error) {
             if let node = node {
                 try node.serialize(into: &self, withIdentifier: identifier)
             }
@@ -746,13 +744,13 @@ extension DER {
         ///     tagClass: The number of the explicit tag.
         ///     block: The block that will be invoked to encode the contents of the explicit tag.
         @inlinable
-        public mutating func serialize(
+        public mutating func serialize<E: Swift.Error>(
             explicitlyTaggedWithTagNumber tagNumber: UInt,
-            tagClass: ASN1Identifier.TagClass,
-            _ block: (inout Serializer) throws -> Void
-        ) rethrows {
-            let identifier = ASN1Identifier(tagWithNumber: tagNumber, tagClass: tagClass)
-            try self.appendConstructedNode(identifier: identifier) { coder in
+            tagClass: ISO_8824.Identifier.Class,
+            _ block: (inout Serializer) throws(E) -> Void
+        ) throws(E) {
+            let identifier = ISO_8824.Identifier(tagWithNumber: tagNumber, tagClass: tagClass)
+            try self.appendConstructedNode(identifier: identifier) { (coder: inout Serializer) throws(E) -> Void in
                 try block(&coder)
             }
         }
@@ -761,13 +759,13 @@ extension DER {
         ///
         /// - parameters:
         ///     - elements: The members of the ASN.1 SEQUENCE OF.
-        ///     - identifier: The identifier to use for the SEQUENCE OF node. Defaults to ``ASN1Identifier/sequence``.
+        ///     - identifier: The identifier to use for the SEQUENCE OF node. Defaults to ``ISO_8824.Identifier/sequence``.
         @inlinable
         public mutating func serializeSequenceOf<Elements: Sequence>(
             _ elements: Elements,
-            identifier: ASN1Identifier = .sequence
-        ) throws where Elements.Element: DERSerializable {
-            try self.appendConstructedNode(identifier: identifier) { coder in
+            identifier: ISO_8824.Identifier = .sequence
+        ) throws(ISO_8824.Error) where Elements.Element: ISO_8825.DER.Serializable {
+            try self.appendConstructedNode(identifier: identifier) { (coder: inout Serializer) throws(ISO_8824.Error) -> Void in
                 for element in elements {
                     try coder.serialize(element)
                 }
@@ -778,16 +776,16 @@ extension DER {
         ///
         /// - parameters:
         ///     - elements: The members of the ASN.1 SET OF.
-        ///     - identifier: The identifier to use for the SET OF node. Defaults to ``ASN1Identifier/set``.
+        ///     - identifier: The identifier to use for the SET OF node. Defaults to ``ISO_8824.Identifier/set``.
         @inlinable
         public mutating func serializeSetOf<Elements: Sequence>(
             _ elements: Elements,
-            identifier: ASN1Identifier = .set
-        ) throws where Elements.Element: DERSerializable {
+            identifier: ISO_8824.Identifier = .set
+        ) throws(ISO_8824.Error) where Elements.Element: ISO_8825.DER.Serializable {
             // We first serialize all elements into one intermediate Serializer and
             // create ArraySlices of their binary DER representation.
-            var intermediateSerializer = DER.Serializer()
-            let serializedRanges = try elements.map { element in
+            var intermediateSerializer = ISO_8825.DER.Serializer()
+            let serializedRanges = try elements.map { (element: Elements.Element) throws(ISO_8824.Error) -> Range<Int> in
                 let startIndex = intermediateSerializer.serializedBytes.endIndex
                 try intermediateSerializer.serialize(element)
                 let endIndex = intermediateSerializer.serializedBytes.endIndex
@@ -819,7 +817,7 @@ extension DER {
         /// - parameters:
         ///     - node: The parsed node to serialize.
         @inlinable
-        public mutating func serialize(_ node: ASN1Node) {
+        public mutating func serialize(_ node: ISO_8825.Node) {
             let identifier = node.identifier
             let constructed: Bool
 
@@ -861,11 +859,11 @@ extension DER {
         // This is the base logical function that all other append methods are built on. This one has most of the logic, and doesn't
         // police what we expect to happen in the content writer.
         @inlinable
-        mutating func _appendNode(
-            identifier: ASN1Identifier,
+        mutating func _appendNode<E: Swift.Error>(
+            identifier: ISO_8824.Identifier,
             constructed: Bool,
-            _ contentWriter: (inout Serializer) throws -> Void
-        ) rethrows {
+            _ contentWriter: (inout Serializer) throws(E) -> Void
+        ) throws(E) {
             // This is a tricky game to play. We want to write the identifier and the length, but we don't know what the
             // length is here. To get around that, we _assume_ the length will be one byte, and let the writer write their content.
             // If it turns out to have been longer, we recalculate how many bytes we need and shuffle them in the buffer,
@@ -922,31 +920,33 @@ extension DER {
 ///
 /// Users implementing this type are expected to write the ASN.1 decoding code themselves. This approach is discussed in
 /// depth in <doc:DecodingASN1>. When working with a type that may be implicitly tagged (which is most ASN.1 types),
-/// users are recommended to implement ``DERImplicitlyTaggable`` instead.
-public protocol DERParseable {
-    /// Initialize this object from a serialized DER representation.
-    ///
-    /// This function is invoked by the parser with the root node for the ASN.1 object. Implementers are
-    /// expected to initialize themselves if possible, or to throw if they cannot.
-    ///
-    /// - parameters:
-    ///     - node: The ASN.1 node representing this object.
-    init(derEncoded node: ASN1Node) throws
+/// users are recommended to implement ``ISO_8825.DER.ImplicitlyTaggable`` instead.
+extension ISO_8825.DER {
+    public protocol Parseable {
+        /// Initialize this object from a serialized DER representation.
+        ///
+        /// This function is invoked by the parser with the root node for the ASN.1 object. Implementers are
+        /// expected to initialize themselves if possible, or to throw if they cannot.
+        ///
+        /// - parameters:
+        ///     - node: The ASN.1 node representing this object.
+        init(derEncoded node: ISO_8825.Node) throws(ISO_8824.Error)
+    }
 }
 
-extension DERParseable {
+extension ISO_8825.DER.Parseable {
     /// Initialize this object as one element of a constructed ASN.1 object.
     ///
     /// This is a helper function for parsing constructed ASN.1 objects. It delegates all its functionality
-    /// to ``DERParseable/init(derEncoded:)-7tumk``.
+    /// to ``ISO_8825.DER.Parseable/init(derEncoded:)-7tumk``.
     ///
     /// - parameters:
     ///     - sequenceNodeIterator: The sequence of nodes that make up this object's parent. The first node in this collection
     ///         will be used to construct this object.
     @inlinable
-    public init(derEncoded sequenceNodeIterator: inout ASN1NodeCollection.Iterator) throws {
+    public init(derEncoded sequenceNodeIterator: inout ISO_8825.Node.Collection.Iterator) throws(ISO_8824.Error) {
         guard let node = sequenceNodeIterator.next() else {
-            throw ASN1Error.invalidASN1Object(reason: "Unable to decode \(Self.self), no ASN.1 nodes to decode")
+            throw ISO_8824.Error.invalidASN1Object(reason: "Unable to decode \(Self.self), no ASN.1 nodes to decode")
         }
 
         self = try .init(derEncoded: node)
@@ -957,8 +957,8 @@ extension DERParseable {
     /// - parameters:
     ///     - derEncoded: The DER-encoded bytes representing this object.
     @inlinable
-    public init(derEncoded: [UInt8]) throws {
-        self = try .init(derEncoded: DER.parse(derEncoded))
+    public init(derEncoded: [UInt8]) throws(ISO_8824.Error) {
+        self = try .init(derEncoded: ISO_8825.DER.parse(derEncoded))
     }
 
     /// Initialize this object from a serialized DER representation.
@@ -966,8 +966,8 @@ extension DERParseable {
     /// - parameters:
     ///     - derEncoded: The DER-encoded bytes representing this object.
     @inlinable
-    public init(derEncoded: ArraySlice<UInt8>) throws {
-        self = try .init(derEncoded: DER.parse(derEncoded))
+    public init(derEncoded: ArraySlice<UInt8>) throws(ISO_8824.Error) {
+        self = try .init(derEncoded: ISO_8825.DER.parse(derEncoded))
     }
 }
 
@@ -975,13 +975,15 @@ extension DERParseable {
 ///
 /// Users implementing this type are expected to write the ASN.1 serialization code themselves. This approach is discussed in
 /// depth in <doc:DecodingASN1>. When working with a type that may be implicitly tagged (which is most ASN.1 types),
-/// users are recommended to implement ``DERImplicitlyTaggable`` instead.
-public protocol DERSerializable {
-    /// Serialize this object into DER-encoded ASN.1 form.
-    ///
-    /// - parameters:
-    ///     - coder: A serializer to be used to encode the object.
-    func serialize(into coder: inout DER.Serializer) throws
+/// users are recommended to implement ``ISO_8825.DER.ImplicitlyTaggable`` instead.
+extension ISO_8825.DER {
+    public protocol Serializable {
+        /// Serialize this object into DER-encoded ASN.1 form.
+        ///
+        /// - parameters:
+        ///     - coder: A serializer to be used to encode the object.
+        func serialize(into coder: inout ISO_8825.DER.Serializer) throws(ISO_8824.Error)
+    }
 }
 
 /// An ASN.1 node that can tolerate having an implicit tag.
@@ -991,36 +993,41 @@ public protocol DERSerializable {
 /// CHOICE elements without explicit tags cannot be implicitly tagged.
 ///
 /// Objects that _can_ be implicitly tagged should prefer to implement this protocol in preference to
-/// ``DERSerializable`` and ``DERParseable``.
-public protocol DERImplicitlyTaggable: DERParseable, DERSerializable {
-    /// The tag that the first node will use "by default" if the grammar omits
-    /// any more specific tag definition.
-    static var defaultIdentifier: ASN1Identifier { get }
+/// ``ISO_8825.DER.Serializable`` and ``ISO_8825.DER.Parseable``.
+extension ISO_8825.DER {
+    // -> naming judgment: `ImplicitlyTaggable` retained from upstream. IMPLICIT is
+    //    X.680/X.690 spec vocabulary; the compound leaf is mechanically exempt at L2
+    //    (Bundle.standards omits the compound rules) but flagged for principal review.
+    public protocol ImplicitlyTaggable: ISO_8825.DER.Parseable, ISO_8825.DER.Serializable {
+        /// The tag that the first node will use "by default" if the grammar omits
+        /// any more specific tag definition.
+        static var defaultIdentifier: ISO_8824.Identifier { get }
 
-    /// Initialize this object from a serialized DER representation.
-    ///
-    /// This function is invoked by the parser with the root node for the ASN.1 object. Implementers are
-    /// expected to initialize themselves if possible, or to throw if they cannot. The object is expected
-    /// to use the identifier `identifier`.
-    ///
-    /// - parameters:
-    ///     - derEncoded: The ASN.1 node representing this object.
-    ///     - identifier: The ASN.1 identifier that `derEncoded` is expected to have.
-    init(derEncoded: ASN1Node, withIdentifier identifier: ASN1Identifier) throws
+        /// Initialize this object from a serialized DER representation.
+        ///
+        /// This function is invoked by the parser with the root node for the ASN.1 object. Implementers are
+        /// expected to initialize themselves if possible, or to throw if they cannot. The object is expected
+        /// to use the identifier `identifier`.
+        ///
+        /// - parameters:
+        ///     - derEncoded: The ASN.1 node representing this object.
+        ///     - identifier: The ASN.1 identifier that `derEncoded` is expected to have.
+        init(derEncoded: ISO_8825.Node, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error)
 
-    /// Serialize this object into DER-encoded ASN.1 form.
-    ///
-    /// - parameters:
-    ///     - coder: A serializer to be used to encode the object.
-    ///     - identifier: The ASN.1 identifier that this object should use to represent itself.
-    func serialize(into coder: inout DER.Serializer, withIdentifier identifier: ASN1Identifier) throws
+        /// Serialize this object into DER-encoded ASN.1 form.
+        ///
+        /// - parameters:
+        ///     - coder: A serializer to be used to encode the object.
+        ///     - identifier: The ASN.1 identifier that this object should use to represent itself.
+        func serialize(into coder: inout ISO_8825.DER.Serializer, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error)
+    }
 }
 
-extension DERImplicitlyTaggable {
+extension ISO_8825.DER.ImplicitlyTaggable {
     /// Initialize this object as one element of a constructed ASN.1 object.
     ///
     /// This is a helper function for parsing constructed ASN.1 objects. It delegates all its functionality
-    /// to ``DERImplicitlyTaggable/init(derEncoded:withIdentifier:)-7e88k``.
+    /// to ``ISO_8825.DER.ImplicitlyTaggable/init(derEncoded:withIdentifier:)-7e88k``.
     ///
     /// - parameters:
     ///     - sequenceNodeIterator: The sequence of nodes that make up this object's parent. The first node in this collection
@@ -1028,11 +1035,11 @@ extension DERImplicitlyTaggable {
     ///     - identifier: The ASN.1 identifier that `derEncoded` is expected to have.
     @inlinable
     public init(
-        derEncoded sequenceNodeIterator: inout ASN1NodeCollection.Iterator,
-        withIdentifier identifier: ASN1Identifier = Self.defaultIdentifier
-    ) throws {
+        derEncoded sequenceNodeIterator: inout ISO_8825.Node.Collection.Iterator,
+        withIdentifier identifier: ISO_8824.Identifier = Self.defaultIdentifier
+    ) throws(ISO_8824.Error) {
         guard let node = sequenceNodeIterator.next() else {
-            throw ASN1Error.invalidASN1Object(reason: "Unable to decode \(Self.self), no ASN.1 nodes to decode")
+            throw ISO_8824.Error.invalidASN1Object(reason: "Unable to decode \(Self.self), no ASN.1 nodes to decode")
         }
 
         self = try .init(derEncoded: node, withIdentifier: identifier)
@@ -1044,8 +1051,8 @@ extension DERImplicitlyTaggable {
     ///     - derEncoded: The DER-encoded bytes representing this object.
     ///     - identifier: The ASN.1 identifier that `derEncoded` is expected to have.
     @inlinable
-    public init(derEncoded: [UInt8], withIdentifier identifier: ASN1Identifier = Self.defaultIdentifier) throws {
-        self = try .init(derEncoded: DER.parse(derEncoded), withIdentifier: identifier)
+    public init(derEncoded: [UInt8], withIdentifier identifier: ISO_8824.Identifier = Self.defaultIdentifier) throws(ISO_8824.Error) {
+        self = try .init(derEncoded: ISO_8825.DER.parse(derEncoded), withIdentifier: identifier)
     }
 
     /// Initialize this object from a serialized DER representation.
@@ -1056,18 +1063,18 @@ extension DERImplicitlyTaggable {
     @inlinable
     public init(
         derEncoded: ArraySlice<UInt8>,
-        withIdentifier identifier: ASN1Identifier = Self.defaultIdentifier
-    ) throws {
-        self = try .init(derEncoded: DER.parse(derEncoded), withIdentifier: identifier)
+        withIdentifier identifier: ISO_8824.Identifier = Self.defaultIdentifier
+    ) throws(ISO_8824.Error) {
+        self = try .init(derEncoded: ISO_8825.DER.parse(derEncoded), withIdentifier: identifier)
     }
 
     @inlinable
-    public init(derEncoded: ASN1Node) throws {
+    public init(derEncoded: ISO_8825.Node) throws(ISO_8824.Error) {
         try self.init(derEncoded: derEncoded, withIdentifier: Self.defaultIdentifier)
     }
 
     @inlinable
-    public func serialize(into coder: inout DER.Serializer) throws {
+    public func serialize(into coder: inout ISO_8825.DER.Serializer) throws(ISO_8824.Error) {
         try self.serialize(into: &coder, withIdentifier: Self.defaultIdentifier)
     }
 }
