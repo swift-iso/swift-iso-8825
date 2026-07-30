@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the SwiftASN1 open source project
 //
@@ -10,7 +10,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
 public import ISO_8824
 
@@ -190,7 +190,7 @@ extension ISO_8825.TLV {
             }
 
             switch wideLength {
-            case let .definite(wideLength):
+            case .definite(let wideLength):
                 guard let length = Int(exactly: wideLength) else {
                     throw ISO_8824.Error.invalidASN1Object(reason: "Excessively large field: \(wideLength)")
                 }
@@ -286,7 +286,7 @@ extension ISO_8825 {
             }
 
             @inlinable
-            package init(_ wrapped: Wrapped.Iterator) {
+            init(_ wrapped: Wrapped.Iterator) {
                 self.wrapped = wrapped
             }
         }
@@ -326,7 +326,7 @@ extension ISO_8825.Node {
         @usableFromInline var _depth: Int
 
         @inlinable
-        package init(nodes: ArraySlice<ISO_8825.TLV>, depth: Int) {
+        init(nodes: ArraySlice<ISO_8825.TLV>, depth: Int) {
             self._nodes = nodes
             self._depth = depth
 
@@ -352,7 +352,7 @@ extension ISO_8825.Node.Collection: Sequence {
         var _depth: Int
 
         @inlinable
-        package init(nodes: ArraySlice<ISO_8825.TLV>, depth: Int) {
+        init(nodes: ArraySlice<ISO_8825.TLV>, depth: Int) {
             self._nodes = nodes
             self._depth = depth
         }
@@ -406,12 +406,12 @@ extension ISO_8825 {
         /// The content of this ASN.1 node.
         public var content: Content
 
-        /// The encoded bytes for this node.
-        ///
-        /// This is principally intended for diagnostic purposes.
         // -> Byte discipline: ArraySlice<UInt8> wire substrate retained pending a
         //    compile-gated [API-BYTE-004] migration (parser mixes byte-domain slicing
         //    with arithmetic-domain length math); judgment deferred to the lead.
+        /// The encoded bytes for this node.
+        ///
+        /// This is principally intended for diagnostic purposes.
         public var encodedBytes: ArraySlice<UInt8>
 
         @inlinable
@@ -449,7 +449,7 @@ extension ArraySlice where Element == UInt8 {
     }
 
     @inlinable
-    package mutating func _readLength(_ minimalEncoding: Bool) throws(ISO_8824.Error) -> Length? {
+    mutating func _readLength(_ minimalEncoding: Bool) throws(ISO_8824.Error) -> Length? {
         guard let firstByte = self.popFirst() else {
             return nil
         }

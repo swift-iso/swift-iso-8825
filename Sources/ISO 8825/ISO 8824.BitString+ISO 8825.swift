@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the SwiftASN1 open source project
 //
@@ -10,7 +10,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
 public import ISO_8824
 
@@ -70,11 +70,11 @@ extension ISO_8824.BitString: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.Impl
         }
 
         switch node.content {
-        case .constructed(_):
+        case .constructed:
             // BER allows constructed ASN1 BitStrings, that is, you can construct a BitString that is represented by a composition of many individual Primitive (non-constructed) BitStrings
             throw ISO_8824.Error.invalidASN1Object(reason: "Constructed encoding of BitString not yet supported")
 
-        case .primitive(_):
+        case .primitive:
             self = try Self(derEncoded: node, withIdentifier: identifier)
         }
     }

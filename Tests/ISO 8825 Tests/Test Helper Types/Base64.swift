@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the swift-iso-8825 open source project
 //
@@ -9,7 +9,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
 // Foundation-free RFC 4648 base64 decoding for test fixtures. Replaces the
 // upstream tests' `Array(Data(base64Encoded:)!)` (core targets and their tests

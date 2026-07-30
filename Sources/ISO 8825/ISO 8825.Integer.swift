@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the SwiftASN1 open source project
 //
@@ -10,7 +10,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
 public import ISO_8824
 
@@ -37,9 +37,9 @@ extension ISO_8825.Integer {
     /// arbitrary-width integer type as well, or use `ArraySlice<UInt8>` to store the raw bytes of the
     /// integer directly.
     public protocol Representable: ISO_8824.Integer.Representable, ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.ImplicitlyTaggable {
+        // -> Byte discipline: deferred ([API-BYTE-004]); see lead notes.
         /// Construct the integer value from the integer bytes. These will be big-endian, and encoded
         /// according to DER requirements.
-        // -> Byte discipline: deferred ([API-BYTE-004]); see lead notes.
         init(derIntegerBytes: ArraySlice<UInt8>) throws(ISO_8824.Error)
 
         /// Construct the integer value form the integer bytes. These will be big-endian, and encoded

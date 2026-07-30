@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the SwiftASN1 open source project
 //
@@ -10,7 +10,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 import ISO_8824
 import ISO_8825
 
@@ -106,18 +106,24 @@ struct RFC5480AlgorithmIdentifier: ISO_8825.DER.ImplicitlyTaggable, Hashable {
 
 // MARK: Algorithm Identifier Statics
 extension RFC5480AlgorithmIdentifier {
+    // reason: each `parameters` value erases a fixed, well-known curve OID constant; the
+    // conversion cannot fail for these literals, so the force-try is a compile-time-known-safe
+    // fixture constant, not a runtime risk.
     static let ecdsaP256 = RFC5480AlgorithmIdentifier(
         algorithm: .AlgorithmIdentifier.idEcPublicKey,
+        // swiftlint:disable:next force_try
         parameters: try! .init(erasing: ISO_8824.ObjectIdentifier.NamedCurves.secp256r1)
     )
 
     static let ecdsaP384 = RFC5480AlgorithmIdentifier(
         algorithm: .AlgorithmIdentifier.idEcPublicKey,
+        // swiftlint:disable:next force_try
         parameters: try! .init(erasing: ISO_8824.ObjectIdentifier.NamedCurves.secp384r1)
     )
 
     static let ecdsaP521 = RFC5480AlgorithmIdentifier(
         algorithm: .AlgorithmIdentifier.idEcPublicKey,
+        // swiftlint:disable:next force_try
         parameters: try! .init(erasing: ISO_8824.ObjectIdentifier.NamedCurves.secp521r1)
     )
 }

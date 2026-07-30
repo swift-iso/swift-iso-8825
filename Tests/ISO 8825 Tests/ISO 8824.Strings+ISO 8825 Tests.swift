@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the SwiftASN1 open source project
 //
@@ -10,11 +10,11 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
-
-import Testing
+// ===----------------------------------------------------------------------===//
 
 import ISO_8824
+import Testing
+
 @testable import ISO_8825
 
 // The wire-facing halves of upstream ASN1StringTests.swift: per-type DER
@@ -236,7 +236,7 @@ extension ISO_8824.BMPString.Test {
             TestCase(
                 "中文",
                 [30, 4, 78, 45, 101, 135]
-            ),
+            )
         ]
 
         for testCase in testCases {

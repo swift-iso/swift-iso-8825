@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the SwiftASN1 open source project
 //
@@ -10,7 +10,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
 public import ISO_8824
 
@@ -609,10 +609,10 @@ extension ISO_8825.DER {
         @usableFromInline
         var _serializedBytes: [UInt8]
 
-        /// The bytes that have been serialized by this serializer.
         // -> Byte discipline: [UInt8] output substrate retained pending a compile-gated
         //    [API-BYTE-004] migration (serializer mixes byte writes with length
         //    arithmetic); judgment deferred to the lead.
+        /// The bytes that have been serialized by this serializer.
         @inlinable
         public var serializedBytes: [UInt8] {
             self._serializedBytes
@@ -638,7 +638,7 @@ extension ISO_8825.DER {
             identifier: ISO_8824.Identifier,
             _ contentWriter: (inout [UInt8]) throws(E) -> Void
         ) throws(E) {
-            try self._appendNode(identifier: identifier, constructed: false) { (serializer: inout Serializer) throws(E) -> Void in
+            try self._appendNode(identifier: identifier, constructed: false) { (serializer: inout Serializer) throws(E) in
                 try contentWriter(&serializer._serializedBytes)
             }
         }
@@ -697,7 +697,7 @@ extension ISO_8825.DER {
             _ node: T,
             explicitlyTaggedWithIdentifier identifier: ISO_8824.Identifier
         ) throws(ISO_8824.Error) {
-            try self.appendConstructedNode(identifier: identifier) { (coder: inout Serializer) throws(ISO_8824.Error) -> Void in
+            try self.appendConstructedNode(identifier: identifier) { (coder: inout Serializer) throws(ISO_8824.Error) in
                 try coder.serialize(node)
             }
         }
@@ -750,7 +750,7 @@ extension ISO_8825.DER {
             _ block: (inout Serializer) throws(E) -> Void
         ) throws(E) {
             let identifier = ISO_8824.Identifier(tagWithNumber: tagNumber, tagClass: tagClass)
-            try self.appendConstructedNode(identifier: identifier) { (coder: inout Serializer) throws(E) -> Void in
+            try self.appendConstructedNode(identifier: identifier) { (coder: inout Serializer) throws(E) in
                 try block(&coder)
             }
         }
@@ -765,7 +765,7 @@ extension ISO_8825.DER {
             _ elements: Elements,
             identifier: ISO_8824.Identifier = .sequence
         ) throws(ISO_8824.Error) where Elements.Element: ISO_8825.DER.Serializable {
-            try self.appendConstructedNode(identifier: identifier) { (coder: inout Serializer) throws(ISO_8824.Error) -> Void in
+            try self.appendConstructedNode(identifier: identifier) { (coder: inout Serializer) throws(ISO_8824.Error) in
                 for element in elements {
                     try coder.serialize(element)
                 }

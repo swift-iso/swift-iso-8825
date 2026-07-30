@@ -37,7 +37,7 @@ let package = Package(
             dependencies: [
                 "ISO 8825"
             ]
-        ),
+        )
     ],
     swiftLanguageModes: [.v6]
 )
@@ -54,7 +54,7 @@ for target in package.targets where ![.system, .binary, .plugin, .macro].contain
         .enableUpcomingFeature("MemberImportVisibility"),
         .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
         .enableExperimentalFeature("Lifetimes"),
-        .enableExperimentalFeature("SuppressedAssociatedTypes"),
+        .enableExperimentalFeature("SuppressedAssociatedTypes")
     ]
 
     let package: [SwiftSetting] = []

@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the SwiftASN1 open source project
 //
@@ -10,11 +10,11 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 //
-//===----------------------------------------------------------------------===//
-
-import Testing
+// ===----------------------------------------------------------------------===//
 
 import ISO_8824
+import Testing
+
 @testable import ISO_8825
 
 // Coverage for the @retroactive cross-package conformance
