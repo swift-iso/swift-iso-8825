@@ -57,7 +57,7 @@ extension ISO_8824.ObjectIdentifier: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.B
     /// packed representation; this copy is the wire-side gate for decoded content
     /// octets and is invisible to it.
     @inlinable
-    static func validateObjectIdentifierInEncodedForm(_ content: ArraySlice<UInt8>) throws(ISO_8824.Error) {
+    package static func validateObjectIdentifierInEncodedForm(_ content: ArraySlice<UInt8>) throws(ISO_8824.Error) {
         var content = content
 
         guard content.count >= 1 else {

@@ -130,7 +130,7 @@ extension ISO_8825.Time {
 
 extension ArraySlice where Element == UInt8 {
     @inlinable
-    mutating func _readFourDigitDecimalInteger() -> Int? {
+    package mutating func _readFourDigitDecimalInteger() -> Int? {
         guard let first = self._readTwoDigitDecimalInteger(),
             let second = self._readTwoDigitDecimalInteger()
         else {
@@ -143,7 +143,7 @@ extension ArraySlice where Element == UInt8 {
     }
 
     @inlinable
-    mutating func _readTwoDigitDecimalInteger() -> Int? {
+    package mutating func _readTwoDigitDecimalInteger() -> Int? {
         guard let firstASCII = self.popFirst(),
             let secondASCII = self.popFirst()
         else {
@@ -162,7 +162,7 @@ extension ArraySlice where Element == UInt8 {
     }
 
     @inlinable
-    mutating func _readRawFractionalSeconds() throws(ISO_8824.Error) -> ArraySlice<UInt8> {
+    package mutating func _readRawFractionalSeconds() throws(ISO_8824.Error) -> ArraySlice<UInt8> {
         guard let nonDecimalASCIIIndex = self.firstIndex(where: { Int(fromDecimalASCII: $0) == nil }) else {
             throw ISO_8824.Error.invalidASN1Object(
                 reason: "Invalid fractional seconds"
@@ -185,7 +185,7 @@ extension ArraySlice where Element == UInt8 {
 
 extension Array where Element == UInt8 {
     @inlinable
-    mutating func append(_ generalizedTime: ISO_8824.GeneralizedTime) {
+    package mutating func append(_ generalizedTime: ISO_8824.GeneralizedTime) {
         self._appendFourDigitDecimal(generalizedTime.year)
         self._appendTwoDigitDecimal(generalizedTime.month)
         self._appendTwoDigitDecimal(generalizedTime.day)
@@ -202,7 +202,7 @@ extension Array where Element == UInt8 {
     }
 
     @inlinable
-    mutating func append(_ utcTime: ISO_8824.UTCTime) {
+    package mutating func append(_ utcTime: ISO_8824.UTCTime) {
         precondition((1950..<2050).contains(utcTime.year))
         if utcTime.year >= 2000 {
             self._appendTwoDigitDecimal(utcTime.year &- 2000)
@@ -218,7 +218,7 @@ extension Array where Element == UInt8 {
     }
 
     @inlinable
-    mutating func _appendFourDigitDecimal(_ number: Int) {
+    package mutating func _appendFourDigitDecimal(_ number: Int) {
         assert(number >= 0 && number <= 9999)
 
         // Each digit can be isolated by dividing by the place and then taking the result modulo 10.
@@ -232,7 +232,7 @@ extension Array where Element == UInt8 {
     }
 
     @inlinable
-    mutating func _appendTwoDigitDecimal(_ number: Int) {
+    package mutating func _appendTwoDigitDecimal(_ number: Int) {
         assert(number >= 0 && number <= 99)
 
         // Each digit can be isolated by dividing by the place and then taking the result modulo 10.
@@ -246,7 +246,7 @@ extension Array where Element == UInt8 {
 
 extension Int {
     @inlinable
-    init?(fromDecimalASCII ascii: UInt8) {
+    package init?(fromDecimalASCII ascii: UInt8) {
         let asciiZero = UInt8(ascii: "0")
         let zeroToNine = 0...9
 

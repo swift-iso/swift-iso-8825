@@ -26,7 +26,7 @@ extension ISO_8824.Identifier {
     /// The short-form identifier octet for this identifier, if the tag number
     /// permits short-form encoding (X.690 §8.1.2.3).
     @inlinable
-    var _shortForm: UInt8? {
+    package var _shortForm: UInt8? {
         // An ASN.1 identifier can be encoded in short form iff the tag number is strictly
         // less than 0x1f.
         guard self.tagNumber < 0x1f else { return nil }
@@ -38,7 +38,7 @@ extension ISO_8824.Identifier {
 
     /// Decodes a short-form identifier octet (X.690 §8.1.2.3).
     @inlinable
-    init(shortIdentifier: UInt8) {
+    package init(shortIdentifier: UInt8) {
         precondition(shortIdentifier & 0x1F != 0x1F)
         self.init(
             tagWithNumber: UInt(shortIdentifier & 0x1f),
@@ -50,7 +50,7 @@ extension ISO_8824.Identifier {
 extension ISO_8824.Identifier.Class {
     /// Decodes the tag class from the leading identifier octet (X.690 §8.1.2.2).
     @inlinable
-    init(topByteInWireFormat topByte: UInt8) {
+    package init(topByteInWireFormat topByte: UInt8) {
         switch topByte >> 6 {
         case 0x00:
             self = .universal
@@ -67,7 +67,7 @@ extension ISO_8824.Identifier.Class {
 
     /// The class bits of the leading identifier octet (X.690 §8.1.2.2).
     @inlinable
-    var _topByteFlags: UInt8 {
+    package var _topByteFlags: UInt8 {
         switch self {
         case .universal:
             return 0x00
@@ -84,7 +84,7 @@ extension ISO_8824.Identifier.Class {
 extension Array where Element == UInt8 {
     /// Appends the identifier octets for `identifier` (X.690 §8.1.2).
     @inlinable
-    mutating func writeIdentifier(_ identifier: ISO_8824.Identifier, constructed: Bool) {
+    package mutating func writeIdentifier(_ identifier: ISO_8824.Identifier, constructed: Bool) {
         if var shortForm = identifier._shortForm {
             if constructed {
                 shortForm |= 0x20

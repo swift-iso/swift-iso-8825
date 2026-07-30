@@ -859,7 +859,7 @@ extension ISO_8825.DER {
         // This is the base logical function that all other append methods are built on. This one has most of the logic, and doesn't
         // police what we expect to happen in the content writer.
         @inlinable
-        mutating func _appendNode<E: Swift.Error>(
+        package mutating func _appendNode<E: Swift.Error>(
             identifier: ISO_8824.Identifier,
             constructed: Bool,
             _ contentWriter: (inout Serializer) throws(E) -> Void

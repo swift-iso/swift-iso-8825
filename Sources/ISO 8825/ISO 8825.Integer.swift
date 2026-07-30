@@ -196,7 +196,7 @@ extension UInt: ISO_8825.Integer.Representable {}
 
 extension RandomAccessCollection where Element == UInt8 {
     @inlinable
-    func _trimLeadingExcessBytes() -> SubSequence {
+    package func _trimLeadingExcessBytes() -> SubSequence {
         var slice = self[...]
         guard let first = slice.first else {
             // Easy case, empty.
@@ -244,7 +244,7 @@ extension RandomAccessCollection where Element == UInt8 {
 
 extension UInt8 {
     @inlinable
-    var _topBitSet: Bool {
+    package var _topBitSet: Bool {
         return (self & 0x80) != 0
     }
 }

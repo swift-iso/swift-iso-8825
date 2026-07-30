@@ -286,7 +286,7 @@ extension ISO_8825 {
             }
 
             @inlinable
-            init(_ wrapped: Wrapped.Iterator) {
+            package init(_ wrapped: Wrapped.Iterator) {
                 self.wrapped = wrapped
             }
         }
@@ -326,7 +326,7 @@ extension ISO_8825.Node {
         @usableFromInline var _depth: Int
 
         @inlinable
-        init(nodes: ArraySlice<ISO_8825.TLV>, depth: Int) {
+        package init(nodes: ArraySlice<ISO_8825.TLV>, depth: Int) {
             self._nodes = nodes
             self._depth = depth
 
@@ -352,7 +352,7 @@ extension ISO_8825.Node.Collection: Sequence {
         var _depth: Int
 
         @inlinable
-        init(nodes: ArraySlice<ISO_8825.TLV>, depth: Int) {
+        package init(nodes: ArraySlice<ISO_8825.TLV>, depth: Int) {
             self._nodes = nodes
             self._depth = depth
         }
@@ -415,7 +415,7 @@ extension ISO_8825 {
         public var encodedBytes: ArraySlice<UInt8>
 
         @inlinable
-        internal init(
+        package init(
             identifier: ISO_8824.Identifier,
             content: ISO_8825.Node.Content,
             encodedBytes: ArraySlice<UInt8>
@@ -449,7 +449,7 @@ extension ArraySlice where Element == UInt8 {
     }
 
     @inlinable
-    mutating func _readLength(_ minimalEncoding: Bool) throws(ISO_8824.Error) -> Length? {
+    package mutating func _readLength(_ minimalEncoding: Bool) throws(ISO_8824.Error) -> Length? {
         guard let firstByte = self.popFirst() else {
             return nil
         }
@@ -506,7 +506,7 @@ extension ArraySlice where Element == UInt8 {
 
 extension FixedWidthInteger {
     @inlinable
-    internal init<Bytes: Collection>(bigEndianBytes bytes: Bytes) throws(ISO_8824.Error) where Bytes.Element == UInt8 {
+    package init<Bytes: Collection>(bigEndianBytes bytes: Bytes) throws(ISO_8824.Error) where Bytes.Element == UInt8 {
         guard bytes.count <= (Self.bitWidth / 8) else {
             throw ISO_8824.Error.invalidASN1Object(reason: "Unable to treat \(bytes.count) bytes as a \(Self.self)")
         }
@@ -529,7 +529,7 @@ extension FixedWidthInteger {
 
 extension Array where Element == UInt8 {
     @inlinable
-    mutating func _moveRange(offset: Int, range: Range<Index>) {
+    package mutating func _moveRange(offset: Int, range: Range<Index>) {
         // We only bothered to implement this for positive offsets for now, the algorithm
         // generalises.
         precondition(offset > 0)
@@ -551,7 +551,7 @@ extension Array where Element == UInt8 {
 
 extension Int {
     @inlinable
-    var _bytesNeededToEncode: Int {
+    package var _bytesNeededToEncode: Int {
         // ASN.1 lengths are in two forms. If we can store the length in 7 bits, we should:
         // that requires only one byte. Otherwise, we need multiple bytes: work out how many,
         // plus one for the length of the length bytes.
@@ -569,7 +569,7 @@ extension Int {
 extension FixedWidthInteger {
     // Bytes needed to store a given integer.
     @inlinable
-    internal var neededBytes: Int {
+    package var neededBytes: Int {
         let neededBits = self.bitWidth - self.leadingZeroBitCount
         return (neededBits + 7) / 8
     }
@@ -577,7 +577,7 @@ extension FixedWidthInteger {
 
 extension ISO_8825.Node.Collection {
     @inlinable
-    func isOrderedAccordingToSetOfSemantics() -> Bool {
+    package func isOrderedAccordingToSetOfSemantics() -> Bool {
         var iterator = self.makeIterator()
         guard let first = iterator.next() else {
             return true
@@ -596,7 +596,7 @@ extension ISO_8825.Node.Collection {
 }
 
 @inlinable
-func asn1SetElementLessThan(_ lhs: ArraySlice<UInt8>, _ rhs: ArraySlice<UInt8>) -> Bool {
+package func asn1SetElementLessThan(_ lhs: ArraySlice<UInt8>, _ rhs: ArraySlice<UInt8>) -> Bool {
     for (leftByte, rightByte) in zip(lhs, rhs) {
         if leftByte < rightByte {
             // true means left comes before right
@@ -618,7 +618,7 @@ func asn1SetElementLessThan(_ lhs: ArraySlice<UInt8>, _ rhs: ArraySlice<UInt8>) 
 }
 
 @inlinable
-func asn1SetElementLessThanOrEqual(_ lhs: ArraySlice<UInt8>, _ rhs: ArraySlice<UInt8>) -> Bool {
+package func asn1SetElementLessThanOrEqual(_ lhs: ArraySlice<UInt8>, _ rhs: ArraySlice<UInt8>) -> Bool {
     // https://github.com/apple/swift/blob/43c5824be892967993f4d0111206764eceeffb67/stdlib/public/core/Comparable.swift#L202
     !asn1SetElementLessThan(rhs, lhs)
 }
