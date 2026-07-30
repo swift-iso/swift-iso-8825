@@ -75,7 +75,10 @@ struct SEC1PrivateKey: ISO_8825.DER.ImplicitlyTaggable {
     init(privateKey: [UInt8], algorithm: RFC5480AlgorithmIdentifier?, publicKey: [UInt8]) {
         self.privateKey = ISO_8824.OctetString(contentBytes: privateKey[...])
         self.algorithm = algorithm
-        self.publicKey = ISO_8824.BitString(bytes: publicKey[...])
+        // REASON: test-fixture construction from parameter bytes with default paddingBits (0),
+        // always within the valid 0..<8 range; cannot actually throw here.
+        // swiftlint:disable:next force_try
+        self.publicKey = try! ISO_8824.BitString(bytes: publicKey[...])
     }
 
     func serialize(into coder: inout ISO_8825.DER.Serializer, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {

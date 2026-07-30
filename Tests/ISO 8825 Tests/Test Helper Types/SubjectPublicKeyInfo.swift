@@ -45,7 +45,10 @@ struct SubjectPublicKeyInfo: ISO_8825.DER.ImplicitlyTaggable, Hashable {
 
     internal init(algorithmIdentifier: RFC5480AlgorithmIdentifier, key: [UInt8]) {
         self.algorithmIdentifier = algorithmIdentifier
-        self.key = ISO_8824.BitString(bytes: key[...])
+        // REASON: test-fixture construction from parameter bytes with default paddingBits (0),
+        // always within the valid 0..<8 range; cannot actually throw here.
+        // swiftlint:disable:next force_try
+        self.key = try! ISO_8824.BitString(bytes: key[...])
     }
 
     func serialize(into coder: inout ISO_8825.DER.Serializer, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {

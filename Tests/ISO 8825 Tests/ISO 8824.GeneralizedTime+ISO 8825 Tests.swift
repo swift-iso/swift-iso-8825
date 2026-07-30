@@ -370,7 +370,7 @@ extension ISO_8824.GeneralizedTime.Test {
                     minutes: 6,
                     seconds: 27,
                     rawFractionalSeconds: ArraySlice<UInt8>([
-                        49, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 49
+                        49, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 49,
                     ])
                 )
             ),  // `fractionalSeconds` loses precision and becomes 0.1 (as opposed to 0.10000000000000001).
@@ -405,7 +405,7 @@ extension ISO_8824.GeneralizedTime.Test {
             ("20211032000000Z", nil),  // only 31 days in October
             ("20211131000000Z", nil),  // only 30 days in November
             ("19920521000000.", nil),  // invalid fractional seconds and missing trailing Z
-            ("19920521000000.Z", nil)  // invalid fractional seconds
+            ("19920521000000.Z", nil),  // invalid fractional seconds
 
         ]
 

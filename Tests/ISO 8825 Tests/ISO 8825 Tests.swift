@@ -568,7 +568,7 @@ struct ISO8825Tests {
             0x30, 0x08,  // Sequence, containing...
             0xA2, 0x06,  // Context specific tag 2, 3 byte body, containing...
             0x02, 0x01, 0x00,  // Integer 0 and
-            0x02, 0x01, 0x01  // Integer 1
+            0x02, 0x01, 0x01,  // Integer 1
 
         ]
         let parsed = try ISO_8825.DER.parse(weirdASN1)
@@ -585,7 +585,7 @@ struct ISO8825Tests {
         let weirdASN1: [UInt8] = [
             0x30, 0x05,  // Sequence, containing...
             0x82, 0x03,  // Context specific tag 2, 3 byte body, containing...
-            0x02, 0x01, 0x00  // Integer 0
+            0x02, 0x01, 0x00,  // Integer 0
         ]
         let parsed = try ISO_8825.DER.parse(weirdASN1)
         try ISO_8825.DER.sequence(parsed, identifier: .sequence) { nodes in
@@ -623,7 +623,7 @@ struct ISO8825Tests {
             63, 239, 131, 221, 65, 75, 44, 34, 21, 35, 134, 80, 78, 217, 17, 101, 64, 64, 155, 128, 218, 112, 229, 73,
             94, 68, 31, 69, 46, 113, 3, 167, 125,
             234, 50, 7, 107, 238, 124, 23, 137, 128, 147, 141, 221, 56, 65, 41, 29,
-            83, 121, 151, 37, 138, 197, 127, 2, 3, 1, 0, 1
+            83, 121, 151, 37, 138, 197, 127, 2, 3, 1, 0, 1,
         ]
         #expect(spki.key.bytes == expectedKey)
     }
@@ -644,7 +644,7 @@ struct ISO8825Tests {
             52, 63, 37, 53, 202, 16, 61, 223, 242, 100, 56, 208, 139, 82, 3, 200,
             52, 4, 189, 91, 243, 215, 40, 98, 228, 157, 5, 60, 176, 37, 51, 120, 68,
             218, 143, 218, 250, 176, 18, 83, 61, 148, 63, 135, 215, 228, 42, 103,
-            199
+            199,
         ]
         #expect(spki.key.bytes == expectedKey)
     }
@@ -861,7 +861,7 @@ struct ISO8825Tests {
             identifier: .set,
             rootNode: try ISO_8825.DER.parse(serializer.serializedBytes)
         )
-        #expect(
+        try #expect(
             bitStrings == [
                 ISO_8824.BitString(bytes: [1])
             ]
@@ -872,7 +872,7 @@ struct ISO8825Tests {
         var serializer = ISO_8825.DER.Serializer()
         try serializer.serializeSetOf([
             ISO_8824.BitString(bytes: [1]),
-            ISO_8824.BitString(bytes: [2])
+            ISO_8824.BitString(bytes: [2]),
         ])
         #expect(serializer.serializedBytes == [49, 8, 3, 2, 0, 1, 3, 2, 0, 2])
 
@@ -881,10 +881,10 @@ struct ISO8825Tests {
             identifier: .set,
             rootNode: try ISO_8825.DER.parse(serializer.serializedBytes)
         )
-        #expect(
+        try #expect(
             bitStrings == [
                 ISO_8824.BitString(bytes: [1]),
-                ISO_8824.BitString(bytes: [2])
+                ISO_8824.BitString(bytes: [2]),
             ]
         )
     }
@@ -893,7 +893,7 @@ struct ISO8825Tests {
         var serializer = ISO_8825.DER.Serializer()
         try serializer.serializeSetOf([
             ISO_8824.BitString(bytes: [2]),
-            ISO_8824.BitString(bytes: [1])
+            ISO_8824.BitString(bytes: [1]),
         ])
         #expect(serializer.serializedBytes == [49, 8, 3, 2, 0, 1, 3, 2, 0, 2])
 
@@ -902,10 +902,10 @@ struct ISO8825Tests {
             identifier: .set,
             rootNode: try ISO_8825.DER.parse(serializer.serializedBytes)
         )
-        #expect(
+        try #expect(
             bitStrings == [
                 ISO_8824.BitString(bytes: [1]),
-                ISO_8824.BitString(bytes: [2])
+                ISO_8824.BitString(bytes: [2]),
             ]
         )
     }
@@ -913,7 +913,7 @@ struct ISO8825Tests {
         var serializer = ISO_8825.DER.Serializer()
         try serializer.serializeSetOf([
             ISO_8824.BitString(bytes: [1]),
-            ISO_8824.BitString(bytes: [1])
+            ISO_8824.BitString(bytes: [1]),
         ])
         #expect(serializer.serializedBytes == [49, 8, 3, 2, 0, 1, 3, 2, 0, 1])
 
@@ -922,10 +922,10 @@ struct ISO8825Tests {
             identifier: .set,
             rootNode: try ISO_8825.DER.parse(serializer.serializedBytes)
         )
-        #expect(
+        try #expect(
             bitStrings == [
                 ISO_8824.BitString(bytes: [1]),
-                ISO_8824.BitString(bytes: [1])
+                ISO_8824.BitString(bytes: [1]),
             ]
         )
     }
@@ -1002,7 +1002,7 @@ struct ISO8825Tests {
             0x04, 0x01, 0xed,  // primitive Octet String; [0xED]
             0x00, 0x00,  // indefinite end marker
             0x04, 0x02, 0xfa, 0xce,
-            0x00, 0x00
+            0x00, 0x00,
         ]
         let asn1OctetString = try ISO_8824.OctetString(berEncoded: try ISO_8825.BER.parse(berOctetString))
         #expect(asn1OctetString.bytes == [0xFE, 0xED, 0xFA, 0xCE])
