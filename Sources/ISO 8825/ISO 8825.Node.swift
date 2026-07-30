@@ -274,7 +274,7 @@ extension ISO_8825 {
         public typealias Element = Result<T, ISO_8824.Error>
 
         @usableFromInline
-        typealias Wrapped = LazyMapSequence<LazySequence<(ISO_8825.Node.Collection)>.Elements, Result<T, ISO_8824.Error>>
+        package typealias Wrapped = LazyMapSequence<LazySequence<(ISO_8825.Node.Collection)>.Elements, Result<T, ISO_8824.Error>>
 
         public struct Iterator: IteratorProtocol {
             @usableFromInline
@@ -286,7 +286,7 @@ extension ISO_8825 {
             }
 
             @inlinable
-            init(_ wrapped: Wrapped.Iterator) {
+            package init(_ wrapped: Wrapped.Iterator) {
                 self.wrapped = wrapped
             }
         }
@@ -295,7 +295,7 @@ extension ISO_8825 {
         var wrapped: Wrapped
 
         @inlinable
-        init(_ wrapped: Wrapped) {
+        package init(_ wrapped: Wrapped) {
             self.wrapped = wrapped
         }
 
@@ -326,6 +326,13 @@ extension ISO_8825.Node {
         @usableFromInline var _depth: Int
 
         @inlinable
+        // swift-linter:disable:next inlinable internal access
+        // REASON: the prescribed `package` upgrade is compiler-illegal here — the
+        //   `nodes` parameter is `ArraySlice<ISO_8825.TLV>`, and `ISO_8825.TLV` is a
+        //   `@usableFromInline` internal implementation type that is deliberately not
+        //   part of the package surface. Amendment §A6's initializer-parameter
+        //   exemption resolves only bare parameter type names, so the
+        //   generic-wrapped case still fires.
         init(nodes: ArraySlice<ISO_8825.TLV>, depth: Int) {
             self._nodes = nodes
             self._depth = depth
@@ -352,6 +359,13 @@ extension ISO_8825.Node.Collection: Sequence {
         var _depth: Int
 
         @inlinable
+        // swift-linter:disable:next inlinable internal access
+        // REASON: the prescribed `package` upgrade is compiler-illegal here — the
+        //   `nodes` parameter is `ArraySlice<ISO_8825.TLV>`, and `ISO_8825.TLV` is a
+        //   `@usableFromInline` internal implementation type that is deliberately not
+        //   part of the package surface. Amendment §A6's initializer-parameter
+        //   exemption resolves only bare parameter type names, so the
+        //   generic-wrapped case still fires.
         init(nodes: ArraySlice<ISO_8825.TLV>, depth: Int) {
             self._nodes = nodes
             self._depth = depth
@@ -443,13 +457,13 @@ extension ISO_8825.Node {
 
 extension ArraySlice where Element == UInt8 {
     @usableFromInline
-    enum Length: Sendable {
+    package enum Length: Sendable {
         case indefinite
         case definite(_: UInt)
     }
 
     @inlinable
-    mutating func _readLength(_ minimalEncoding: Bool) throws(ISO_8824.Error) -> Length? {
+    package mutating func _readLength(_ minimalEncoding: Bool) throws(ISO_8824.Error) -> Length? {
         guard let firstByte = self.popFirst() else {
             return nil
         }
