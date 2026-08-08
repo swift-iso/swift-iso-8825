@@ -712,7 +712,7 @@ extension ISO_8825.DER {
         ///     node: The node to be serialized.
         @inlinable
         public mutating func serializeOptionalImplicitlyTagged<T: ISO_8825.DER.Serializable>(_ node: T?) throws(ISO_8824.Error) {
-            if let node = node {
+            if let node {
                 try self.serialize(node)
             }
         }
@@ -729,7 +729,7 @@ extension ISO_8825.DER {
             _ node: T?,
             withIdentifier identifier: ISO_8824.Identifier
         ) throws(ISO_8824.Error) {
-            if let node = node {
+            if let node {
                 try node.serialize(into: &self, withIdentifier: identifier)
             }
         }
@@ -833,6 +833,7 @@ extension ISO_8825.DER {
                     for node in nodes {
                         coder.serialize(node)
                     }
+
                 case .primitive(let baseData):
                     coder.serializeRawBytes(baseData)
                 }

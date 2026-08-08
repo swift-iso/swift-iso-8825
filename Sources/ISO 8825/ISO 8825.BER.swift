@@ -326,11 +326,9 @@ extension ISO_8825.BER {
 
         // We have the right optional, so let's consume it.
         nodes = localNodesCopy
-        let parsed = try builder(node)
-
         // DER forbids encoding DEFAULT values at their default state, but BER allows it
 
-        return parsed
+        return try builder(node)
     }
 
     /// Parses a value that is encoded with a DEFAULT.

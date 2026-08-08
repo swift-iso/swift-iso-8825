@@ -34,9 +34,11 @@ extension Bool: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.ImplicitlyTaggable
         case 0:
             // Boolean false
             self = false
+
         case 0xff:
             // Boolean true in DER
             self = true
+
         case let byte:
             // If we come to support BER then these values are all "true" as well.
             throw ISO_8824.Error.invalidASN1Object(reason: "Invalid byte for ASN1Bool: \(byte)")
@@ -57,6 +59,7 @@ extension Bool: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.ImplicitlyTaggable
         case 0:
             // Boolean false
             self = false
+
         default:
             // Boolean true in BER
             self = true
