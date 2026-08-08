@@ -42,9 +42,11 @@ extension ISO_8824.BitString: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.Impl
 
         let bytes = content.dropFirst()
 
-        // Decode-side canonicity checks (X.690 §8.6.2.3 and §11.2.1): these must
-        // throw rather than trap, so they run here before delegating to the
-        // (trapping-on-invariant-violation) value initializer in ISO_8824.
+        // Decode-side canonicity checks (X.690 §8.6.2.3 and §11.2.1): these run
+        // here, ahead of delegating to the ISO_8824 value initializer, so that a
+        // wire-decode failure reports the X.690-specific `reason` above rather
+        // than the ISO_8824 initializer's own (equivalent but less specific)
+        // `ISO_8824.Error` from re-validating the same invariant.
         if let finalByte = bytes.last {
             // This mask sets the bottom `paddingBits` bits to 1.
             let mask = ~(UInt8.max << paddingBits)
@@ -60,7 +62,7 @@ extension ISO_8824.BitString: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.Impl
             )
         }
 
-        self.init(bytes: bytes, paddingBits: Int(paddingBits))
+        try self.init(bytes: bytes, paddingBits: Int(paddingBits))
     }
 
     @inlinable
