@@ -34,7 +34,7 @@ struct ECDSASignature<IntegerType: ISO_8825.Integer.Representable>: ISO_8825.DER
     }
 
     init(derEncoded rootNode: ISO_8825.Node, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
-        self = try ISO_8825.DER.sequence(rootNode, identifier: identifier) { (nodes) throws(ISO_8824.Error) in
+        self = try ISO_8825.DER.sequence(rootNode, identifier: identifier) { nodes throws(ISO_8824.Error) in
             let r = try IntegerType(derEncoded: &nodes)
             let s = try IntegerType(derEncoded: &nodes)
 
@@ -43,9 +43,9 @@ struct ECDSASignature<IntegerType: ISO_8825.Integer.Representable>: ISO_8825.DER
     }
 
     func serialize(into coder: inout ISO_8825.DER.Serializer, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
-        try coder.appendConstructedNode(identifier: identifier) { (coder) throws(ISO_8824.Error) in
-            try coder.serialize(self.r)
-            try coder.serialize(self.s)
+        try coder.appendConstructedNode(identifier: identifier) { coder throws(ISO_8824.Error) in
+            try coder.serialize(r)
+            try coder.serialize(s)
         }
     }
 }

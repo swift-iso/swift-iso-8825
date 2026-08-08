@@ -392,7 +392,7 @@ struct ISO8825Tests {
         let parsed = try ISO_8825.DER.parse(decodedSequence)
 
         do throws(ISO_8824.Error) {
-            try ISO_8825.DER.sequence(parsed, identifier: .sequence) { (nodes) throws(ISO_8824.Error) in
+            try ISO_8825.DER.sequence(parsed, identifier: .sequence) { nodes throws(ISO_8824.Error) in
                 // This is fine.
                 _ = try ISO_8824.OctetString(derEncoded: &nodes)
             }
@@ -415,7 +415,7 @@ struct ISO8825Tests {
         let parsed = try ISO_8825.DER.parse(decodedSequence)
 
         do throws(ISO_8824.Error) {
-            try ISO_8825.DER.sequence(parsed, identifier: .sequence) { (nodes) throws(ISO_8824.Error) in
+            try ISO_8825.DER.sequence(parsed, identifier: .sequence) { nodes throws(ISO_8824.Error) in
                 _ = try ISO_8824.OctetString(derEncoded: &nodes)
                 _ = try ISO_8824.OctetString(derEncoded: &nodes)
                 _ = try Stub(derEncoded: &nodes)
@@ -756,7 +756,7 @@ struct ISO8825Tests {
         #expect(bytes == [0x30, 0x03, 0x81, 0x1, 0x1])
 
         let parseResult = try ISO_8825.DER.parse(bytes)
-        let int: Int? = try ISO_8825.DER.sequence(parseResult, identifier: .sequence) { (nodes) throws(ISO_8824.Error) in
+        let int: Int? = try ISO_8825.DER.sequence(parseResult, identifier: .sequence) { nodes throws(ISO_8824.Error) in
             try ISO_8825.DER.optionalImplicitlyTagged(&nodes, tag: ISO_8824.Identifier(tagWithNumber: 1, tagClass: .contextSpecific))
         }
         #expect(int == 1)
@@ -775,8 +775,8 @@ struct ISO8825Tests {
         #expect(bytes == [0x30, 0x03, 0x81, 0x1, 0x1])
 
         let parseResult = try ISO_8825.DER.parse(bytes)
-        let int = try ISO_8825.DER.sequence(parseResult, identifier: .sequence) { (nodes) throws(ISO_8824.Error) in
-            try ISO_8825.DER.optionalImplicitlyTagged(&nodes, tagNumber: 1, tagClass: .contextSpecific) { (node) throws(ISO_8824.Error) in
+        let int = try ISO_8825.DER.sequence(parseResult, identifier: .sequence) { nodes throws(ISO_8824.Error) in
+            try ISO_8825.DER.optionalImplicitlyTagged(&nodes, tagNumber: 1, tagClass: .contextSpecific) { node throws(ISO_8824.Error) in
                 try Int(derEncoded: node, withIdentifier: .init(tagWithNumber: 1, tagClass: .contextSpecific))
             }
         }

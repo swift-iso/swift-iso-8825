@@ -105,6 +105,7 @@ extension ISO_8824.PrintableString.Test {
                 UInt8(ascii: "="), UInt8(ascii: " "),
                 UInt8(ascii: ","), UInt8(ascii: "."):
                 return false
+
             default:
                 return true
             }
@@ -236,7 +237,7 @@ extension ISO_8824.BMPString.Test {
             TestCase(
                 "中文",
                 [30, 4, 78, 45, 101, 135]
-            )
+            ),
         ]
 
         for testCase in testCases {

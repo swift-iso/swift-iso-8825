@@ -45,7 +45,7 @@ struct PKCS8PrivateKey: ISO_8825.DER.ImplicitlyTaggable {
     var privateKey: SEC1PrivateKey
 
     init(derEncoded rootNode: ISO_8825.Node, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
-        self = try ISO_8825.DER.sequence(rootNode, identifier: identifier) { (nodes) throws(ISO_8824.Error) in
+        self = try ISO_8825.DER.sequence(rootNode, identifier: identifier) { nodes throws(ISO_8824.Error) in
             let version = try Int(derEncoded: &nodes)
             guard version == 0 else {
                 throw ISO_8824.Error.invalidASN1Object(reason: "Invalid version")
@@ -81,13 +81,13 @@ struct PKCS8PrivateKey: ISO_8825.DER.ImplicitlyTaggable {
     }
 
     func serialize(into coder: inout ISO_8825.DER.Serializer, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
-        try coder.appendConstructedNode(identifier: identifier) { (coder) throws(ISO_8824.Error) in
+        try coder.appendConstructedNode(identifier: identifier) { coder throws(ISO_8824.Error) in
             try coder.serialize(0)  // version
-            try coder.serialize(self.algorithm)
+            try coder.serialize(algorithm)
 
             // Here's a weird one: we recursively serialize the private key, and then turn the bytes into an octet string.
             var subCoder = ISO_8825.DER.Serializer()
-            try subCoder.serialize(self.privateKey)
+            try subCoder.serialize(privateKey)
             let serializedKey = ISO_8824.OctetString(contentBytes: subCoder.serializedBytes[...])
 
             try coder.serialize(serializedKey)
