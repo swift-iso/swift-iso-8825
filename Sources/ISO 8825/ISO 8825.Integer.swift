@@ -208,8 +208,10 @@ extension RandomAccessCollection where Element == UInt8 {
         switch first {
         case 0:
             wholeByte = 0
+
         case 0xFF:
             wholeByte = 0xFF
+
         default:
             // We're already fine, this is maximally compact. We need the whole thing.
             return slice

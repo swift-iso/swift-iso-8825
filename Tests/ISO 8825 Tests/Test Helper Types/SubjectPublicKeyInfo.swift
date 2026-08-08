@@ -30,7 +30,7 @@ struct SubjectPublicKeyInfo: ISO_8825.DER.ImplicitlyTaggable, Hashable {
         //   algorithm         AlgorithmIdentifier,
         //   subjectPublicKey  BIT STRING
         // }
-        self = try ISO_8825.DER.sequence(rootNode, identifier: identifier) { (nodes) throws(ISO_8824.Error) in
+        self = try ISO_8825.DER.sequence(rootNode, identifier: identifier) { nodes throws(ISO_8824.Error) in
             let algorithmIdentifier = try RFC5480AlgorithmIdentifier(derEncoded: &nodes)
             let key = try ISO_8824.BitString(derEncoded: &nodes)
 
@@ -52,9 +52,9 @@ struct SubjectPublicKeyInfo: ISO_8825.DER.ImplicitlyTaggable, Hashable {
     }
 
     func serialize(into coder: inout ISO_8825.DER.Serializer, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
-        try coder.appendConstructedNode(identifier: identifier) { (coder) throws(ISO_8824.Error) in
-            try coder.serialize(self.algorithmIdentifier)
-            try coder.serialize(self.key)
+        try coder.appendConstructedNode(identifier: identifier) { coder throws(ISO_8824.Error) in
+            try coder.serialize(algorithmIdentifier)
+            try coder.serialize(key)
         }
     }
 }
@@ -88,7 +88,7 @@ struct RFC5480AlgorithmIdentifier: ISO_8825.DER.ImplicitlyTaggable, Hashable {
         // }
         //
         // We don't bother with helpers: we just try to decode it directly.
-        self = try ISO_8825.DER.sequence(rootNode, identifier: identifier) { (nodes) throws(ISO_8824.Error) in
+        self = try ISO_8825.DER.sequence(rootNode, identifier: identifier) { nodes throws(ISO_8824.Error) in
             let algorithmOID = try ISO_8824.ObjectIdentifier(derEncoded: &nodes)
 
             let parameters = nodes.next().map { ISO_8825.`Any`(derEncoded: $0) }
@@ -98,9 +98,9 @@ struct RFC5480AlgorithmIdentifier: ISO_8825.DER.ImplicitlyTaggable, Hashable {
     }
 
     func serialize(into coder: inout ISO_8825.DER.Serializer, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
-        try coder.appendConstructedNode(identifier: identifier) { (coder) throws(ISO_8824.Error) in
-            try coder.serialize(self.algorithm)
-            if let parameters = self.parameters {
+        try coder.appendConstructedNode(identifier: identifier) { coder throws(ISO_8824.Error) in
+            try coder.serialize(algorithm)
+            if let parameters {
                 try coder.serialize(parameters)
             }
         }

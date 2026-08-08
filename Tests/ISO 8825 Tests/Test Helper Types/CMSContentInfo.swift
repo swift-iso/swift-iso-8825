@@ -30,9 +30,9 @@ struct CMSContentInfo: ISO_8825.BER.ImplicitlyTaggable, ISO_8825.DER.ImplicitlyT
     }
 
     init(derEncoded rootNode: ISO_8825.Node, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
-        self = try ISO_8825.DER.sequence(rootNode, identifier: Self.defaultIdentifier) { (nodes) throws(ISO_8824.Error) in
+        self = try ISO_8825.DER.sequence(rootNode, identifier: Self.defaultIdentifier) { nodes throws(ISO_8824.Error) in
             let contentType = try ISO_8824.ObjectIdentifier(derEncoded: &nodes)
-            let content = try ISO_8825.DER.explicitlyTagged(&nodes, tagNumber: 0, tagClass: .contextSpecific) { (node) throws(ISO_8824.Error) in
+            let content = try ISO_8825.DER.explicitlyTagged(&nodes, tagNumber: 0, tagClass: .contextSpecific) { node throws(ISO_8824.Error) in
                 ISO_8825.`Any`(derEncoded: node)
             }
             return .init(contentType: contentType, content: content)
@@ -40,9 +40,9 @@ struct CMSContentInfo: ISO_8825.BER.ImplicitlyTaggable, ISO_8825.DER.ImplicitlyT
     }
 
     init(berEncoded rootNode: ISO_8825.Node, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
-        self = try ISO_8825.BER.sequence(rootNode, identifier: Self.defaultIdentifier) { (nodes) throws(ISO_8824.Error) in
+        self = try ISO_8825.BER.sequence(rootNode, identifier: Self.defaultIdentifier) { nodes throws(ISO_8824.Error) in
             let contentType = try ISO_8824.ObjectIdentifier(derEncoded: &nodes)
-            let content = try ISO_8825.BER.explicitlyTagged(&nodes, tagNumber: 0, tagClass: .contextSpecific) { (node) throws(ISO_8824.Error) in
+            let content = try ISO_8825.BER.explicitlyTagged(&nodes, tagNumber: 0, tagClass: .contextSpecific) { node throws(ISO_8824.Error) in
                 ISO_8825.`Any`(berEncoded: node)
             }
             return .init(contentType: contentType, content: content)
@@ -50,9 +50,9 @@ struct CMSContentInfo: ISO_8825.BER.ImplicitlyTaggable, ISO_8825.DER.ImplicitlyT
     }
 
     func serialize(into coder: inout ISO_8825.DER.Serializer, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
-        try coder.appendConstructedNode(identifier: identifier) { (coder) throws(ISO_8824.Error) in
-            try coder.serialize(self.contentType)
-            try coder.serialize(self.content)
+        try coder.appendConstructedNode(identifier: identifier) { coder throws(ISO_8824.Error) in
+            try coder.serialize(contentType)
+            try coder.serialize(content)
         }
     }
 }

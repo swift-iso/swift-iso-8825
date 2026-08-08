@@ -54,12 +54,16 @@ extension ISO_8824.Identifier.Class {
         switch topByte >> 6 {
         case 0x00:
             self = .universal
+
         case 0x01:
             self = .application
+
         case 0x02:
             self = .contextSpecific
+
         case 0x03:
             self = .private
+
         default:
             fatalError("Unreachable")
         }
@@ -71,10 +75,13 @@ extension ISO_8824.Identifier.Class {
         switch self {
         case .universal:
             return 0x00
+
         case .application:
             return 0x01 << 6
+
         case .contextSpecific:
             return 0x02 << 6
+
         case .private:
             return 0x03 << 6
         }

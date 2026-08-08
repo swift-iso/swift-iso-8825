@@ -281,7 +281,7 @@ extension ISO_8825 {
             var wrapped: Wrapped.Iterator
 
             @inlinable
-            mutating public func next() -> Element? {
+            public mutating func next() -> Element? {
                 wrapped.next()
             }
 
@@ -471,6 +471,7 @@ extension ArraySlice where Element == UInt8 {
         switch firstByte {
         case 0x80:
             return .indefinite
+
         case let val where val & 0x80 == 0x80:
             // Top bit is set, this is the long form. The remaining 7 bits of this octet
             // determine how long the length field is.
@@ -494,6 +495,7 @@ extension ArraySlice where Element == UInt8 {
                         reason:
                             "Field length encoded in long form, but DER requires \(length) to be encoded in short form"
                     )
+
                 case 8...:
                     // For 8 or more bits, fieldLength should be the minimum required.
                     let requiredBytes = (requiredBits + 7) / 8
@@ -502,6 +504,7 @@ extension ArraySlice where Element == UInt8 {
                             reason: "Field length encoded in excessive number of bytes"
                         )
                     }
+
                 default:
                     // This is not reachable, but we'll error anyway.
                     throw ISO_8824.Error.unsupportedFieldLength(
@@ -511,6 +514,7 @@ extension ArraySlice where Element == UInt8 {
             }
 
             return .definite(length)
+
         case let val:
             // Short form, the length is only one 7-bit integer.
             return .definite(UInt(val))
