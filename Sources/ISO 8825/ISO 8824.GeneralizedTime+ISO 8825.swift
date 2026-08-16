@@ -21,22 +21,32 @@ public import ISO_8824
 // `defaultIdentifier` is declared publicly on the value type in ISO_8824 and
 // witnesses the requirement from there; it is not re-declared in this extension.
 
-extension ISO_8824.GeneralizedTime: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.ImplicitlyTaggable {
+extension ISO_8824.GeneralizedTime: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.ImplicitlyTaggable
+{
     @inlinable
-    public init(derEncoded node: ISO_8825.Node, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+    public init(
+        derEncoded node: ISO_8825.Node,
+        withIdentifier identifier: ISO_8824.Identifier
+    ) throws(ISO_8824.Error) {
         let content = try ISO_8824.OctetString(derEncoded: node, withIdentifier: identifier).bytes
         self = try ISO_8825.Time.generalizedTimeFromBytes(content)
     }
 
     @inlinable
-    public init(berEncoded node: ISO_8825.Node, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+    public init(
+        berEncoded node: ISO_8825.Node,
+        withIdentifier identifier: ISO_8824.Identifier
+    ) throws(ISO_8824.Error) {
         // BER doesn't require the seconds to be present, and the time can be followed by a timezone offset. We don't support this at the moment.
         let content = try ISO_8824.OctetString(berEncoded: node, withIdentifier: identifier).bytes
         self = try ISO_8825.Time.generalizedTimeFromBytes(content)
     }
 
     @inlinable
-    public func serialize(into coder: inout ISO_8825.DER.Serializer, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+    public func serialize(
+        into coder: inout ISO_8825.DER.Serializer,
+        withIdentifier identifier: ISO_8824.Identifier
+    ) throws(ISO_8824.Error) {
         coder.appendPrimitiveNode(identifier: identifier) { bytes in
             bytes.append(self)
         }

@@ -56,7 +56,10 @@ extension ISO_8825.BER {
             )
         }
 
-        precondition(result.nodes.count == 0, "ISO_8825.TLV.Parser unexpectedly allowed multiple root nodes")
+        precondition(
+            result.nodes.count == 0,
+            "ISO_8825.TLV.Parser unexpectedly allowed multiple root nodes"
+        )
 
         return rootNode
     }
@@ -96,11 +99,14 @@ extension ISO_8825.BER {
         identifier: ISO_8824.Identifier,
         rootNode: ISO_8825.Node
     ) throws(ISO_8824.Error) -> [T] {
-        guard rootNode.identifier == identifier, case .constructed(let nodes) = rootNode.content else {
+        guard rootNode.identifier == identifier, case .constructed(let nodes) = rootNode.content
+        else {
             throw ISO_8824.Error.unexpectedFieldType(rootNode.identifier)
         }
 
-        return try nodes.map { (node: ISO_8825.Node) throws(ISO_8824.Error) -> T in try T(berEncoded: node) }
+        return try nodes.map { (node: ISO_8825.Node) throws(ISO_8824.Error) -> T in
+            try T(berEncoded: node)
+        }
     }
 
     /// Parse the node as an ASN.1 SEQUENCE OF.
@@ -187,7 +193,9 @@ extension ISO_8825.BER {
         rootNode: ISO_8825.Node
     ) throws(ISO_8824.Error) -> [T] {
         try self.lazySet(of: type, identifier: identifier, rootNode: rootNode)
-            .map { (element: Result<T, ISO_8824.Error>) throws(ISO_8824.Error) -> T in try element.get() }
+            .map { (element: Result<T, ISO_8824.Error>) throws(ISO_8824.Error) -> T in
+                try element.get()
+            }
     }
 
     /// Parse the node as an ASN.1 SET OF lazily.
@@ -205,13 +213,18 @@ extension ISO_8825.BER {
         identifier: ISO_8824.Identifier,
         rootNode: ISO_8825.Node
     ) throws(ISO_8824.Error) -> ISO_8825.BER.LazySetOfSequence<T> {
-        guard rootNode.identifier == identifier, case .constructed(let nodes) = rootNode.content else {
+        guard rootNode.identifier == identifier, case .constructed(let nodes) = rootNode.content
+        else {
             throw ISO_8824.Error.unexpectedFieldType(rootNode.identifier)
         }
 
         // BER allows unsorted SET OF
 
-        return .init(nodes.lazy.map { node in Result { () throws(ISO_8824.Error) -> T in try T(berEncoded: node) } })
+        return .init(
+            nodes.lazy.map { node in
+                Result { () throws(ISO_8824.Error) -> T in try T(berEncoded: node) }
+            }
+        )
     }
 }
 
@@ -238,7 +251,12 @@ extension ISO_8825.BER {
         tagClass: ISO_8824.Identifier.Class,
         _ builder: (ISO_8825.Node) throws(ISO_8824.Error) -> T
     ) throws(ISO_8824.Error) -> T? {
-        return try ISO_8825.DER.optionalExplicitlyTagged(&nodes, tagNumber: tagNumber, tagClass: tagClass, builder)
+        return try ISO_8825.DER.optionalExplicitlyTagged(
+            &nodes,
+            tagNumber: tagNumber,
+            tagClass: tagClass,
+            builder
+        )
     }
 }
 
@@ -287,7 +305,12 @@ extension ISO_8825.BER {
         tagClass: ISO_8824.Identifier.Class,
         _ builder: (ISO_8825.Node) throws(E) -> Result
     ) throws(E) -> Result? {
-        return try ISO_8825.DER.optionalImplicitlyTagged(&nodes, tagNumber: tagNumber, tagClass: tagClass, builder)
+        return try ISO_8825.DER.optionalImplicitlyTagged(
+            &nodes,
+            tagNumber: tagNumber,
+            tagClass: tagClass,
+            builder
+        )
     }
 }
 
@@ -349,7 +372,8 @@ extension ISO_8825.BER {
         identifier: ISO_8824.Identifier,
         defaultValue: T
     ) throws(ISO_8824.Error) -> T {
-        return try Self.decodeDefault(&nodes, identifier: identifier, defaultValue: defaultValue) { (node: ISO_8825.Node) throws(ISO_8824.Error) -> T in
+        return try Self.decodeDefault(&nodes, identifier: identifier, defaultValue: defaultValue) {
+            (node: ISO_8825.Node) throws(ISO_8824.Error) -> T in
             try T(berEncoded: node)
         }
     }
@@ -370,7 +394,11 @@ extension ISO_8825.BER {
         _ nodes: inout ISO_8825.Node.Collection.Iterator,
         defaultValue: T
     ) throws(ISO_8824.Error) -> T {
-        return try Self.decodeDefault(&nodes, identifier: T.defaultIdentifier, defaultValue: defaultValue)
+        return try Self.decodeDefault(
+            &nodes,
+            identifier: T.defaultIdentifier,
+            defaultValue: defaultValue
+        )
     }
 
     /// Parses a value that is encoded with a DEFAULT and an explicit tag.
@@ -393,7 +421,13 @@ extension ISO_8825.BER {
         defaultValue: T,
         _ builder: (ISO_8825.Node) throws(ISO_8824.Error) -> T
     ) throws(ISO_8824.Error) -> T {
-        guard let result = try optionalExplicitlyTagged(&nodes, tagNumber: tagNumber, tagClass: tagClass, builder)
+        guard
+            let result = try optionalExplicitlyTagged(
+                &nodes,
+                tagNumber: tagNumber,
+                tagClass: tagClass,
+                builder
+            )
         else {
             return defaultValue
         }
@@ -450,7 +484,12 @@ extension ISO_8825.BER {
         tagClass: ISO_8824.Identifier.Class,
         _ builder: (ISO_8825.Node) throws(ISO_8824.Error) -> T
     ) throws(ISO_8824.Error) -> T {
-        return try ISO_8825.DER.explicitlyTagged(&nodes, tagNumber: tagNumber, tagClass: tagClass, builder)
+        return try ISO_8825.DER.explicitlyTagged(
+            &nodes,
+            tagNumber: tagNumber,
+            tagClass: tagClass,
+            builder
+        )
     }
 
     /// Parses an explicitly tagged element.
@@ -477,13 +516,16 @@ extension ISO_8825.BER {
 
         // We expect a single child.
         guard case .constructed(let nodes) = node.content else {
-            throw ISO_8824.Error.invalidASN1Object(reason: "Explicit tag \(expectedNodeID) for \(T.self) is primitive")
+            throw ISO_8824.Error.invalidASN1Object(
+                reason: "Explicit tag \(expectedNodeID) for \(T.self) is primitive"
+            )
         }
 
         var nodeIterator = nodes.makeIterator()
         guard let child = nodeIterator.next(), nodeIterator.next() == nil else {
             throw ISO_8824.Error.invalidASN1Object(
-                reason: "Invalid number of child nodes for explicit tag \(expectedNodeID) for \(T.self)"
+                reason:
+                    "Invalid number of child nodes for explicit tag \(expectedNodeID) for \(T.self)"
             )
         }
 
@@ -522,9 +564,13 @@ extension ISO_8825.BER.Parseable {
     }
 
     @inlinable
-    public init(berEncoded sequenceNodeIterator: inout ISO_8825.Node.Collection.Iterator) throws(ISO_8824.Error) {
+    public init(
+        berEncoded sequenceNodeIterator: inout ISO_8825.Node.Collection.Iterator
+    ) throws(ISO_8824.Error) {
         guard let node = sequenceNodeIterator.next() else {
-            throw ISO_8824.Error.invalidASN1Object(reason: "Unable to decode \(Self.self), no ASN.1 nodes to decode")
+            throw ISO_8824.Error.invalidASN1Object(
+                reason: "Unable to decode \(Self.self), no ASN.1 nodes to decode"
+            )
         }
 
         self = try .init(berEncoded: node)
@@ -567,7 +613,9 @@ extension ISO_8825.BER {
 extension ISO_8825.BER {
     // -> naming judgment: `ImplicitlyTaggable` retained from upstream; see the
     //    matching note on ISO_8825.DER.ImplicitlyTaggable.
-    public protocol ImplicitlyTaggable: ISO_8825.BER.Parseable, ISO_8825.BER.Serializable, ISO_8825.DER.ImplicitlyTaggable {
+    public protocol ImplicitlyTaggable: ISO_8825.BER.Parseable, ISO_8825.BER.Serializable, ISO_8825
+            .DER.ImplicitlyTaggable
+    {
         /// The tag that the first node will use "by default" if the grammar omits
         /// any more specific tag definition.
         static var defaultIdentifier: ISO_8824.Identifier { get }
@@ -581,7 +629,10 @@ extension ISO_8825.BER {
         /// - parameters:
         ///     - berEncoded: The ASN.1 node representing this object.
         ///     - identifier: The ASN.1 identifier that `berEncoded` is expected to have.
-        init(berEncoded: ISO_8825.Node, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error)
+        init(
+            berEncoded: ISO_8825.Node,
+            withIdentifier identifier: ISO_8824.Identifier
+        ) throws(ISO_8824.Error)
     }
 }
 
@@ -601,7 +652,9 @@ extension ISO_8825.BER.ImplicitlyTaggable {
         withIdentifier identifier: ISO_8824.Identifier = Self.defaultIdentifier
     ) throws(ISO_8824.Error) {
         guard let node = sequenceNodeIterator.next() else {
-            throw ISO_8824.Error.invalidASN1Object(reason: "Unable to decode \(Self.self), no ASN.1 nodes to decode")
+            throw ISO_8824.Error.invalidASN1Object(
+                reason: "Unable to decode \(Self.self), no ASN.1 nodes to decode"
+            )
         }
 
         self = try .init(berEncoded: node, withIdentifier: identifier)
@@ -613,7 +666,10 @@ extension ISO_8825.BER.ImplicitlyTaggable {
     ///     - berEncoded: The BER-encoded bytes representing this object.
     ///     - identifier: The ASN.1 identifier that `berEncoded` is expected to have.
     @inlinable
-    public init(berEncoded: [UInt8], withIdentifier identifier: ISO_8824.Identifier = Self.defaultIdentifier) throws(ISO_8824.Error) {
+    public init(
+        berEncoded: [UInt8],
+        withIdentifier identifier: ISO_8824.Identifier = Self.defaultIdentifier
+    ) throws(ISO_8824.Error) {
         self = try .init(berEncoded: ISO_8825.BER.parse(berEncoded), withIdentifier: identifier)
     }
 

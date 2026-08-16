@@ -22,7 +22,9 @@ extension ISO_8825 {
     ///
     /// The only things users can do with ASN.1 ANYs is to try to decode them as something else,
     /// to create them from something else, or to serialize them.
-    public struct `Any`: ISO_8825.DER.Parseable, ISO_8825.BER.Parseable, ISO_8825.DER.Serializable, ISO_8825.BER.Serializable, Hashable, Sendable {
+    public struct `Any`: ISO_8825.DER.Parseable, ISO_8825.BER.Parseable, ISO_8825.DER.Serializable,
+        ISO_8825.BER.Serializable, Hashable, Sendable
+    {
         @usableFromInline
         var _serializedBytes: ArraySlice<UInt8>
 
@@ -43,7 +45,10 @@ extension ISO_8825 {
         ///     erasing: The type to be represented as an ASN1 ANY.
         ///     identifier: The tag to use with this node.
         @inlinable
-        public init<ASN1Type: ISO_8825.DER.ImplicitlyTaggable>(erasing: ASN1Type, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+        public init<ASN1Type: ISO_8825.DER.ImplicitlyTaggable>(
+            erasing: ASN1Type,
+            withIdentifier identifier: ISO_8824.Identifier
+        ) throws(ISO_8824.Error) {
             var serializer = ISO_8825.DER.Serializer()
             try erasing.serialize(into: &serializer, withIdentifier: identifier)
             self._serializedBytes = ArraySlice(serializer._serializedBytes)
@@ -103,7 +108,10 @@ extension ISO_8825.DER.ImplicitlyTaggable {
     ///     asn1Any: The ASN.1 ANY object to reinterpret.
     ///     identifier: The tag to use with this node.
     @inlinable
-    public init(asn1Any: ISO_8825.`Any`, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+    public init(
+        asn1Any: ISO_8825.`Any`,
+        withIdentifier identifier: ISO_8824.Identifier
+    ) throws(ISO_8824.Error) {
         try self.init(derEncoded: asn1Any._serializedBytes, withIdentifier: identifier)
     }
 }
@@ -132,7 +140,10 @@ extension ISO_8825.BER.ImplicitlyTaggable {
     ///     berASN1Any: The ASN.1 ANY object to reinterpret.
     ///     identifier: The tag to use with this node.
     @inlinable
-    public init(berASN1Any: ISO_8825.`Any`, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+    public init(
+        berASN1Any: ISO_8825.`Any`,
+        withIdentifier identifier: ISO_8824.Identifier
+    ) throws(ISO_8824.Error) {
         try self.init(berEncoded: berASN1Any._serializedBytes, withIdentifier: identifier)
     }
 }

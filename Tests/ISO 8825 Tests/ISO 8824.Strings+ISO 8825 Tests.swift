@@ -23,7 +23,9 @@ import Testing
 // `derEncoded:` rejection legs of the character sweeps. The value-facing
 // halves (contiguous-bytes views, String round-trips, content validation on
 // construction) live in swift-iso-8824.
-private func assertRoundTrips<ASN1Object: ISO_8825.DER.Parseable & ISO_8825.DER.Serializable & Equatable>(_ value: ASN1Object) throws(ISO_8824.Error) {
+private func assertRoundTrips<
+    ASN1Object: ISO_8825.DER.Parseable & ISO_8825.DER.Serializable & Equatable
+>(_ value: ASN1Object) throws(ISO_8824.Error) {
     var serializer = ISO_8825.DER.Serializer()
     try serializer.serialize(value)
     let parsed = try ASN1Object(derEncoded: serializer.serializedBytes)
@@ -114,11 +116,15 @@ extension ISO_8824.PrintableString.Test {
         let validBytes = allBytes.filter { !invalidBytes.contains($0) }
 
         for byte in invalidBytes {
-            #expect(throws: ISO_8824.Error.self) { try ISO_8824.PrintableString(derEncoded: [0x13, 1, byte]) }
+            #expect(throws: ISO_8824.Error.self) {
+                try ISO_8824.PrintableString(derEncoded: [0x13, 1, byte])
+            }
         }
 
         for byte in validBytes {
-            #expect(throws: Never.self) { try ISO_8824.PrintableString(derEncoded: [0x13, 1, byte]) }
+            #expect(throws: Never.self) {
+                try ISO_8824.PrintableString(derEncoded: [0x13, 1, byte])
+            }
         }
     }
 }
@@ -149,7 +155,9 @@ extension ISO_8824.VisibleString.Test {
         let validBytes = allBytes.filter { !invalidBytes.contains($0) }
 
         for byte in invalidBytes {
-            #expect(throws: ISO_8824.Error.self) { try ISO_8824.VisibleString(derEncoded: [0x1a, 1, byte]) }
+            #expect(throws: ISO_8824.Error.self) {
+                try ISO_8824.VisibleString(derEncoded: [0x1a, 1, byte])
+            }
         }
 
         for byte in validBytes {
@@ -170,7 +178,9 @@ extension ISO_8824.IA5String.Test {
         let validBytes = (UInt8(0)..<UInt8(128))
 
         for byte in invalidBytes {
-            #expect(throws: ISO_8824.Error.self) { try ISO_8824.IA5String(derEncoded: [0x16, 1, byte]) }
+            #expect(throws: ISO_8824.Error.self) {
+                try ISO_8824.IA5String(derEncoded: [0x16, 1, byte])
+            }
         }
 
         for byte in validBytes {

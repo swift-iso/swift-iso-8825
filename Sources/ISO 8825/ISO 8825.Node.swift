@@ -137,7 +137,10 @@ extension ISO_8825.TLV {
         }
 
         @inlinable
-        static func parse(_ data: ArraySlice<UInt8>, encoding rules: ISO_8825.EncodingRules) throws(ISO_8824.Error) -> Parser {
+        static func parse(
+            _ data: ArraySlice<UInt8>,
+            encoding rules: ISO_8825.EncodingRules
+        ) throws(ISO_8824.Error) -> Parser {
             var data = data
             var nodes = [ISO_8825.TLV]()
             nodes.reserveCapacity(16)
@@ -185,14 +188,17 @@ extension ISO_8825.TLV {
                 identifier = ISO_8824.Identifier(shortIdentifier: rawIdentifier)
             }
 
-            guard let wideLength = try data._readLength(!rules.nonMinimalEncodedLengthsAllowed) else {
+            guard let wideLength = try data._readLength(!rules.nonMinimalEncodedLengthsAllowed)
+            else {
                 throw ISO_8824.Error.truncatedASN1Field()
             }
 
             switch wideLength {
             case .definite(let wideLength):
                 guard let length = Int(exactly: wideLength) else {
-                    throw ISO_8824.Error.invalidASN1Object(reason: "Excessively large field: \(wideLength)")
+                    throw ISO_8824.Error.invalidASN1Object(
+                        reason: "Excessively large field: \(wideLength)"
+                    )
                 }
 
                 // we know the length of the data, so we can cut the entire buffer now
@@ -215,7 +221,12 @@ extension ISO_8825.TLV {
                         )
                     )
                     while subData.count > 0 {
-                        try _parseNode(from: &subData, encoding: rules, depth: depth + 1, into: &nodes)
+                        try _parseNode(
+                            from: &subData,
+                            encoding: rules,
+                            depth: depth + 1,
+                            into: &nodes
+                        )
                     }
                 } else {
                     nodes.append(
@@ -274,7 +285,9 @@ extension ISO_8825 {
         public typealias Element = Result<T, ISO_8824.Error>
 
         @usableFromInline
-        package typealias Wrapped = LazyMapSequence<LazySequence<(ISO_8825.Node.Collection)>.Elements, Result<T, ISO_8824.Error>>
+        package typealias Wrapped = LazyMapSequence<
+            LazySequence<(ISO_8825.Node.Collection)>.Elements, Result<T, ISO_8824.Error>
+        >
 
         public struct Iterator: IteratorProtocol {
             @usableFromInline
@@ -524,9 +537,12 @@ extension ArraySlice where Element == UInt8 {
 
 extension FixedWidthInteger {
     @inlinable
-    package init<Bytes: Collection>(bigEndianBytes bytes: Bytes) throws(ISO_8824.Error) where Bytes.Element == UInt8 {
+    package init<Bytes: Collection>(bigEndianBytes bytes: Bytes) throws(ISO_8824.Error)
+    where Bytes.Element == UInt8 {
         guard bytes.count <= (Self.bitWidth / 8) else {
-            throw ISO_8824.Error.invalidASN1Object(reason: "Unable to treat \(bytes.count) bytes as a \(Self.self)")
+            throw ISO_8824.Error.invalidASN1Object(
+                reason: "Unable to treat \(bytes.count) bytes as a \(Self.self)"
+            )
         }
 
         self = 0
@@ -552,7 +568,10 @@ extension Array where Element == UInt8 {
         // generalises.
         precondition(offset > 0)
 
-        let distanceFromEndOfRangeToEndOfSelf = self.distance(from: range.endIndex, to: self.endIndex)
+        let distanceFromEndOfRangeToEndOfSelf = self.distance(
+            from: range.endIndex,
+            to: self.endIndex
+        )
         if distanceFromEndOfRangeToEndOfSelf < offset {
             // We begin by writing some zeroes out to the size we need.
             for _ in 0..<(offset - distanceFromEndOfRangeToEndOfSelf) {
@@ -603,7 +622,12 @@ extension ISO_8825.Node.Collection {
 
         var previousElement = first
         while let nextElement = iterator.next() {
-            guard asn1SetElementLessThanOrEqual(previousElement.encodedBytes, nextElement.encodedBytes) else {
+            guard
+                asn1SetElementLessThanOrEqual(
+                    previousElement.encodedBytes,
+                    nextElement.encodedBytes
+                )
+            else {
                 return false
             }
             previousElement = nextElement
@@ -636,7 +660,10 @@ package func asn1SetElementLessThan(_ lhs: ArraySlice<UInt8>, _ rhs: ArraySlice<
 }
 
 @inlinable
-package func asn1SetElementLessThanOrEqual(_ lhs: ArraySlice<UInt8>, _ rhs: ArraySlice<UInt8>) -> Bool {
+package func asn1SetElementLessThanOrEqual(
+    _ lhs: ArraySlice<UInt8>,
+    _ rhs: ArraySlice<UInt8>
+) -> Bool {
     // https://github.com/apple/swift/blob/43c5824be892967993f4d0111206764eceeffb67/stdlib/public/core/Comparable.swift#L202
     !asn1SetElementLessThan(rhs, lhs)
 }

@@ -44,8 +44,12 @@ struct PKCS8PrivateKey: ISO_8825.DER.ImplicitlyTaggable {
 
     var privateKey: SEC1PrivateKey
 
-    init(derEncoded rootNode: ISO_8825.Node, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
-        self = try ISO_8825.DER.sequence(rootNode, identifier: identifier) { nodes throws(ISO_8824.Error) in
+    init(
+        derEncoded rootNode: ISO_8825.Node,
+        withIdentifier identifier: ISO_8824.Identifier
+    ) throws(ISO_8824.Error) {
+        self = try ISO_8825.DER.sequence(rootNode, identifier: identifier) {
+            nodes throws(ISO_8824.Error) in
             let version = try Int(derEncoded: &nodes)
             guard version == 0 else {
                 throw ISO_8824.Error.invalidASN1Object(reason: "Invalid version")
@@ -55,7 +59,11 @@ struct PKCS8PrivateKey: ISO_8825.DER.ImplicitlyTaggable {
             let privateKeyBytes = try ISO_8824.OctetString(derEncoded: &nodes)
 
             // We ignore the attributes
-            _ = try ISO_8825.DER.optionalExplicitlyTagged(&nodes, tagNumber: 0, tagClass: .contextSpecific) { _ in }
+            _ = try ISO_8825.DER.optionalExplicitlyTagged(
+                &nodes,
+                tagNumber: 0,
+                tagClass: .contextSpecific
+            ) { _ in }
 
             let sec1PrivateKeyNode = try ISO_8825.DER.parse(privateKeyBytes.bytes)
             let sec1PrivateKey = try SEC1PrivateKey(derEncoded: sec1PrivateKeyNode)
@@ -67,7 +75,10 @@ struct PKCS8PrivateKey: ISO_8825.DER.ImplicitlyTaggable {
         }
     }
 
-    private init(algorithm: RFC5480AlgorithmIdentifier, privateKey: SEC1PrivateKey) throws(ISO_8824.Error) {
+    private init(
+        algorithm: RFC5480AlgorithmIdentifier,
+        privateKey: SEC1PrivateKey
+    ) throws(ISO_8824.Error) {
         self.privateKey = privateKey
         self.algorithm = algorithm
     }
@@ -77,10 +88,17 @@ struct PKCS8PrivateKey: ISO_8825.DER.ImplicitlyTaggable {
 
         // We nil out the private key here. I don't really know why we do this, but OpenSSL does, and it seems
         // safe enough to do: it certainly avoids the possibility of disagreeing on what it is!
-        self.privateKey = SEC1PrivateKey(privateKey: privateKey, algorithm: nil, publicKey: publicKey)
+        self.privateKey = SEC1PrivateKey(
+            privateKey: privateKey,
+            algorithm: nil,
+            publicKey: publicKey
+        )
     }
 
-    func serialize(into coder: inout ISO_8825.DER.Serializer, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+    func serialize(
+        into coder: inout ISO_8825.DER.Serializer,
+        withIdentifier identifier: ISO_8824.Identifier
+    ) throws(ISO_8824.Error) {
         try coder.appendConstructedNode(identifier: identifier) { coder throws(ISO_8824.Error) in
             try coder.serialize(0)  // version
             try coder.serialize(algorithm)

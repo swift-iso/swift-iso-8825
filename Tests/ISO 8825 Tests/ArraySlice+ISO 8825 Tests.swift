@@ -31,7 +31,9 @@ extension ISO_8825.Integer.Test {
     @Test
     func `ArraySlice round-trips as INTEGER content bytes`() throws {
         // Wider than UInt64: only representable through the "bigint" slice path.
-        let integerBytes: ArraySlice<UInt8> = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A]
+        let integerBytes: ArraySlice<UInt8> = [
+            0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A,
+        ]
 
         var serializer = ISO_8825.DER.Serializer()
         try serializer.serialize(integerBytes)
@@ -47,7 +49,9 @@ extension ISO_8825.Integer.Test {
         // isSigned == false for the slice bigint, so a set top bit forces the
         // X.690 §8.3 leading-zero pad on the serialize leg, which the parse
         // leg then strips.
-        let integerBytes: ArraySlice<UInt8> = [0xFF, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A]
+        let integerBytes: ArraySlice<UInt8> = [
+            0xFF, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A,
+        ]
 
         var serializer = ISO_8825.DER.Serializer()
         try serializer.serialize(integerBytes)

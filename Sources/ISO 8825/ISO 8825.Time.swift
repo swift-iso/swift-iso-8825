@@ -33,7 +33,9 @@ extension ISO_8825.Time: Sendable {}
 
 extension ISO_8825.Time {
     @inlinable
-    static func generalizedTimeFromBytes(_ bytes: ArraySlice<UInt8>) throws(ISO_8824.Error) -> ISO_8824.GeneralizedTime {
+    static func generalizedTimeFromBytes(
+        _ bytes: ArraySlice<UInt8>
+    ) throws(ISO_8824.Error) -> ISO_8824.GeneralizedTime {
         var bytes = bytes
 
         // First, there must always be a calendar date. No separators, 4
@@ -42,7 +44,9 @@ extension ISO_8825.Time {
             let rawMonth = bytes._readTwoDigitDecimalInteger(),
             let rawDay = bytes._readTwoDigitDecimalInteger()
         else {
-            throw ISO_8824.Error.invalidASN1Object(reason: "Unable to load year, month, and day for GeneralizedTime")
+            throw ISO_8824.Error.invalidASN1Object(
+                reason: "Unable to load year, month, and day for GeneralizedTime"
+            )
         }
 
         // Next there must be a _time_. Per DER rules, this time must always go
@@ -52,7 +56,9 @@ extension ISO_8825.Time {
             let rawMinutes = bytes._readTwoDigitDecimalInteger(),
             let rawSeconds = bytes._readTwoDigitDecimalInteger()
         else {
-            throw ISO_8824.Error.invalidASN1Object(reason: "Unable to load hour, minutes, and seconds for GeneralizedTime")
+            throw ISO_8824.Error.invalidASN1Object(
+                reason: "Unable to load hour, minutes, and seconds for GeneralizedTime"
+            )
         }
 
         // There may be some fractional seconds.
@@ -84,7 +90,9 @@ extension ISO_8825.Time {
     }
 
     @inlinable
-    static func utcTimeFromBytes(_ bytes: ArraySlice<UInt8>) throws(ISO_8824.Error) -> ISO_8824.UTCTime {
+    static func utcTimeFromBytes(
+        _ bytes: ArraySlice<UInt8>
+    ) throws(ISO_8824.Error) -> ISO_8824.UTCTime {
         var bytes = bytes
 
         // First, there must always be a calendar date. No separators, 2
@@ -93,7 +101,9 @@ extension ISO_8825.Time {
             let rawMonth = bytes._readTwoDigitDecimalInteger(),
             let rawDay = bytes._readTwoDigitDecimalInteger()
         else {
-            throw ISO_8824.Error.invalidASN1Object(reason: "Unable to load year, month, and day for UTCTime")
+            throw ISO_8824.Error.invalidASN1Object(
+                reason: "Unable to load year, month, and day for UTCTime"
+            )
         }
 
         // Next there must be a _time_. Per DER rules, this time must always go
@@ -102,7 +112,9 @@ extension ISO_8825.Time {
             let rawMinutes = bytes._readTwoDigitDecimalInteger(),
             let rawSeconds = bytes._readTwoDigitDecimalInteger()
         else {
-            throw ISO_8824.Error.invalidASN1Object(reason: "Unable to load hour, minutes, and seconds for UTCTime")
+            throw ISO_8824.Error.invalidASN1Object(
+                reason: "Unable to load hour, minutes, and seconds for UTCTime"
+            )
         }
 
         // The next character _must_ be Z, or the encoding is invalid.
@@ -163,7 +175,9 @@ extension ArraySlice where Element == UInt8 {
 
     @inlinable
     package mutating func _readRawFractionalSeconds() throws(ISO_8824.Error) -> ArraySlice<UInt8> {
-        guard let nonDecimalASCIIIndex = self.firstIndex(where: { Int(fromDecimalASCII: $0) == nil }) else {
+        guard
+            let nonDecimalASCIIIndex = self.firstIndex(where: { Int(fromDecimalASCII: $0) == nil })
+        else {
             throw ISO_8824.Error.invalidASN1Object(
                 reason: "Invalid fractional seconds"
             )
