@@ -24,13 +24,18 @@ public import ISO_8824
 
 extension ISO_8824.BitString: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.ImplicitlyTaggable {
     @inlinable
-    public init(derEncoded node: ISO_8825.Node, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+    public init(
+        derEncoded node: ISO_8825.Node,
+        withIdentifier identifier: ISO_8824.Identifier
+    ) throws(ISO_8824.Error) {
         guard node.identifier == identifier else {
             throw ISO_8824.Error.unexpectedFieldType(node.identifier)
         }
 
         guard case .primitive(let content) = node.content else {
-            throw ISO_8824.Error.invalidASN1Object(reason: "BitString encoded with constructed encoding")
+            throw ISO_8824.Error.invalidASN1Object(
+                reason: "BitString encoded with constructed encoding"
+            )
         }
 
         // The initial octet explains how many of the bits in the _final_ octet are not part of the bitstring.
@@ -52,7 +57,8 @@ extension ISO_8824.BitString: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.Impl
             let mask = ~(UInt8.max << paddingBits)
             if (finalByte & mask) != 0 {
                 throw ISO_8824.Error.invalidASN1Object(
-                    reason: "Invalid padding bits in BitString: \(paddingBits) of padding, \(finalByte) final byte"
+                    reason:
+                        "Invalid padding bits in BitString: \(paddingBits) of padding, \(finalByte) final byte"
                 )
             }
         } else if paddingBits != 0 {
@@ -66,7 +72,10 @@ extension ISO_8824.BitString: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.Impl
     }
 
     @inlinable
-    public init(berEncoded node: ISO_8825.Node, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+    public init(
+        berEncoded node: ISO_8825.Node,
+        withIdentifier identifier: ISO_8824.Identifier
+    ) throws(ISO_8824.Error) {
         guard node.identifier == identifier else {
             throw ISO_8824.Error.unexpectedFieldType(node.identifier)
         }
@@ -74,7 +83,9 @@ extension ISO_8824.BitString: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.Impl
         switch node.content {
         case .constructed:
             // BER allows constructed ASN1 BitStrings, that is, you can construct a BitString that is represented by a composition of many individual Primitive (non-constructed) BitStrings
-            throw ISO_8824.Error.invalidASN1Object(reason: "Constructed encoding of BitString not yet supported")
+            throw ISO_8824.Error.invalidASN1Object(
+                reason: "Constructed encoding of BitString not yet supported"
+            )
 
         case .primitive:
             self = try Self(derEncoded: node, withIdentifier: identifier)
@@ -82,7 +93,10 @@ extension ISO_8824.BitString: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.Impl
     }
 
     @inlinable
-    public func serialize(into coder: inout ISO_8825.DER.Serializer, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+    public func serialize(
+        into coder: inout ISO_8825.DER.Serializer,
+        withIdentifier identifier: ISO_8824.Identifier
+    ) throws(ISO_8824.Error) {
         coder.appendPrimitiveNode(identifier: identifier) { bytes in
             bytes.append(UInt8(truncatingIfNeeded: self.paddingBits))
             bytes.append(contentsOf: self.bytes)

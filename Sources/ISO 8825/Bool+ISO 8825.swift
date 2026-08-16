@@ -21,7 +21,10 @@ extension Bool: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.ImplicitlyTaggable
     }
 
     @inlinable
-    public init(derEncoded node: ISO_8825.Node, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+    public init(
+        derEncoded node: ISO_8825.Node,
+        withIdentifier identifier: ISO_8824.Identifier
+    ) throws(ISO_8824.Error) {
         guard node.identifier == identifier else {
             throw ISO_8824.Error.unexpectedFieldType(node.identifier)
         }
@@ -46,7 +49,10 @@ extension Bool: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.ImplicitlyTaggable
     }
 
     @inlinable
-    public init(berEncoded node: ISO_8825.Node, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+    public init(
+        berEncoded node: ISO_8825.Node,
+        withIdentifier identifier: ISO_8824.Identifier
+    ) throws(ISO_8824.Error) {
         guard node.identifier == identifier else {
             throw ISO_8824.Error.unexpectedFieldType(node.identifier)
         }
@@ -67,7 +73,10 @@ extension Bool: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.ImplicitlyTaggable
     }
 
     @inlinable
-    public func serialize(into coder: inout ISO_8825.DER.Serializer, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+    public func serialize(
+        into coder: inout ISO_8825.DER.Serializer,
+        withIdentifier identifier: ISO_8824.Identifier
+    ) throws(ISO_8824.Error) {
         coder.appendPrimitiveNode(identifier: identifier) { bytes in
             if self {
                 bytes.append(0xff)

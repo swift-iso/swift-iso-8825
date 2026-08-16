@@ -24,20 +24,28 @@ public import ISO_8824
 
 extension ISO_8824.OctetString: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.ImplicitlyTaggable {
     @inlinable
-    public init(derEncoded node: ISO_8825.Node, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+    public init(
+        derEncoded node: ISO_8825.Node,
+        withIdentifier identifier: ISO_8824.Identifier
+    ) throws(ISO_8824.Error) {
         guard node.identifier == identifier else {
             throw ISO_8824.Error.unexpectedFieldType(node.identifier)
         }
 
         guard case .primitive(let content) = node.content else {
-            throw ISO_8824.Error.invalidASN1Object(reason: "OctetString encoded with constructed encoding")
+            throw ISO_8824.Error.invalidASN1Object(
+                reason: "OctetString encoded with constructed encoding"
+            )
         }
 
         self.init(contentBytes: content)
     }
 
     @inlinable
-    public init(berEncoded node: ISO_8825.Node, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+    public init(
+        berEncoded node: ISO_8825.Node,
+        withIdentifier identifier: ISO_8824.Identifier
+    ) throws(ISO_8824.Error) {
         guard node.identifier == identifier else {
             throw ISO_8824.Error.unexpectedFieldType(node.identifier)
         }
@@ -86,7 +94,10 @@ extension ISO_8824.OctetString: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.Im
     }
 
     @inlinable
-    public func serialize(into coder: inout ISO_8825.DER.Serializer, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+    public func serialize(
+        into coder: inout ISO_8825.DER.Serializer,
+        withIdentifier identifier: ISO_8824.Identifier
+    ) throws(ISO_8824.Error) {
         coder.appendPrimitiveNode(identifier: identifier) { bytes in
             bytes.append(contentsOf: self.bytes)
         }

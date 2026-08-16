@@ -36,7 +36,9 @@ extension ISO_8825.Integer {
     /// UInt64 or Int64. While both of those types conform by default, users can conform their preferred
     /// arbitrary-width integer type as well, or use `ArraySlice<UInt8>` to store the raw bytes of the
     /// integer directly.
-    public protocol Representable: ISO_8824.Integer.Representable, ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.ImplicitlyTaggable {
+    public protocol Representable: ISO_8824.Integer.Representable, ISO_8825.DER.ImplicitlyTaggable,
+        ISO_8825.BER.ImplicitlyTaggable
+    {
         // -> Byte discipline: deferred ([API-BYTE-004]); see lead notes.
         /// Construct the integer value from the integer bytes. These will be big-endian, and encoded
         /// according to DER requirements.
@@ -55,18 +57,25 @@ extension ISO_8825.Integer.Representable {
     }
 
     @inlinable
-    public init(derEncoded node: ISO_8825.Node, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+    public init(
+        derEncoded node: ISO_8825.Node,
+        withIdentifier identifier: ISO_8824.Identifier
+    ) throws(ISO_8824.Error) {
         guard node.identifier == identifier else {
             throw ISO_8824.Error.unexpectedFieldType(node.identifier)
         }
 
         guard case .primitive(var dataBytes) = node.content else {
-            throw ISO_8824.Error.invalidASN1Object(reason: "INTEGER encoded with constructed encoding")
+            throw ISO_8824.Error.invalidASN1Object(
+                reason: "INTEGER encoded with constructed encoding"
+            )
         }
 
         // Zero bytes of integer is not an acceptable encoding.
         guard dataBytes.count > 0 else {
-            throw ISO_8824.Error.invalidASN1IntegerEncoding(reason: "INTEGER encoded with zero bytes")
+            throw ISO_8824.Error.invalidASN1IntegerEncoding(
+                reason: "INTEGER encoded with zero bytes"
+            )
         }
 
         // 8.3.2 If the contents octets of an integer value encoding consist of more than one octet, then the bits of the first octet and bit 8 of the second octet:
@@ -77,7 +86,9 @@ extension ISO_8825.Integer.Representable {
         // NOTE – These rules ensure that an integer value is always encoded in the smallest possible number of octets.
         if let first = dataBytes.first, let second = dataBytes.dropFirst().first {
             if (first == 0xFF) && second._topBitSet || (first == 0x00) && !second._topBitSet {
-                throw ISO_8824.Error.invalidASN1IntegerEncoding(reason: "INTEGER not encoded in fewest number of octets")
+                throw ISO_8824.Error.invalidASN1IntegerEncoding(
+                    reason: "INTEGER not encoded in fewest number of octets"
+                )
             }
         }
 
@@ -87,7 +98,9 @@ extension ISO_8825.Integer.Representable {
             if first == 0x00 {
                 dataBytes = dataBytes.dropFirst()
             } else if first & 0x80 == 0x80 {
-                throw ISO_8824.Error.invalidASN1IntegerEncoding(reason: "INTEGER encoded with top bit set!")
+                throw ISO_8824.Error.invalidASN1IntegerEncoding(
+                    reason: "INTEGER encoded with top bit set!"
+                )
             }
         }
 
@@ -95,18 +108,25 @@ extension ISO_8825.Integer.Representable {
     }
 
     @inlinable
-    public init(berEncoded node: ISO_8825.Node, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+    public init(
+        berEncoded node: ISO_8825.Node,
+        withIdentifier identifier: ISO_8824.Identifier
+    ) throws(ISO_8824.Error) {
         guard node.identifier == identifier else {
             throw ISO_8824.Error.unexpectedFieldType(node.identifier)
         }
 
         guard case .primitive(var dataBytes) = node.content else {
-            throw ISO_8824.Error.invalidASN1Object(reason: "INTEGER encoded with constructed encoding")
+            throw ISO_8824.Error.invalidASN1Object(
+                reason: "INTEGER encoded with constructed encoding"
+            )
         }
 
         // Zero bytes of integer is not an acceptable encoding.
         guard dataBytes.count > 0 else {
-            throw ISO_8824.Error.invalidASN1IntegerEncoding(reason: "INTEGER encoded with zero bytes")
+            throw ISO_8824.Error.invalidASN1IntegerEncoding(
+                reason: "INTEGER encoded with zero bytes"
+            )
         }
 
         // If the type we're trying to decode is unsigned, and the top byte is zero, we should strip it.
@@ -115,7 +135,9 @@ extension ISO_8825.Integer.Representable {
             if first == 0x00 {
                 dataBytes = dataBytes.dropFirst()
             } else if first & 0x80 == 0x80 {
-                throw ISO_8824.Error.invalidASN1IntegerEncoding(reason: "INTEGER encoded with top bit set!")
+                throw ISO_8824.Error.invalidASN1IntegerEncoding(
+                    reason: "INTEGER encoded with top bit set!"
+                )
             }
         }
 
@@ -123,7 +145,10 @@ extension ISO_8825.Integer.Representable {
     }
 
     @inlinable
-    public func serialize(into coder: inout ISO_8825.DER.Serializer, withIdentifier identifier: ISO_8824.Identifier) throws(ISO_8824.Error) {
+    public func serialize(
+        into coder: inout ISO_8825.DER.Serializer,
+        withIdentifier identifier: ISO_8824.Identifier
+    ) throws(ISO_8824.Error) {
         coder.appendPrimitiveNode(identifier: identifier) { bytes in
             self.withBigEndianIntegerBytes { integerBytes in
                 // If the number of bytes is 0, we're encoding a zero. That actually _does_ require one byte.
@@ -156,7 +181,11 @@ extension ISO_8825.Integer.Representable where Self: FixedWidthInteger {
         self = try Self(bigEndianBytes: bytes)
 
         if Self.isSigned, let first = bytes.first, first._topBitSet {
-            for shift in stride(from: self.bitWidth - self.leadingZeroBitCount, to: self.bitWidth, by: 8) {
+            for shift in stride(
+                from: self.bitWidth - self.leadingZeroBitCount,
+                to: self.bitWidth,
+                by: 8
+            ) {
                 self |= 0xFF << shift
             }
         }

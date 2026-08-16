@@ -12,15 +12,21 @@ let package = Package(
         .iOS(.v26),
         .tvOS(.v26),
         .watchOS(.v26),
-        .visionOS(.v26)
+        .visionOS(.v26),
     ],
     products: [
         .library(name: "ISO 8825", targets: ["ISO 8825"])
     ],
     dependencies: [
         .package(url: "https://github.com/swift-iso/swift-iso-8824.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-byte-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-standard-library-extensions.git", branch: "main")
+        .package(
+            url: "https://github.com/swift-primitives/swift-byte-primitives.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-primitives/swift-standard-library-extensions.git",
+            branch: "main"
+        ),
     ],
     targets: [
         .target(
@@ -28,8 +34,14 @@ let package = Package(
             dependencies: [
                 .product(name: "ISO 8824", package: "swift-iso-8824"),
                 .product(name: "Byte Primitives", package: "swift-byte-primitives"),
-                .product(name: "Byte Primitives Standard Library Integration", package: "swift-byte-primitives"),
-                .product(name: "Standard Library Extensions", package: "swift-standard-library-extensions")
+                .product(
+                    name: "Byte Primitives Standard Library Integration",
+                    package: "swift-byte-primitives"
+                ),
+                .product(
+                    name: "Standard Library Extensions",
+                    package: "swift-standard-library-extensions"
+                ),
             ]
         ),
         .testTarget(
@@ -37,7 +49,7 @@ let package = Package(
             dependencies: [
                 "ISO 8825"
             ]
-        )
+        ),
     ],
     swiftLanguageModes: [.v6]
 )
@@ -54,7 +66,7 @@ for target in package.targets where ![.system, .binary, .plugin, .macro].contain
         .enableUpcomingFeature("MemberImportVisibility"),
         .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
         .enableExperimentalFeature("Lifetimes"),
-        .enableExperimentalFeature("SuppressedAssociatedTypes")
+        .enableExperimentalFeature("SuppressedAssociatedTypes"),
     ]
 
     let package: [SwiftSetting] = []

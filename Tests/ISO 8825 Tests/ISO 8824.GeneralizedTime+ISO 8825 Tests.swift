@@ -27,7 +27,9 @@ extension ISO_8824.GeneralizedTime {
 }
 
 extension ISO_8824.GeneralizedTime.Test {
-    private func assertRoundTrips<ASN1Object: ISO_8825.DER.Parseable & ISO_8825.DER.Serializable & Equatable>(_ value: ASN1Object) throws(ISO_8824.Error) {
+    private func assertRoundTrips<
+        ASN1Object: ISO_8825.DER.Parseable & ISO_8825.DER.Serializable & Equatable
+    >(_ value: ASN1Object) throws(ISO_8824.Error) {
         var serializer = ISO_8825.DER.Serializer()
         try serializer.serialize(value)
         let parsed = try ASN1Object(derEncoded: serializer.serializedBytes)
@@ -42,7 +44,15 @@ extension ISO_8824.GeneralizedTime.Test {
             // Valid representations
             (
                 "19920521000000Z",
-                try .init(year: 1992, month: 5, day: 21, hours: 0, minutes: 0, seconds: 0, fractionalSeconds: 0)
+                try .init(
+                    year: 1992,
+                    month: 5,
+                    day: 21,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    fractionalSeconds: 0
+                )
             ),
             (
                 "19920521000000Z",
@@ -58,7 +68,15 @@ extension ISO_8824.GeneralizedTime.Test {
             ),
             (
                 "19920622123421Z",
-                try .init(year: 1992, month: 6, day: 22, hours: 12, minutes: 34, seconds: 21, fractionalSeconds: 0)
+                try .init(
+                    year: 1992,
+                    month: 6,
+                    day: 22,
+                    hours: 12,
+                    minutes: 34,
+                    seconds: 21,
+                    fractionalSeconds: 0
+                )
             ),
             (
                 "19920622123421Z",
@@ -74,7 +92,15 @@ extension ISO_8824.GeneralizedTime.Test {
             ),
             (
                 "19920722132100.3Z",
-                try .init(year: 1992, month: 7, day: 22, hours: 13, minutes: 21, seconds: 0, fractionalSeconds: 0.3)
+                try .init(
+                    year: 1992,
+                    month: 7,
+                    day: 22,
+                    hours: 13,
+                    minutes: 21,
+                    seconds: 0,
+                    fractionalSeconds: 0.3
+                )
             ),
             (
                 "19920722132100.3Z",
@@ -90,7 +116,15 @@ extension ISO_8824.GeneralizedTime.Test {
             ),
             (
                 "19851106210627.3Z",
-                try .init(year: 1985, month: 11, day: 6, hours: 21, minutes: 6, seconds: 27, fractionalSeconds: 0.3)
+                try .init(
+                    year: 1985,
+                    month: 11,
+                    day: 6,
+                    hours: 21,
+                    minutes: 6,
+                    seconds: 27,
+                    fractionalSeconds: 0.3
+                )
             ),
             (
                 "19851106210627.3Z",
@@ -106,7 +140,15 @@ extension ISO_8824.GeneralizedTime.Test {
             ),
             (
                 "19851106210627.14159Z",
-                try .init(year: 1985, month: 11, day: 6, hours: 21, minutes: 6, seconds: 27, fractionalSeconds: 0.14159)
+                try .init(
+                    year: 1985,
+                    month: 11,
+                    day: 6,
+                    hours: 21,
+                    minutes: 6,
+                    seconds: 27,
+                    fractionalSeconds: 0.14159
+                )
             ),
             (
                 "19851106210627.14159Z",
@@ -122,7 +164,15 @@ extension ISO_8824.GeneralizedTime.Test {
             ),
             (
                 "20210131000000Z",
-                try .init(year: 2021, month: 1, day: 31, hours: 0, minutes: 0, seconds: 0, fractionalSeconds: 0)
+                try .init(
+                    year: 2021,
+                    month: 1,
+                    day: 31,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    fractionalSeconds: 0
+                )
             ),
             (
                 "20210131000000Z",
@@ -138,7 +188,15 @@ extension ISO_8824.GeneralizedTime.Test {
             ),  // only 31 days in January
             (
                 "20210228000000Z",
-                try .init(year: 2021, month: 2, day: 28, hours: 0, minutes: 0, seconds: 0, fractionalSeconds: 0)
+                try .init(
+                    year: 2021,
+                    month: 2,
+                    day: 28,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    fractionalSeconds: 0
+                )
             ),
             (
                 "20210228000000Z",
@@ -154,7 +212,15 @@ extension ISO_8824.GeneralizedTime.Test {
             ),  // only 28 days in February 2021
             (
                 "20200229000000Z",
-                try .init(year: 2020, month: 2, day: 29, hours: 0, minutes: 0, seconds: 0, fractionalSeconds: 0)
+                try .init(
+                    year: 2020,
+                    month: 2,
+                    day: 29,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    fractionalSeconds: 0
+                )
             ),
             (
                 "20200229000000Z",
@@ -170,7 +236,15 @@ extension ISO_8824.GeneralizedTime.Test {
             ),  // only 29 days in February 2020
             (
                 "21000228000000Z",
-                try .init(year: 2100, month: 2, day: 28, hours: 0, minutes: 0, seconds: 0, fractionalSeconds: 0)
+                try .init(
+                    year: 2100,
+                    month: 2,
+                    day: 28,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    fractionalSeconds: 0
+                )
             ),
             (
                 "21000228000000Z",
@@ -186,7 +260,15 @@ extension ISO_8824.GeneralizedTime.Test {
             ),  // only 28 days in February 2100
             (
                 "20000229000000Z",
-                try .init(year: 2000, month: 2, day: 29, hours: 0, minutes: 0, seconds: 0, fractionalSeconds: 0)
+                try .init(
+                    year: 2000,
+                    month: 2,
+                    day: 29,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    fractionalSeconds: 0
+                )
             ),
             (
                 "20000229000000Z",
@@ -202,7 +284,15 @@ extension ISO_8824.GeneralizedTime.Test {
             ),  // only 29 days in February 2000
             (
                 "20210331000000Z",
-                try .init(year: 2021, month: 3, day: 31, hours: 0, minutes: 0, seconds: 0, fractionalSeconds: 0)
+                try .init(
+                    year: 2021,
+                    month: 3,
+                    day: 31,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    fractionalSeconds: 0
+                )
             ),
             (
                 "20210331000000Z",
@@ -218,7 +308,15 @@ extension ISO_8824.GeneralizedTime.Test {
             ),  // only 31 days in March
             (
                 "20210430000000Z",
-                try .init(year: 2021, month: 4, day: 30, hours: 0, minutes: 0, seconds: 0, fractionalSeconds: 0)
+                try .init(
+                    year: 2021,
+                    month: 4,
+                    day: 30,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    fractionalSeconds: 0
+                )
             ),
             (
                 "20210430000000Z",
@@ -234,7 +332,15 @@ extension ISO_8824.GeneralizedTime.Test {
             ),  // only 30 days in April
             (
                 "20210531000000Z",
-                try .init(year: 2021, month: 5, day: 31, hours: 0, minutes: 0, seconds: 0, fractionalSeconds: 0)
+                try .init(
+                    year: 2021,
+                    month: 5,
+                    day: 31,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    fractionalSeconds: 0
+                )
             ),
             (
                 "20210531000000Z",
@@ -250,7 +356,15 @@ extension ISO_8824.GeneralizedTime.Test {
             ),  // only 31 days in May
             (
                 "20210630000000Z",
-                try .init(year: 2021, month: 6, day: 30, hours: 0, minutes: 0, seconds: 0, fractionalSeconds: 0)
+                try .init(
+                    year: 2021,
+                    month: 6,
+                    day: 30,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    fractionalSeconds: 0
+                )
             ),
             (
                 "20210630000000Z",
@@ -266,7 +380,15 @@ extension ISO_8824.GeneralizedTime.Test {
             ),  // only 30 days in June
             (
                 "20210731000000Z",
-                try .init(year: 2021, month: 7, day: 31, hours: 0, minutes: 0, seconds: 0, fractionalSeconds: 0)
+                try .init(
+                    year: 2021,
+                    month: 7,
+                    day: 31,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    fractionalSeconds: 0
+                )
             ),
             (
                 "20210731000000Z",
@@ -282,7 +404,15 @@ extension ISO_8824.GeneralizedTime.Test {
             ),  // only 31 days in July
             (
                 "20210831000000Z",
-                try .init(year: 2021, month: 8, day: 31, hours: 0, minutes: 0, seconds: 0, fractionalSeconds: 0)
+                try .init(
+                    year: 2021,
+                    month: 8,
+                    day: 31,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    fractionalSeconds: 0
+                )
             ),
             (
                 "20210831000000Z",
@@ -298,7 +428,15 @@ extension ISO_8824.GeneralizedTime.Test {
             ),  // only 31 days in August
             (
                 "20210930000000Z",
-                try .init(year: 2021, month: 9, day: 30, hours: 0, minutes: 0, seconds: 0, fractionalSeconds: 0)
+                try .init(
+                    year: 2021,
+                    month: 9,
+                    day: 30,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    fractionalSeconds: 0
+                )
             ),
             (
                 "20210930000000Z",
@@ -314,7 +452,15 @@ extension ISO_8824.GeneralizedTime.Test {
             ),  // only 30 days in September
             (
                 "20211031000000Z",
-                try .init(year: 2021, month: 10, day: 31, hours: 0, minutes: 0, seconds: 0, fractionalSeconds: 0)
+                try .init(
+                    year: 2021,
+                    month: 10,
+                    day: 31,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    fractionalSeconds: 0
+                )
             ),
             (
                 "20211031000000Z",
@@ -330,7 +476,15 @@ extension ISO_8824.GeneralizedTime.Test {
             ),  // only 31 days in October
             (
                 "20211130000000Z",
-                try .init(year: 2021, month: 11, day: 30, hours: 0, minutes: 0, seconds: 0, fractionalSeconds: 0)
+                try .init(
+                    year: 2021,
+                    month: 11,
+                    day: 30,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    fractionalSeconds: 0
+                )
             ),
             (
                 "20211130000000Z",
@@ -346,7 +500,15 @@ extension ISO_8824.GeneralizedTime.Test {
             ),  // only 30 days in November
             (
                 "20211231000000Z",
-                try .init(year: 2021, month: 12, day: 31, hours: 0, minutes: 0, seconds: 0, fractionalSeconds: 0)
+                try .init(
+                    year: 2021,
+                    month: 12,
+                    day: 31,
+                    hours: 0,
+                    minutes: 0,
+                    seconds: 0,
+                    fractionalSeconds: 0
+                )
             ),
             (
                 "20211231000000Z",
@@ -373,8 +535,9 @@ extension ISO_8824.GeneralizedTime.Test {
                         49, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 49,
                     ])
                 )
-            ),  // `fractionalSeconds` loses precision and becomes 0.1 (as opposed to 0.10000000000000001).
-            // But `GeneralizedTime` round-trips when serialized and deserialized, as `rawFractionalSeconds` is preserved.
+                // `fractionalSeconds` loses precision and becomes 0.1 rather than
+                // 0.10000000000000001, but the preserved raw value still round-trips.
+            ),
 
             // Invalid representations
             ("19920520240000Z", nil),  // midnight may not be 2400000
@@ -416,7 +579,9 @@ extension ISO_8824.GeneralizedTime.Test {
             serialized.append(contentsOf: stringRepresentation.utf8)
 
             let result: ISO_8824.GeneralizedTime?
-            do throws(ISO_8824.Error) { result = try ISO_8824.GeneralizedTime(derEncoded: serialized) } catch { result = nil }
+            do throws(ISO_8824.Error) {
+                result = try ISO_8824.GeneralizedTime(derEncoded: serialized)
+            } catch { result = nil }
             #expect(result == expectedResult)
 
             if let expected = expectedResult {
@@ -433,7 +598,9 @@ extension ISO_8824.GeneralizedTime.Test {
             serialized.append(UInt8(stringRepresentation.utf8.count))
             serialized.append(contentsOf: stringRepresentation.utf8)
 
-            #expect(throws: ISO_8824.Error.self) { try ISO_8824.GeneralizedTime(derEncoded: serialized) }
+            #expect(throws: ISO_8824.Error.self) {
+                try ISO_8824.GeneralizedTime(derEncoded: serialized)
+            }
         }
 
         func deserializes(_ stringRepresentation: Substring) {
@@ -465,10 +632,13 @@ extension ISO_8824.GeneralizedTime.Test {
     func `requires appropriate tag`() throws {
         let rawValue = "19920521000000Z".utf8
         var invalidBytes = [UInt8]()
-        invalidBytes.writeIdentifier(ISO_8824.Identifier.integer, constructed: false)  // generalizedTime isn't an integer
+        // GeneralizedTime is not an integer.
+        invalidBytes.writeIdentifier(ISO_8824.Identifier.integer, constructed: false)
         invalidBytes.append(UInt8(rawValue.count))
         invalidBytes.append(contentsOf: rawValue)
 
-        #expect(throws: ISO_8824.Error.self) { try ISO_8824.GeneralizedTime(derEncoded: invalidBytes) }
+        #expect(throws: ISO_8824.Error.self) {
+            try ISO_8824.GeneralizedTime(derEncoded: invalidBytes)
+        }
     }
 }

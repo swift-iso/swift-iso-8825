@@ -115,7 +115,8 @@ struct ISO8825Tests {
             "MIGkAgEBBDAWv9iH6ZivZKtk5ihjvjlZCYc9JHyykqvmJ7JVQ50ZZWTkCPtIe7RSKzm+l7NJltqgBwYFK4EEACKhZANiAAQz0BBmMxeOj5XwTL1G4fqTYO2UAiYrUMixiRFlFKVY5I6jAgiEWdNbmte8o6dByo0No5YoyDHdG637xvuzGaWd+IT5LoBAVVv3AgL3ao3dA4aVhm6Yz6G6/2o3X7AH99c="
         let decodedPrivateKey = Array(base64Decoding: encodedPrivateKey)
 
-        let encodedPrivateKeyBytes = "Fr/Yh+mYr2SrZOYoY745WQmHPSR8spKr5ieyVUOdGWVk5Aj7SHu0Uis5vpezSZba"
+        let encodedPrivateKeyBytes =
+            "Fr/Yh+mYr2SrZOYoY745WQmHPSR8spKr5ieyVUOdGWVk5Aj7SHu0Uis5vpezSZba"
         let privateKeyBytes = Array(base64Decoding: encodedPrivateKeyBytes)
 
         let encodedPublicKeyBytes =
@@ -178,8 +179,12 @@ struct ISO8825Tests {
 
         #expect(pkey.algorithm == .ecdsaP256)
         #expect(pkey.privateKey.algorithm == nil)  // OpenSSL nils this out for some reason
-        unsafe pkey.privateKey.privateKey.withUnsafeBytes { #expect(unsafe Array($0) == privateKeyBytes) }
-        unsafe pkey.privateKey.publicKey!.withUnsafeBytes { #expect(unsafe Array($0) == publicKeyBytes) }
+        unsafe pkey.privateKey.privateKey.withUnsafeBytes {
+            #expect(unsafe Array($0) == privateKeyBytes)
+        }
+        unsafe pkey.privateKey.publicKey!.withUnsafeBytes {
+            #expect(unsafe Array($0) == publicKeyBytes)
+        }
 
         // For PKCS8 we should be able to round-trip the serialization.
         var serializer = ISO_8825.DER.Serializer()
@@ -192,7 +197,8 @@ struct ISO8825Tests {
             "MIG2AgEAMBAGByqGSM49AgEGBSuBBAAiBIGeMIGbAgEBBDCKfeRAkTtGQG7bGao6Ca5MDDcmxttyr6HNmNoaSkmuYvBtLGLLBWm1+VHT602xOIihZANiAAS56RzXiLO5YvFI0qh/+T9DhOXfkm3K/jJSUAqV/hP0FUlIUR824cFVdMMQA1S100mETsxdT0QDqUGAinMTUBSyk9y+jR33Fw/A068ZQRlqTCa0ThS0vwxKhM/M4vhYeDE="
         let decodedPrivateKey = Array(base64Decoding: encodedPrivateKey)
 
-        let encodedPrivateKeyBytes = "in3kQJE7RkBu2xmqOgmuTAw3Jsbbcq+hzZjaGkpJrmLwbSxiywVptflR0+tNsTiI"
+        let encodedPrivateKeyBytes =
+            "in3kQJE7RkBu2xmqOgmuTAw3Jsbbcq+hzZjaGkpJrmLwbSxiywVptflR0+tNsTiI"
         let privateKeyBytes = Array(base64Decoding: encodedPrivateKeyBytes)
 
         let encodedPublicKeyBytes =
@@ -204,8 +210,12 @@ struct ISO8825Tests {
 
         #expect(pkey.algorithm == .ecdsaP384)
         #expect(pkey.privateKey.algorithm == nil)  // OpenSSL nils this out for some reason
-        unsafe pkey.privateKey.privateKey.withUnsafeBytes { #expect(unsafe Array($0) == privateKeyBytes) }
-        unsafe pkey.privateKey.publicKey!.withUnsafeBytes { #expect(unsafe Array($0) == publicKeyBytes) }
+        unsafe pkey.privateKey.privateKey.withUnsafeBytes {
+            #expect(unsafe Array($0) == privateKeyBytes)
+        }
+        unsafe pkey.privateKey.publicKey!.withUnsafeBytes {
+            #expect(unsafe Array($0) == publicKeyBytes)
+        }
 
         // For PKCS8 we should be able to round-trip the serialization.
         var serializer = ISO_8825.DER.Serializer()
@@ -231,8 +241,12 @@ struct ISO8825Tests {
 
         #expect(pkey.algorithm == .ecdsaP521)
         #expect(pkey.privateKey.algorithm == nil)  // OpenSSL nils this out for some reason
-        unsafe pkey.privateKey.privateKey.withUnsafeBytes { #expect(unsafe Array($0) == privateKeyBytes) }
-        unsafe pkey.privateKey.publicKey!.withUnsafeBytes { #expect(unsafe Array($0) == publicKeyBytes) }
+        unsafe pkey.privateKey.privateKey.withUnsafeBytes {
+            #expect(unsafe Array($0) == privateKeyBytes)
+        }
+        unsafe pkey.privateKey.publicKey!.withUnsafeBytes {
+            #expect(unsafe Array($0) == publicKeyBytes)
+        }
 
         // For PKCS8 we should be able to round-trip the serialization.
         var serializer = ISO_8825.DER.Serializer()
@@ -333,7 +347,9 @@ struct ISO8825Tests {
         let decodedInteger = Array(base64Decoding: base64Node)
         let result = try ISO_8825.DER.parse(decodedInteger)
 
-        #expect(result.identifier == ISO_8824.Identifier(tagWithNumber: 55, tagClass: .contextSpecific))
+        #expect(
+            result.identifier == ISO_8824.Identifier(tagWithNumber: 55, tagClass: .contextSpecific)
+        )
     }
 
     @Test func supportSmallestValidMultibyteTags() throws {
@@ -342,7 +358,9 @@ struct ISO8825Tests {
         let decodedInteger = Array(base64Decoding: base64Node)
         let result = try ISO_8825.DER.parse(decodedInteger)
 
-        #expect(result.identifier == ISO_8824.Identifier(tagWithNumber: 31, tagClass: .contextSpecific))
+        #expect(
+            result.identifier == ISO_8824.Identifier(tagWithNumber: 31, tagClass: .contextSpecific)
+        )
     }
 
     @Test func rejectExcessivelySmallMultibyteTags() throws {
@@ -371,7 +389,10 @@ struct ISO8825Tests {
         let decodedInteger = Array(base64Decoding: base64Node)
         let result = try ISO_8825.DER.parse(decodedInteger)
 
-        #expect(result.identifier == ISO_8824.Identifier(tagWithNumber: (1 << 63) - 1, tagClass: .contextSpecific))
+        #expect(
+            result.identifier
+                == ISO_8824.Identifier(tagWithNumber: (1 << 63) - 1, tagClass: .contextSpecific)
+        )
     }
 
     @Test func rejectMultibyteTagWithLeadingZeroByte() throws {
@@ -392,7 +413,8 @@ struct ISO8825Tests {
         let parsed = try ISO_8825.DER.parse(decodedSequence)
 
         do throws(ISO_8824.Error) {
-            try ISO_8825.DER.sequence(parsed, identifier: .sequence) { nodes throws(ISO_8824.Error) in
+            try ISO_8825.DER.sequence(parsed, identifier: .sequence) {
+                nodes throws(ISO_8824.Error) in
                 // This is fine.
                 _ = try ISO_8824.OctetString(derEncoded: &nodes)
             }
@@ -415,7 +437,8 @@ struct ISO8825Tests {
         let parsed = try ISO_8825.DER.parse(decodedSequence)
 
         do throws(ISO_8824.Error) {
-            try ISO_8825.DER.sequence(parsed, identifier: .sequence) { nodes throws(ISO_8824.Error) in
+            try ISO_8825.DER.sequence(parsed, identifier: .sequence) {
+                nodes throws(ISO_8824.Error) in
                 _ = try ISO_8824.OctetString(derEncoded: &nodes)
                 _ = try ISO_8824.OctetString(derEncoded: &nodes)
                 _ = try Stub(derEncoded: &nodes)
@@ -574,7 +597,12 @@ struct ISO8825Tests {
         let parsed = try ISO_8825.DER.parse(weirdASN1)
         try ISO_8825.DER.sequence(parsed, identifier: .sequence) { nodes in
             let error = #expect(throws: ISO_8824.Error.self) {
-                try ISO_8825.DER.optionalExplicitlyTagged(&nodes, tagNumber: 2, tagClass: .contextSpecific, { _ in })
+                try ISO_8825.DER.optionalExplicitlyTagged(
+                    &nodes,
+                    tagNumber: 2,
+                    tagClass: .contextSpecific,
+                    { _ in }
+                )
             }
             #expect(error?.code == .invalidASN1Object)
         }
@@ -590,7 +618,12 @@ struct ISO8825Tests {
         let parsed = try ISO_8825.DER.parse(weirdASN1)
         try ISO_8825.DER.sequence(parsed, identifier: .sequence) { nodes in
             let error = #expect(throws: ISO_8824.Error.self) {
-                try ISO_8825.DER.optionalExplicitlyTagged(&nodes, tagNumber: 2, tagClass: .contextSpecific, { _ in })
+                try ISO_8825.DER.optionalExplicitlyTagged(
+                    &nodes,
+                    tagNumber: 2,
+                    tagClass: .contextSpecific,
+                    { _ in }
+                )
             }
             #expect(error?.code == .invalidASN1Object)
         }
@@ -608,7 +641,8 @@ struct ISO8825Tests {
 
         let parsed = try ISO_8825.DER.parse(decodedSPKI)
         let spki = try SubjectPublicKeyInfo(derEncoded: parsed)
-        #expect(spki.algorithmIdentifier.algorithm == [1, 2, 840, 113549, 1, 1, 1])  // RSA encryption
+        // RSA encryption.
+        #expect(spki.algorithmIdentifier.algorithm == [1, 2, 840, 113549, 1, 1, 1])
 
         serializer = ISO_8825.DER.Serializer()
         try serializer.serialize(spki.algorithmIdentifier.parameters!)
@@ -620,7 +654,8 @@ struct ISO8825Tests {
             78, 249, 184, 68, 85, 134, 40, 54, 32, 254, 159, 133, 155, 203, 199, 192,
             244, 136, 10, 165, 61, 28, 159, 157, 28, 93, 147, 203, 67, 58, 89, 92,
             21, 149, 254, 145, 37, 210, 70, 178, 186, 117, 179, 215, 27, 197, 247,
-            63, 239, 131, 221, 65, 75, 44, 34, 21, 35, 134, 80, 78, 217, 17, 101, 64, 64, 155, 128, 218, 112, 229, 73,
+            63, 239, 131, 221, 65, 75, 44, 34, 21, 35, 134, 80, 78, 217, 17, 101, 64, 64, 155, 128,
+            218, 112, 229, 73,
             94, 68, 31, 69, 46, 113, 3, 167, 125,
             234, 50, 7, 107, 238, 124, 23, 137, 128, 147, 141, 221, 56, 65, 41, 29,
             83, 121, 151, 37, 138, 197, 127, 2, 3, 1, 0, 1,
@@ -637,7 +672,11 @@ struct ISO8825Tests {
         let parsed = try ISO_8825.DER.parse(decodedSPKI)
         let spki = try SubjectPublicKeyInfo(derEncoded: parsed)
         #expect(spki.algorithmIdentifier.algorithm == .AlgorithmIdentifier.idEcPublicKey)
-        #expect(try ISO_8824.ObjectIdentifier(asn1Any: spki.algorithmIdentifier.parameters!) == [1, 3, 132, 0, 10])
+        #expect(
+            try ISO_8824.ObjectIdentifier(asn1Any: spki.algorithmIdentifier.parameters!) == [
+                1, 3, 132, 0, 10,
+            ]
+        )
 
         let expectedKey: ArraySlice<UInt8> = [
             4, 204, 221, 61, 73, 182, 254, 154, 19, 8, 149, 70, 206, 118, 130, 40,
@@ -682,7 +721,9 @@ struct ISO8825Tests {
 
             var subCoder = ISO_8825.DER.Serializer()
             // We won't notice these are empty either, but we will notice the algo mismatch.
-            try subCoder.serialize(SEC1PrivateKey(privateKey: [], algorithm: .ecdsaP384, publicKey: []))
+            try subCoder.serialize(
+                SEC1PrivateKey(privateKey: [], algorithm: .ecdsaP384, publicKey: [])
+            )
             let serializedKey = ISO_8824.OctetString(contentBytes: subCoder.serializedBytes[...])
 
             try coder.serialize(serializedKey)
@@ -756,8 +797,12 @@ struct ISO8825Tests {
         #expect(bytes == [0x30, 0x03, 0x81, 0x1, 0x1])
 
         let parseResult = try ISO_8825.DER.parse(bytes)
-        let int: Int? = try ISO_8825.DER.sequence(parseResult, identifier: .sequence) { nodes throws(ISO_8824.Error) in
-            try ISO_8825.DER.optionalImplicitlyTagged(&nodes, tag: ISO_8824.Identifier(tagWithNumber: 1, tagClass: .contextSpecific))
+        let int: Int? = try ISO_8825.DER.sequence(parseResult, identifier: .sequence) {
+            nodes throws(ISO_8824.Error) in
+            try ISO_8825.DER.optionalImplicitlyTagged(
+                &nodes,
+                tag: ISO_8824.Identifier(tagWithNumber: 1, tagClass: .contextSpecific)
+            )
         }
         #expect(int == 1)
     }
@@ -775,9 +820,17 @@ struct ISO8825Tests {
         #expect(bytes == [0x30, 0x03, 0x81, 0x1, 0x1])
 
         let parseResult = try ISO_8825.DER.parse(bytes)
-        let int = try ISO_8825.DER.sequence(parseResult, identifier: .sequence) { nodes throws(ISO_8824.Error) in
-            try ISO_8825.DER.optionalImplicitlyTagged(&nodes, tagNumber: 1, tagClass: .contextSpecific) { node throws(ISO_8824.Error) in
-                try Int(derEncoded: node, withIdentifier: .init(tagWithNumber: 1, tagClass: .contextSpecific))
+        let int = try ISO_8825.DER.sequence(parseResult, identifier: .sequence) {
+            nodes throws(ISO_8824.Error) in
+            try ISO_8825.DER.optionalImplicitlyTagged(
+                &nodes,
+                tagNumber: 1,
+                tagClass: .contextSpecific
+            ) { node throws(ISO_8824.Error) in
+                try Int(
+                    derEncoded: node,
+                    withIdentifier: .init(tagWithNumber: 1, tagClass: .contextSpecific)
+                )
             }
         }
         #expect(int == 1)
@@ -966,14 +1019,19 @@ struct ISO8825Tests {
         // A more complex example to prove that we can add the raw bytes at arbitrary locations.
         serializer = ISO_8825.DER.Serializer()
         serializer.appendConstructedNode(identifier: .sequence) { serializer in
-            serializer.serialize(explicitlyTaggedWithTagNumber: 1, tagClass: .contextSpecific) { serializer in
+            serializer.serialize(explicitlyTaggedWithTagNumber: 1, tagClass: .contextSpecific) {
+                serializer in
                 serializer.serializeRawBytes([1, 2, 3, 4])
             }
-            serializer.serialize(explicitlyTaggedWithTagNumber: 2, tagClass: .contextSpecific) { _ in }
+            serializer.serialize(explicitlyTaggedWithTagNumber: 2, tagClass: .contextSpecific) {
+                _ in
+            }
         }
 
         #expect(
-            serializer.serializedBytes == [0x30, 0x8, 0xA1, 0x04, 0x01, 0x2, 0x03, 0x04, 0xA2, 0x00]
+            serializer.serializedBytes == [
+                0x30, 0x8, 0xA1, 0x04, 0x01, 0x2, 0x03, 0x04, 0xA2, 0x00,
+            ]
         )
     }
 
@@ -1004,7 +1062,9 @@ struct ISO8825Tests {
             0x04, 0x02, 0xfa, 0xce,
             0x00, 0x00,
         ]
-        let asn1OctetString = try ISO_8824.OctetString(berEncoded: try ISO_8825.BER.parse(berOctetString))
+        let asn1OctetString = try ISO_8824.OctetString(
+            berEncoded: try ISO_8825.BER.parse(berOctetString)
+        )
         #expect(asn1OctetString.bytes == [0xFE, 0xED, 0xFA, 0xCE])
         #expect(throws: ISO_8824.Error.self) {
             try ISO_8825.DER.parse(berOctetString)
@@ -1049,7 +1109,10 @@ struct ISO8825Tests {
     @Test func constructedOctetString() throws {
         let weirdASN1: [UInt8] = [0x24, 0x06, 0x04, 0x01, 0xAB, 0x04, 0x01, 0xCD]
         let node = try ISO_8825.DER.parse(weirdASN1)
-        #expect(try ISO_8824.OctetString(berEncoded: node) == ISO_8824.OctetString(contentBytes: [0xAB, 0xCD]))
+        #expect(
+            try ISO_8824.OctetString(berEncoded: node)
+                == ISO_8824.OctetString(contentBytes: [0xAB, 0xCD])
+        )
         #expect(throws: ISO_8824.Error.self) {
             try ISO_8824.OctetString(derEncoded: node)
         }
