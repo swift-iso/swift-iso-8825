@@ -54,8 +54,8 @@ dependencies: [
 
 ## Acknowledgments
 
-This package derives from Apple's [SwiftASN1](https://github.com/apple/swift-asn1); see NOTICE.txt and CONTRIBUTORS.txt for provenance.
+This package derives from Apple's [SwiftASN1](https://github.com/apple/swift-asn1); see the NOTICE and Attribution sections of [LICENSE.md](LICENSE.md) for provenance.
 
 ## License
 
-Licensed under the Apache License, Version 2.0. See [LICENSE.txt](LICENSE.txt) for details.
+Licensed under the Apache License, Version 2.0. See [LICENSE.md](LICENSE.md) for details.
