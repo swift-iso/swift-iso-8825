@@ -1,29 +1,6 @@
-// ===----------------------------------------------------------------------===//
-//
-// This source file is part of the SwiftASN1 open source project
-//
-// Copyright (c) 2019-2020 Apple Inc. and the SwiftASN1 project authors
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of SwiftASN1 project authors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
 import ISO_8824
 import ISO_8825
 
-// For private keys, SEC 1 uses:
-//
-// ECPrivateKey ::= SEQUENCE {
-//   version INTEGER { ecPrivkeyVer1(1) } (ecPrivkeyVer1),
-//   privateKey OCTET STRING,
-//   parameters [0] EXPLICIT ECDomainParameters OPTIONAL,
-//   publicKey [1] EXPLICIT BIT STRING OPTIONAL
-// }
-// -> RFC 7468: the PEMRepresentable conformance and defaultPEMDiscriminator move to
-// the future swift-ietf/swift-rfc-7468 with the PEM codec (lead PEM-home ruling).
 struct SEC1PrivateKey: ISO_8825.DER.ImplicitlyTaggable {
     static var defaultIdentifier: ISO_8824.Identifier {
         return .sequence
@@ -93,9 +70,7 @@ struct SEC1PrivateKey: ISO_8825.DER.ImplicitlyTaggable {
     init(privateKey: [UInt8], algorithm: RFC5480AlgorithmIdentifier?, publicKey: [UInt8]) {
         self.privateKey = ISO_8824.OctetString(contentBytes: privateKey[...])
         self.algorithm = algorithm
-        // REASON: test-fixture construction from parameter bytes with default paddingBits (0),
-        // always within the valid 0..<8 range; cannot actually throw here.
-        // swiftlint:disable:next force_try
+
         self.publicKey = try! ISO_8824.BitString(bytes: publicKey[...])
     }
 
@@ -104,7 +79,7 @@ struct SEC1PrivateKey: ISO_8825.DER.ImplicitlyTaggable {
         withIdentifier identifier: ISO_8824.Identifier
     ) throws(ISO_8824.Error) {
         try coder.appendConstructedNode(identifier: identifier) { coder throws(ISO_8824.Error) in
-            try coder.serialize(1)  // version
+            try coder.serialize(1)
             try coder.serialize(privateKey)
 
             if let algorithm {

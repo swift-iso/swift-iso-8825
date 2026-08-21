@@ -2,9 +2,6 @@
 
 import PackageDescription
 
-// ISO/IEC 8825-1 | ITU-T X.690 - ASN.1 encoding rules:
-// Basic Encoding Rules (BER), Canonical Encoding Rules (CER),
-// and Distinguished Encoding Rules (DER)
 let package = Package(
     name: "swift-iso-8825",
     platforms: [

@@ -1,16 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// This source file is part of the SwiftASN1 open source project
-//
-// Copyright (c) 2019-2020 Apple Inc. and the SwiftASN1 project authors
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of SwiftASN1 project authors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
 import ISO_8824
 import ISO_8825
 
@@ -27,12 +14,7 @@ struct SubjectPublicKeyInfo: ISO_8825.DER.ImplicitlyTaggable, Hashable {
         derEncoded rootNode: ISO_8825.Node,
         withIdentifier identifier: ISO_8824.Identifier
     ) throws(ISO_8824.Error) {
-        // The SPKI block looks like this:
-        //
-        // SubjectPublicKeyInfo  ::=  SEQUENCE  {
-        //   algorithm         AlgorithmIdentifier,
-        //   subjectPublicKey  BIT STRING
-        // }
+
         self = try ISO_8825.DER.sequence(rootNode, identifier: identifier) {
             nodes throws(ISO_8824.Error) in
             let algorithmIdentifier = try RFC5480AlgorithmIdentifier(derEncoded: &nodes)
@@ -49,9 +31,7 @@ struct SubjectPublicKeyInfo: ISO_8825.DER.ImplicitlyTaggable, Hashable {
 
     internal init(algorithmIdentifier: RFC5480AlgorithmIdentifier, key: [UInt8]) {
         self.algorithmIdentifier = algorithmIdentifier
-        // REASON: test-fixture construction from parameter bytes with default paddingBits (0),
-        // always within the valid 0..<8 range; cannot actually throw here.
-        // swiftlint:disable:next force_try
+
         self.key = try! ISO_8824.BitString(bytes: key[...])
     }
 
@@ -84,20 +64,7 @@ struct RFC5480AlgorithmIdentifier: ISO_8825.DER.ImplicitlyTaggable, Hashable {
         derEncoded rootNode: ISO_8825.Node,
         withIdentifier identifier: ISO_8824.Identifier
     ) throws(ISO_8824.Error) {
-        // The AlgorithmIdentifier block looks like this.
-        //
-        // AlgorithmIdentifier  ::=  SEQUENCE  {
-        //   algorithm   OBJECT IDENTIFIER,
-        //   parameters  ANY DEFINED BY algorithm OPTIONAL
-        // }
-        //
-        // ECParameters ::= CHOICE {
-        //   namedCurve         OBJECT IDENTIFIER
-        //   -- implicitCurve   NULL
-        //   -- specifiedCurve  SpecifiedECDomain
-        // }
-        //
-        // We don't bother with helpers: we just try to decode it directly.
+
         self = try ISO_8825.DER.sequence(rootNode, identifier: identifier) {
             nodes throws(ISO_8824.Error) in
             let algorithmOID = try ISO_8824.ObjectIdentifier(derEncoded: &nodes)
@@ -121,26 +88,23 @@ struct RFC5480AlgorithmIdentifier: ISO_8825.DER.ImplicitlyTaggable, Hashable {
     }
 }
 
-// MARK: Algorithm Identifier Statics
 extension RFC5480AlgorithmIdentifier {
-    // reason: each `parameters` value erases a fixed, well-known curve OID constant; the
-    // conversion cannot fail for these literals, so the force-try is a compile-time-known-safe
-    // fixture constant, not a runtime risk.
+
     static let ecdsaP256 = RFC5480AlgorithmIdentifier(
         algorithm: .AlgorithmIdentifier.idEcPublicKey,
-        // swiftlint:disable:next force_try
+
         parameters: try! .init(erasing: ISO_8824.ObjectIdentifier.NamedCurves.secp256r1)
     )
 
     static let ecdsaP384 = RFC5480AlgorithmIdentifier(
         algorithm: .AlgorithmIdentifier.idEcPublicKey,
-        // swiftlint:disable:next force_try
+
         parameters: try! .init(erasing: ISO_8824.ObjectIdentifier.NamedCurves.secp384r1)
     )
 
     static let ecdsaP521 = RFC5480AlgorithmIdentifier(
         algorithm: .AlgorithmIdentifier.idEcPublicKey,
-        // swiftlint:disable:next force_try
+
         parameters: try! .init(erasing: ISO_8824.ObjectIdentifier.NamedCurves.secp521r1)
     )
 }

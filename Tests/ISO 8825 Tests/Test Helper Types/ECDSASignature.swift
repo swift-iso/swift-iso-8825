@@ -1,25 +1,6 @@
-// ===----------------------------------------------------------------------===//
-//
-// This source file is part of the SwiftASN1 open source project
-//
-// Copyright (c) 2019-2020 Apple Inc. and the SwiftASN1 project authors
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of SwiftASN1 project authors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
 import ISO_8824
 import ISO_8825
 
-/// An ECDSA signature is laid out as follows:
-///
-/// ECDSASignature ::= SEQUENCE {
-///   r INTEGER,
-///   s INTEGER
-/// }
 struct ECDSASignature<IntegerType: ISO_8825.Integer.Representable>: ISO_8825.DER.ImplicitlyTaggable
 {
     static var defaultIdentifier: ISO_8824.Identifier {

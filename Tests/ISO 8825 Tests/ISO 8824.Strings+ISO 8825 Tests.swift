@@ -1,28 +1,8 @@
-// ===----------------------------------------------------------------------===//
-//
-// This source file is part of the SwiftASN1 open source project
-//
-// Copyright (c) 2021 Apple Inc. and the SwiftASN1 project authors
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of SwiftASN1 project authors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
 import ISO_8824
 import Testing
 
 @testable import ISO_8825
 
-// The wire-facing halves of upstream ASN1StringTests.swift: per-type DER
-// byte-vector assertions, round-trips through the DER serializer, the
-// BMPString literal test's serialized-bytes assertions, and the
-// `derEncoded:` rejection legs of the character sweeps. The value-facing
-// halves (contiguous-bytes views, String round-trips, content validation on
-// construction) live in swift-iso-8824.
 private func assertRoundTrips<
     ASN1Object: ISO_8825.DER.Parseable & ISO_8825.DER.Serializable & Equatable
 >(_ value: ASN1Object) throws(ISO_8824.Error) {
@@ -232,9 +212,6 @@ extension ISO_8824.BMPString.Test {
     func `string literals serialize to the DER byte vector`() throws {
         typealias TestCase = (literal: String, asn1: [UInt8])
 
-        // The UTF-16 content-byte assertions of the upstream literal test are
-        // value law and live in swift-iso-8824; the serialized-form assertions
-        // are the wire half.
         let testCases: [TestCase] = [
             TestCase(
                 "Test",

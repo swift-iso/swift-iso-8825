@@ -1,29 +1,7 @@
-// ===----------------------------------------------------------------------===//
-//
-// This source file is part of the SwiftASN1 open source project
-//
-// Copyright (c) 2022 Apple Inc. and the SwiftASN1 project authors
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of SwiftASN1 project authors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
 public import ISO_8824
 
-// The X.690 §11.7/§11.8 wire halves of upstream TimeUtilities.swift: the
-// content-octet readers and writers for GeneralizedTime (YYYYMMDDHHMMSS[.f]Z)
-// and UTCTime (YYMMDDHHMMSSZ). The calendar value law (component validation,
-// leap years, fractional-second canonicalization) remains in ISO_8824 and is
-// exercised through the public throwing component-wise initializers.
-
 extension ISO_8825 {
-    /// The GeneralizedTime / UTCTime content-octet wire discipline.
-    ///
-    /// Upstream name: `TimeUtilities` (wire halves only).
+
     @usableFromInline
     enum Time {}
 }
@@ -38,8 +16,6 @@ extension ISO_8825.Time {
     ) throws(ISO_8824.Error) -> ISO_8824.GeneralizedTime {
         var bytes = bytes
 
-        // First, there must always be a calendar date. No separators, 4
-        // digits for the year, 2 digits for the month, 2 digits for the day.
         guard let rawYear = bytes._readFourDigitDecimalInteger(),
             let rawMonth = bytes._readTwoDigitDecimalInteger(),
             let rawDay = bytes._readTwoDigitDecimalInteger()
@@ -49,9 +25,6 @@ extension ISO_8825.Time {
             )
         }
 
-        // Next there must be a _time_. Per DER rules, this time must always go
-        // to at least seconds, there are no separators, there is no time-zone (but there must be a 'Z'),
-        // and there may be fractional seconds but they must not have trailing zeros.
         guard let rawHour = bytes._readTwoDigitDecimalInteger(),
             let rawMinutes = bytes._readTwoDigitDecimalInteger(),
             let rawSeconds = bytes._readTwoDigitDecimalInteger()
@@ -61,19 +34,16 @@ extension ISO_8825.Time {
             )
         }
 
-        // There may be some fractional seconds.
         var rawFractionalSeconds = ArraySlice<UInt8>()
         if bytes.first == UInt8(ascii: ".") {
             bytes.removeFirst()
             rawFractionalSeconds = try bytes._readRawFractionalSeconds()
         }
 
-        // The next character _must_ be Z, or the encoding is invalid.
         guard bytes.popFirst() == UInt8(ascii: "Z") else {
             throw ISO_8824.Error.invalidASN1Object(reason: "Invalid time zone in GeneralizedTime")
         }
 
-        // Great! There better not be anything left.
         guard bytes.count == 0 else {
             throw ISO_8824.Error.invalidASN1Object(reason: "Trailing bytes in GeneralizedTime")
         }
@@ -95,8 +65,6 @@ extension ISO_8825.Time {
     ) throws(ISO_8824.Error) -> ISO_8824.UTCTime {
         var bytes = bytes
 
-        // First, there must always be a calendar date. No separators, 2
-        // digits for the year, 2 digits for the month, 2 digits for the day.
         guard let rawYear = bytes._readTwoDigitDecimalInteger(),
             let rawMonth = bytes._readTwoDigitDecimalInteger(),
             let rawDay = bytes._readTwoDigitDecimalInteger()
@@ -106,8 +74,6 @@ extension ISO_8825.Time {
             )
         }
 
-        // Next there must be a _time_. Per DER rules, this time must always go
-        // to at least seconds, there are no separators, there is no time-zone (but there must be a 'Z').
         guard let rawHour = bytes._readTwoDigitDecimalInteger(),
             let rawMinutes = bytes._readTwoDigitDecimalInteger(),
             let rawSeconds = bytes._readTwoDigitDecimalInteger()
@@ -117,12 +83,10 @@ extension ISO_8825.Time {
             )
         }
 
-        // The next character _must_ be Z, or the encoding is invalid.
         guard bytes.popFirst() == UInt8(ascii: "Z") else {
             throw ISO_8824.Error.invalidASN1Object(reason: "Invalid time zone in UTCTime")
         }
 
-        // Great! There better not be anything left.
         guard bytes.count == 0 else {
             throw ISO_8824.Error.invalidASN1Object(reason: "Trailing bytes in UTCTime")
         }
@@ -149,8 +113,6 @@ extension ArraySlice where Element == UInt8 {
             return nil
         }
 
-        // Unchecked math is still safe here: we're in Int32 space, and this number cannot
-        // get any larger than 9999.
         return (first &* 100) &+ second
     }
 
@@ -168,8 +130,6 @@ extension ArraySlice where Element == UInt8 {
             return nil
         }
 
-        // Unchecked math is safe here: we're in Int32 space at the very least, and this number cannot
-        // possibly be smaller than zero or larger than 99.
         return (first &* 10) &+ (second)
     }
 
@@ -183,8 +143,6 @@ extension ArraySlice where Element == UInt8 {
             )
         }
 
-        // If `nonDecimalASCIIIndex == self.startIndex`, then it means that there is a decimal point
-        // but there are no fractional seconds
         if nonDecimalASCIIIndex == self.startIndex {
             throw ISO_8824.Error.invalidASN1Object(
                 reason: "Invalid fractional seconds"
@@ -235,9 +193,6 @@ extension Array where Element == UInt8 {
     package mutating func _appendFourDigitDecimal(_ number: Int) {
         assert(number >= 0 && number <= 9999)
 
-        // Each digit can be isolated by dividing by the place and then taking the result modulo 10.
-        // This is annoyingly division heavy. There may be a better algorithm floating around.
-        // Unchecked math is fine, there cannot be an overflow here.
         let asciiZero = UInt8(ascii: "0")
         self.append(UInt8(truncatingIfNeeded: (number / 1000) % 10) &+ asciiZero)
         self.append(UInt8(truncatingIfNeeded: (number / 100) % 10) &+ asciiZero)
@@ -249,9 +204,6 @@ extension Array where Element == UInt8 {
     package mutating func _appendTwoDigitDecimal(_ number: Int) {
         assert(number >= 0 && number <= 99)
 
-        // Each digit can be isolated by dividing by the place and then taking the result modulo 10.
-        // This is annoyingly division heavy. There may be a better algorithm floating around.
-        // Unchecked math is fine, there cannot be an overflow here.
         let asciiZero = UInt8(ascii: "0")
         self.append(UInt8(truncatingIfNeeded: (number / 10) % 10) &+ asciiZero)
         self.append(UInt8(truncatingIfNeeded: number % 10) &+ asciiZero)
@@ -264,7 +216,6 @@ extension Int {
         let asciiZero = UInt8(ascii: "0")
         let zeroToNine = 0...9
 
-        // These are all coming from UInt8space, the subtraction cannot overflow.
         let converted = Int(ascii) &- Int(asciiZero)
 
         guard zeroToNine.contains(converted) else {

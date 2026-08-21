@@ -1,26 +1,8 @@
-// ===----------------------------------------------------------------------===//
-//
-// This source file is part of the SwiftASN1 open source project
-//
-// Copyright (c) 2019-2020 Apple Inc. and the SwiftASN1 project authors
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of SwiftASN1 project authors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
 import ISO_8824
 import Testing
 
 @testable import ISO_8825
 
-// The wire-facing halves of upstream GeneralizedTimeTests.swift: the DER
-// string-vector parse + round-trip table, truncation/junk-suffix rejection,
-// and tag enforcement on `init(derEncoded:)`. The value-facing halves
-// (component bounds, comparisons) live in swift-iso-8824.
 extension ISO_8824.GeneralizedTime {
     @Suite
     struct Test {}
@@ -38,10 +20,9 @@ extension ISO_8824.GeneralizedTime.Test {
 
     @Test
     func `simple generalized time test vectors`() throws {
-        // This is a small set of generalized time test vectors derived from the ASN.1 docs.
-        // We store the byte payload here as a string.
+
         let vectors: [(String, ISO_8824.GeneralizedTime?)] = [
-            // Valid representations
+
             (
                 "19920521000000Z",
                 try .init(
@@ -185,7 +166,7 @@ extension ISO_8824.GeneralizedTime.Test {
                     seconds: 0,
                     rawFractionalSeconds: ArraySlice<UInt8>()
                 )
-            ),  // only 31 days in January
+            ),
             (
                 "20210228000000Z",
                 try .init(
@@ -209,7 +190,7 @@ extension ISO_8824.GeneralizedTime.Test {
                     seconds: 0,
                     rawFractionalSeconds: ArraySlice<UInt8>()
                 )
-            ),  // only 28 days in February 2021
+            ),
             (
                 "20200229000000Z",
                 try .init(
@@ -233,7 +214,7 @@ extension ISO_8824.GeneralizedTime.Test {
                     seconds: 0,
                     rawFractionalSeconds: ArraySlice<UInt8>()
                 )
-            ),  // only 29 days in February 2020
+            ),
             (
                 "21000228000000Z",
                 try .init(
@@ -257,7 +238,7 @@ extension ISO_8824.GeneralizedTime.Test {
                     seconds: 0,
                     rawFractionalSeconds: ArraySlice<UInt8>()
                 )
-            ),  // only 28 days in February 2100
+            ),
             (
                 "20000229000000Z",
                 try .init(
@@ -281,7 +262,7 @@ extension ISO_8824.GeneralizedTime.Test {
                     seconds: 0,
                     rawFractionalSeconds: ArraySlice<UInt8>()
                 )
-            ),  // only 29 days in February 2000
+            ),
             (
                 "20210331000000Z",
                 try .init(
@@ -305,7 +286,7 @@ extension ISO_8824.GeneralizedTime.Test {
                     seconds: 0,
                     rawFractionalSeconds: ArraySlice<UInt8>()
                 )
-            ),  // only 31 days in March
+            ),
             (
                 "20210430000000Z",
                 try .init(
@@ -329,7 +310,7 @@ extension ISO_8824.GeneralizedTime.Test {
                     seconds: 0,
                     rawFractionalSeconds: ArraySlice<UInt8>()
                 )
-            ),  // only 30 days in April
+            ),
             (
                 "20210531000000Z",
                 try .init(
@@ -353,7 +334,7 @@ extension ISO_8824.GeneralizedTime.Test {
                     seconds: 0,
                     rawFractionalSeconds: ArraySlice<UInt8>()
                 )
-            ),  // only 31 days in May
+            ),
             (
                 "20210630000000Z",
                 try .init(
@@ -377,7 +358,7 @@ extension ISO_8824.GeneralizedTime.Test {
                     seconds: 0,
                     rawFractionalSeconds: ArraySlice<UInt8>()
                 )
-            ),  // only 30 days in June
+            ),
             (
                 "20210731000000Z",
                 try .init(
@@ -401,7 +382,7 @@ extension ISO_8824.GeneralizedTime.Test {
                     seconds: 0,
                     rawFractionalSeconds: ArraySlice<UInt8>()
                 )
-            ),  // only 31 days in July
+            ),
             (
                 "20210831000000Z",
                 try .init(
@@ -425,7 +406,7 @@ extension ISO_8824.GeneralizedTime.Test {
                     seconds: 0,
                     rawFractionalSeconds: ArraySlice<UInt8>()
                 )
-            ),  // only 31 days in August
+            ),
             (
                 "20210930000000Z",
                 try .init(
@@ -449,7 +430,7 @@ extension ISO_8824.GeneralizedTime.Test {
                     seconds: 0,
                     rawFractionalSeconds: ArraySlice<UInt8>()
                 )
-            ),  // only 30 days in September
+            ),
             (
                 "20211031000000Z",
                 try .init(
@@ -473,7 +454,7 @@ extension ISO_8824.GeneralizedTime.Test {
                     seconds: 0,
                     rawFractionalSeconds: ArraySlice<UInt8>()
                 )
-            ),  // only 31 days in October
+            ),
             (
                 "20211130000000Z",
                 try .init(
@@ -497,7 +478,7 @@ extension ISO_8824.GeneralizedTime.Test {
                     seconds: 0,
                     rawFractionalSeconds: ArraySlice<UInt8>()
                 )
-            ),  // only 30 days in November
+            ),
             (
                 "20211231000000Z",
                 try .init(
@@ -521,7 +502,7 @@ extension ISO_8824.GeneralizedTime.Test {
                     seconds: 0,
                     rawFractionalSeconds: ArraySlice<UInt8>()
                 )
-            ),  // only 31 days in December
+            ),
             (
                 "19851106210627.10000000000000001Z",
                 try .init(
@@ -535,40 +516,38 @@ extension ISO_8824.GeneralizedTime.Test {
                         49, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 49,
                     ])
                 )
-                // `fractionalSeconds` loses precision and becomes 0.1 rather than
-                // 0.10000000000000001, but the preserved raw value still round-trips.
+
             ),
 
-            // Invalid representations
-            ("19920520240000Z", nil),  // midnight may not be 2400000
-            ("19920622123421.0Z", nil),  // spurious trailing zeros
-            ("19920722132100.30Z", nil),  // spurious trailing zeros
-            ("19851106210627,3Z", nil),  // comma as decimal separator
-            ("1985110621.14159Z", nil),  // missing minutes and seconds
-            ("198511062106.14159Z", nil),  // missing seconds
-            ("19851106210627.3", nil),  // missing trailing Z
-            ("19851106210627.3-0500", nil),  // explicit time zone
-            ("20211300000000Z", nil),  // there is no 13th month
-            ("20210000000000Z", nil),  // there is no zeroth month
-            ("20210100000000Z", nil),  // there is no zeroth day
-            ("20210101000062Z", nil),  // 62nd second is not allowed
-            ("20210101236000Z", nil),  // 60th minute is not allowed
-            ("20210132000000Z", nil),  // only 31 days in January
-            ("20210229000000Z", nil),  // only 28 days in February 2021
-            ("20200230000000Z", nil),  // only 29 days in February 2020
-            ("21000229000000Z", nil),  // only 28 days in February 2100
-            ("20000230000000Z", nil),  // only 29 days in February 2000
-            ("20210332000000Z", nil),  // only 31 days in March
-            ("20210431000000Z", nil),  // only 30 days in April
-            ("20210532000000Z", nil),  // only 31 days in May
-            ("20210631000000Z", nil),  // only 30 days in June
-            ("20210732000000Z", nil),  // only 31 days in July
-            ("20210832000000Z", nil),  // only 31 days in August
-            ("20210931000000Z", nil),  // only 30 days in September
-            ("20211032000000Z", nil),  // only 31 days in October
-            ("20211131000000Z", nil),  // only 30 days in November
-            ("19920521000000.", nil),  // invalid fractional seconds and missing trailing Z
-            ("19920521000000.Z", nil),  // invalid fractional seconds
+            ("19920520240000Z", nil),
+            ("19920622123421.0Z", nil),
+            ("19920722132100.30Z", nil),
+            ("19851106210627,3Z", nil),
+            ("1985110621.14159Z", nil),
+            ("198511062106.14159Z", nil),
+            ("19851106210627.3", nil),
+            ("19851106210627.3-0500", nil),
+            ("20211300000000Z", nil),
+            ("20210000000000Z", nil),
+            ("20210100000000Z", nil),
+            ("20210101000062Z", nil),
+            ("20210101236000Z", nil),
+            ("20210132000000Z", nil),
+            ("20210229000000Z", nil),
+            ("20200230000000Z", nil),
+            ("21000229000000Z", nil),
+            ("20000230000000Z", nil),
+            ("20210332000000Z", nil),
+            ("20210431000000Z", nil),
+            ("20210532000000Z", nil),
+            ("20210631000000Z", nil),
+            ("20210732000000Z", nil),
+            ("20210832000000Z", nil),
+            ("20210931000000Z", nil),
+            ("20211032000000Z", nil),
+            ("20211131000000Z", nil),
+            ("19920521000000.", nil),
+            ("19920521000000.Z", nil),
 
         ]
 
@@ -612,7 +591,6 @@ extension ISO_8824.GeneralizedTime.Test {
             #expect(throws: Never.self) { try ISO_8824.GeneralizedTime(derEncoded: serialized) }
         }
 
-        // Anything that doesn't end up in a Z must fail to deserialize.
         let string = Substring("19851106210627.14159Z")
         for distance in 0..<string.count {
             let sliced = string.prefix(distance)
@@ -621,7 +599,6 @@ extension ISO_8824.GeneralizedTime.Test {
 
         deserializes(string)
 
-        // Adding some excess data should fail too.
         for junkByteCount in 1...string.count {
             let junked = string + string.prefix(junkByteCount)
             mustNotDeserialize(junked)
@@ -632,7 +609,7 @@ extension ISO_8824.GeneralizedTime.Test {
     func `requires appropriate tag`() throws {
         let rawValue = "19920521000000Z".utf8
         var invalidBytes = [UInt8]()
-        // GeneralizedTime is not an integer.
+
         invalidBytes.writeIdentifier(ISO_8824.Identifier.integer, constructed: false)
         invalidBytes.append(UInt8(rawValue.count))
         invalidBytes.append(contentsOf: rawValue)

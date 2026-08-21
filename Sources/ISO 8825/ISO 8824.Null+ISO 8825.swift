@@ -1,25 +1,4 @@
-// ===----------------------------------------------------------------------===//
-//
-// This source file is part of the SwiftASN1 open source project
-//
-// Copyright (c) 2021 Apple Inc. and the SwiftASN1 project authors
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of SwiftASN1 project authors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
 public import ISO_8824
-
-// The X.690 §8.8 wire discipline for the X.680 NULL value type. The abstract
-// value lives in ISO_8824; the empty-content codec is X.690 wire law and is
-// owned here.
-//
-// `defaultIdentifier` is declared publicly on the value type in ISO_8824 and
-// witnesses the requirement from there; it is not re-declared in this extension.
 
 extension ISO_8824.Null: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.ImplicitlyTaggable {
     @inlinable
