@@ -17,11 +17,11 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/swift-iso/swift-iso-8824.git", branch: "main"),
         .package(
-            url: "https://github.com/swift-primitives/swift-byte-primitives.git",
+            url: "https://github.com/swift-molecules/swift-byte.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-standard-library-extensions.git",
+            url: "https://github.com/swift-molecules/swift-standard-library-extensions.git",
             branch: "main"
         ),
     ],
@@ -30,10 +30,10 @@ let package = Package(
             name: "ISO 8825",
             dependencies: [
                 .product(name: "ISO 8824", package: "swift-iso-8824"),
-                .product(name: "Byte Primitives", package: "swift-byte-primitives"),
+                .product(name: "Byte", package: "swift-byte"),
                 .product(
-                    name: "Byte Primitives Standard Library Integration",
-                    package: "swift-byte-primitives"
+                    name: "Byte Standard Library Integration",
+                    package: "swift-byte"
                 ),
                 .product(
                     name: "Standard Library Extensions",
