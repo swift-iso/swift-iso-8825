@@ -44,16 +44,12 @@ let package = Package(
         .testTarget(
             name: "ISO 8825 Tests",
             dependencies: [
-                "ISO 8825"
+                .target(name: "ISO 8825")
             ]
         ),
     ],
     swiftLanguageModes: [.v6]
 )
-
-extension String {
-    var tests: Self { self + " Tests" }
-}
 
 for target in package.targets where ![.system, .binary, .plugin, .macro].contains(target.type) {
     let ecosystem: [SwiftSetting] = [
