@@ -17,7 +17,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/swift-iso/swift-iso-8824.git", branch: "main"),
         .package(
-            url: "https://github.com/swift-molecules/swift-byte.git",
+            url: "https://github.com/swift-atoms/swift-byte.git",
             branch: "main"
         ),
         .package(
@@ -32,7 +32,7 @@ let package = Package(
                 .product(name: "ISO 8824", package: "swift-iso-8824"),
                 .product(name: "Byte", package: "swift-byte"),
                 .product(
-                    name: "Byte Standard Library Integration",
+                    name: "Byte",
                     package: "swift-byte"
                 ),
                 .product(
