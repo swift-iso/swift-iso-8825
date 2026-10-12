@@ -2,10 +2,6 @@ import ISO_8824
 import ISO_8825
 
 struct CMSContentInfo: ISO_8825.BER.ImplicitlyTaggable, ISO_8825.DER.ImplicitlyTaggable, Hashable {
-    static var defaultIdentifier: ISO_8824.Identifier {
-        .sequence
-    }
-
     public var contentType: ISO_8824.ObjectIdentifier
 
     var content: ISO_8825.`Any`
@@ -49,6 +45,12 @@ struct CMSContentInfo: ISO_8825.BER.ImplicitlyTaggable, ISO_8825.DER.ImplicitlyT
             }
             return .init(contentType: contentType, content: content)
         }
+    }
+}
+
+extension CMSContentInfo {
+    static var defaultIdentifier: ISO_8824.Identifier {
+        .sequence
     }
 
     func serialize(

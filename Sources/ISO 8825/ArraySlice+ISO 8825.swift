@@ -20,7 +20,7 @@ extension ArraySlice: @retroactive ISO_8824.Integer.Representable where Element 
     }
 
     @inlinable
-    public func withBigEndianIntegerBytes<ReturnType, E: Swift.Error>(
+    public func withBigEndianIntegerBytes<ReturnType, E: Swift::Error>(
         _ body: (ArraySlice<UInt8>) throws(E) -> ReturnType
     ) throws(E) -> ReturnType {
         return try body(self)

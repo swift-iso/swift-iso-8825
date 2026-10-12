@@ -2,10 +2,6 @@ import ISO_8824
 import ISO_8825
 
 struct PKCS8PrivateKey: ISO_8825.DER.ImplicitlyTaggable {
-    static var defaultIdentifier: ISO_8824.Identifier {
-        return .sequence
-    }
-
     var algorithm: RFC5480AlgorithmIdentifier
 
     var privateKey: SEC1PrivateKey
@@ -56,6 +52,12 @@ struct PKCS8PrivateKey: ISO_8825.DER.ImplicitlyTaggable {
             algorithm: nil,
             publicKey: publicKey
         )
+    }
+}
+
+extension PKCS8PrivateKey {
+    static var defaultIdentifier: ISO_8824.Identifier {
+        return .sequence
     }
 
     func serialize(

@@ -191,7 +191,7 @@ extension ISO_8825.BER {
     }
 
     @inlinable
-    public static func optionalImplicitlyTagged<Result, E: Swift.Error>(
+    public static func optionalImplicitlyTagged<Result, E: Swift::Error>(
         _ nodes: inout ISO_8825.Node.Collection.Iterator,
         tagNumber: UInt,
         tagClass: ISO_8824.Identifier.Class,

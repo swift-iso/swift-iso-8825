@@ -3,10 +3,6 @@ import ISO_8825
 
 struct ECDSASignature<IntegerType: ISO_8825.Integer.Representable>: ISO_8825.DER.ImplicitlyTaggable
 {
-    static var defaultIdentifier: ISO_8824.Identifier {
-        .sequence
-    }
-
     var r: IntegerType
     var s: IntegerType
 
@@ -26,6 +22,12 @@ struct ECDSASignature<IntegerType: ISO_8825.Integer.Representable>: ISO_8825.DER
 
             return ECDSASignature(r: r, s: s)
         }
+    }
+}
+
+extension ECDSASignature {
+    static var defaultIdentifier: ISO_8824.Identifier {
+        .sequence
     }
 
     func serialize(

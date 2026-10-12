@@ -2,10 +2,6 @@ import ISO_8824
 import ISO_8825
 
 struct SubjectPublicKeyInfo: ISO_8825.DER.ImplicitlyTaggable, Hashable {
-    static var defaultIdentifier: ISO_8824.Identifier {
-        .sequence
-    }
-
     var algorithmIdentifier: RFC5480AlgorithmIdentifier
 
     var key: ISO_8824.BitString
@@ -34,6 +30,12 @@ struct SubjectPublicKeyInfo: ISO_8825.DER.ImplicitlyTaggable, Hashable {
 
         self.key = try! ISO_8824.BitString(bytes: key[...])
     }
+}
+
+extension SubjectPublicKeyInfo {
+    static var defaultIdentifier: ISO_8824.Identifier {
+        .sequence
+    }
 
     func serialize(
         into coder: inout ISO_8825.DER.Serializer,
@@ -47,10 +49,6 @@ struct SubjectPublicKeyInfo: ISO_8825.DER.ImplicitlyTaggable, Hashable {
 }
 
 struct RFC5480AlgorithmIdentifier: ISO_8825.DER.ImplicitlyTaggable, Hashable {
-    static var defaultIdentifier: ISO_8824.Identifier {
-        .sequence
-    }
-
     var algorithm: ISO_8824.ObjectIdentifier
 
     var parameters: ISO_8825.`Any`?
@@ -73,6 +71,12 @@ struct RFC5480AlgorithmIdentifier: ISO_8825.DER.ImplicitlyTaggable, Hashable {
 
             return .init(algorithm: algorithmOID, parameters: parameters)
         }
+    }
+}
+
+extension RFC5480AlgorithmIdentifier {
+    static var defaultIdentifier: ISO_8824.Identifier {
+        .sequence
     }
 
     func serialize(

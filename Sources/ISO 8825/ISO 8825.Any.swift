@@ -37,12 +37,6 @@ extension ISO_8825 {
         public init(berEncoded rootNode: ISO_8825.Node) {
             self = .init(derEncoded: rootNode)
         }
-
-        @inlinable
-        public func serialize(into coder: inout ISO_8825.DER.Serializer) throws(ISO_8824.Error) {
-
-            coder.serializeRawBytes(self._serializedBytes)
-        }
     }
 }
 
@@ -88,5 +82,13 @@ extension ISO_8825.BER.ImplicitlyTaggable {
         withIdentifier identifier: ISO_8824.Identifier
     ) throws(ISO_8824.Error) {
         try self.init(berEncoded: berASN1Any._serializedBytes, withIdentifier: identifier)
+    }
+}
+
+extension ISO_8825.`Any` {
+    @inlinable
+    public func serialize(into coder: inout ISO_8825.DER.Serializer) throws(ISO_8824.Error) {
+
+        coder.serializeRawBytes(self._serializedBytes)
     }
 }

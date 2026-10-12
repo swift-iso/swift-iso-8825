@@ -2,10 +2,6 @@ import ISO_8824
 import ISO_8825
 
 struct SEC1PrivateKey: ISO_8825.DER.ImplicitlyTaggable {
-    static var defaultIdentifier: ISO_8824.Identifier {
-        return .sequence
-    }
-
     var algorithm: RFC5480AlgorithmIdentifier?
 
     var privateKey: ISO_8824.OctetString
@@ -72,6 +68,12 @@ struct SEC1PrivateKey: ISO_8825.DER.ImplicitlyTaggable {
         self.algorithm = algorithm
 
         self.publicKey = try! ISO_8824.BitString(bytes: publicKey[...])
+    }
+}
+
+extension SEC1PrivateKey {
+    static var defaultIdentifier: ISO_8824.Identifier {
+        return .sequence
     }
 
     func serialize(
