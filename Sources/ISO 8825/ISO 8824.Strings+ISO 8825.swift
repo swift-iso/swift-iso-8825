@@ -66,8 +66,7 @@ extension ISO_8824.TeletexString: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.
     }
 }
 
-extension ISO_8824.PrintableString: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.ImplicitlyTaggable
-{
+extension ISO_8824.PrintableString: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.ImplicitlyTaggable {
     @inlinable
     public init(
         derEncoded node: ISO_8825.Node,
@@ -130,8 +129,7 @@ extension ISO_8824.VisibleString: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.
     }
 }
 
-extension ISO_8824.UniversalString: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.ImplicitlyTaggable
-{
+extension ISO_8824.UniversalString: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.ImplicitlyTaggable {
     @inlinable
     public init(
         derEncoded node: ISO_8825.Node,

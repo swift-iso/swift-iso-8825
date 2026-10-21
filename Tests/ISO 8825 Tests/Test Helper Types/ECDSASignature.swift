@@ -1,8 +1,7 @@
 import ISO_8824
 import ISO_8825
 
-struct ECDSASignature<IntegerType: ISO_8825.Integer.Representable>: ISO_8825.DER.ImplicitlyTaggable
-{
+struct ECDSASignature<IntegerType: ISO_8825.Integer.Representable>: ISO_8825.DER.ImplicitlyTaggable {
     var r: IntegerType
     var s: IntegerType
 

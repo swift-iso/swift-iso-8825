@@ -28,7 +28,11 @@ struct SubjectPublicKeyInfo: ISO_8825.DER.ImplicitlyTaggable, Hashable {
     internal init(algorithmIdentifier: RFC5480AlgorithmIdentifier, key: [UInt8]) {
         self.algorithmIdentifier = algorithmIdentifier
 
-        self.key = try! ISO_8824.BitString(bytes: key[...])
+        do {
+            self.key = try ISO_8824.BitString(bytes: key[...])
+        } catch {
+            preconditionFailure("Test key bytes must form a valid bit string: \(error)")
+        }
     }
 }
 
@@ -94,21 +98,29 @@ extension RFC5480AlgorithmIdentifier {
 
 extension RFC5480AlgorithmIdentifier {
 
+    private static func erasedCurve(_ curve: ISO_8824.ObjectIdentifier) -> ISO_8825.`Any` {
+        do {
+            return try ISO_8825.`Any`(erasing: curve)
+        } catch {
+            preconditionFailure("Named curve identifiers must be erasable: \(error)")
+        }
+    }
+
     static let ecdsaP256 = RFC5480AlgorithmIdentifier(
         algorithm: .AlgorithmIdentifier.idEcPublicKey,
 
-        parameters: try! .init(erasing: ISO_8824.ObjectIdentifier.NamedCurves.secp256r1)
+        parameters: erasedCurve(ISO_8824.ObjectIdentifier.NamedCurves.secp256r1)
     )
 
     static let ecdsaP384 = RFC5480AlgorithmIdentifier(
         algorithm: .AlgorithmIdentifier.idEcPublicKey,
 
-        parameters: try! .init(erasing: ISO_8824.ObjectIdentifier.NamedCurves.secp384r1)
+        parameters: erasedCurve(ISO_8824.ObjectIdentifier.NamedCurves.secp384r1)
     )
 
     static let ecdsaP521 = RFC5480AlgorithmIdentifier(
         algorithm: .AlgorithmIdentifier.idEcPublicKey,
 
-        parameters: try! .init(erasing: ISO_8824.ObjectIdentifier.NamedCurves.secp521r1)
+        parameters: erasedCurve(ISO_8824.ObjectIdentifier.NamedCurves.secp521r1)
     )
 }

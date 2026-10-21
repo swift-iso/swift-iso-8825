@@ -399,9 +399,12 @@ extension ISO_8825.DER {
                 encodedBytes: firstNode.encodedBytes
             )
         } else {
+            guard let dataBytes = firstNode.dataBytes else {
+                preconditionFailure("A primitive TLV always carries its data bytes")
+            }
             rootNode = ISO_8825.Node(
                 identifier: firstNode.identifier,
-                content: .primitive(firstNode.dataBytes!),
+                content: .primitive(dataBytes),
                 encodedBytes: firstNode.encodedBytes
             )
         }

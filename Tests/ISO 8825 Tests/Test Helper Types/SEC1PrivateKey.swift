@@ -67,7 +67,11 @@ struct SEC1PrivateKey: ISO_8825.DER.ImplicitlyTaggable {
         self.privateKey = ISO_8824.OctetString(contentBytes: privateKey[...])
         self.algorithm = algorithm
 
-        self.publicKey = try! ISO_8824.BitString(bytes: publicKey[...])
+        do {
+            self.publicKey = try ISO_8824.BitString(bytes: publicKey[...])
+        } catch {
+            preconditionFailure("Test public key bytes must form a valid bit string: \(error)")
+        }
     }
 }
 

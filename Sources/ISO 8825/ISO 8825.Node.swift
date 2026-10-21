@@ -233,8 +233,10 @@ extension ISO_8825.TLV {
                 let lastIndex = nodes.endIndex - 1
                 repeat {
                     try _parseNode(from: &data, encoding: rules, depth: depth + 1, into: &nodes)
-                } while data.count > 0 && nodes.last!.isEndMarker == false
-                let endMarker = nodes.popLast()!
+                } while data.count > 0 && nodes.last?.isEndMarker == false
+                guard let endMarker = nodes.popLast() else {
+                    preconditionFailure("Parsing a constructed indefinite-length TLV always appends nodes")
+                }
                 let encodedBytes = originalData[..<endMarker.encodedBytes.endIndex]
                 nodes[lastIndex].encodedBytes = encodedBytes
             }
@@ -338,10 +340,12 @@ extension ISO_8825.Node.Collection: Sequence {
 
             assert(nextNode.depth == self._depth + 1)
             guard nextNode.isConstructed else {
-
+                guard let dataBytes = nextNode.dataBytes else {
+                    preconditionFailure("A primitive TLV always carries its data bytes")
+                }
                 return ISO_8825.Node(
                     identifier: nextNode.identifier,
-                    content: .primitive(nextNode.dataBytes!),
+                    content: .primitive(dataBytes),
                     encodedBytes: nextNode.encodedBytes
                 )
             }

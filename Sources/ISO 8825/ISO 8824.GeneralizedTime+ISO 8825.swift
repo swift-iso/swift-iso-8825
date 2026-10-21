@@ -1,7 +1,6 @@
 public import ISO_8824
 
-extension ISO_8824.GeneralizedTime: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.ImplicitlyTaggable
-{
+extension ISO_8824.GeneralizedTime: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.ImplicitlyTaggable {
     @inlinable
     public init(
         derEncoded node: ISO_8825.Node,
