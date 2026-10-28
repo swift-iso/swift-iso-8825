@@ -32,10 +32,6 @@ let package = Package(
                 .product(name: "ISO 8824", package: "swift-iso-8824"),
                 .product(name: "Byte", package: "swift-byte"),
                 .product(
-                    name: "Byte",
-                    package: "swift-byte"
-                ),
-                .product(
                     name: "Standard Library Extensions",
                     package: "swift-standard-library-extensions"
                 ),
