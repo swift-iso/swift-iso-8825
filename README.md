@@ -1,61 +1,22 @@
 # swift-iso-8825
 
-![Development Status](https://img.shields.io/badge/status-active--development-blue.svg)
+Use this package when you need to read or write ASN.1 values as BER or DER bytes, for example to handle keys, certificates or CMS messages. Parse with `ISO_8825.DER.parse(_:)` or `ISO_8825.BER.parse(_:)` into an `ISO_8825.Node`, decode its parts with the `ISO_8825.DER` or `ISO_8825.BER` helpers, and write with `ISO_8825.DER.Serializer`. The values themselves, such as `ISO_8824.ObjectIdentifier` and the time and string types, come from swift-iso-8824.
 
-Swift implementation of ISO/IEC 8825 (ITU-T X.690) — the ASN.1 encoding rules: Basic Encoding Rules (BER) and Distinguished Encoding Rules (DER), with the shared TLV wire vocabulary.
+## Laws
 
----
-
-## Overview
-
-This package carries the transfer-syntax law of ASN.1: parsing and serializing the abstract value types defined by [swift-iso-8824](https://github.com/swift-iso/swift-iso-8824) (ITU-T X.680) under BER and DER. The split mirrors the specifications themselves — notation and value validity live in `ISO_8824`; this module supplies the wire conformances retroactively and adds the structural combinators (`sequence`, `set`, tagged optionals, defaults) that X.690 messages are built from.
-
-Failures throw typed errors, so decoding a hostile input is exhaustive at the call site.
-
-## Quick Start
-
-```swift
-import ISO_8825
-
-// Parse a DER-encoded SEQUENCE.
-let node = try ISO_8825.DER.parse(bytes)
-let value = try ISO_8825.DER.sequence(node, identifier: .sequence) { iterator in
-    let version = try ISO_8824.Integer(derEncoded: &iterator)
-    let oid = try ISO_8824.ObjectIdentifier(derEncoded: &iterator)
-    return (version, oid)
-}
-
-// Serialize back to DER.
-var serializer = ISO_8825.DER.Serializer()
-try serializer.serialize(oid)
-let encoded = serializer.serializedBytes
-```
-
-## Installation
-
-```swift
-dependencies: [
-    .package(url: "https://github.com/swift-iso/swift-iso-8825.git", branch: "main")
-]
-```
-
-```swift
-.target(
-    name: "MyTarget",
-    dependencies: [
-        .product(name: "ISO 8825", package: "swift-iso-8825")
-    ]
-)
-```
-
-## Related Packages
-
-- [swift-iso-8824](https://github.com/swift-iso/swift-iso-8824) — the ASN.1 abstract value types and tag vocabulary this package encodes.
-
-## Acknowledgments
-
-This package derives from Apple's [SwiftASN1](https://github.com/apple/swift-asn1); see the NOTICE and Attribution sections of [LICENSE.md](LICENSE.md) for provenance.
-
-## License
-
-Licensed under the Apache License, Version 2.0. See [LICENSE.md](LICENSE.md) for details.
+- Input must hold exactly one element. Trailing bytes are refused, and so is nesting deeper than 50 levels.
+- DER parsing refuses indefinite lengths, a long-form length that would fit the short form, and a length written in more bytes than it needs. BER parsing accepts all three, and allows an indefinite length only on a constructed element.
+- A tag number below 31 written in the long form is refused under both rules.
+- Writing always produces DER. Lengths are definite and as short as possible, and a SET OF is written with its elements sorted by their encoded bytes.
+- An `ISO_8825.Any` holds DER bytes. Wrapping a BER node in one re-encodes it with definite lengths.
+- A sequence decoded with `ISO_8825.DER.sequence(_:identifier:_:)` must consume every element, or decoding fails.
+- Reading a SET OF checks that its elements are sorted under DER and does not under BER.
+- An optional tagged field counts as absent when the next element has a different tag. An explicit tag must wrap exactly one element.
+- Under DER, a DEFAULT field that is present and equal to its default is refused. Under BER it is accepted.
+- A DER boolean must be the byte 0x00 or 0xFF. Under BER any non-zero byte is true. Writing always uses 0xFF.
+- A DER integer must use the fewest bytes. Under BER extra leading bytes are accepted. Under both, empty content is refused, and a value that doesn't fit the Swift integer type is refused. An unsigned type refuses a negative encoding and gains a leading zero byte when written if its top bit is set.
+- Under BER, an octet string or a string type may be constructed from pieces, which are joined. DER accepts only the primitive form. A constructed bit string is refused under both.
+- `ISO_8824.PrintableString`, `ISO_8824.VisibleString` and `ISO_8824.IA5String` check their characters when decoded. The other string types take the bytes as they are.
+- A GeneralizedTime must be written as year, month, day, hour, minute and second, an optional fraction, and Z. Offsets, missing seconds, an empty fraction and trailing zeros in the fraction are refused, under BER as well as DER.
+- A UTCTime must be written with seconds and Z. Its two-digit year 50 to 99 means 1950 to 1999, and 00 to 49 means 2000 to 2049.
+- A NULL must have empty content.
