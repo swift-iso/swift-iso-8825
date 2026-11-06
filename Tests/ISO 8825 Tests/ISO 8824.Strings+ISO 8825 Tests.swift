@@ -12,12 +12,14 @@ private func assertRoundTrips<
     #expect(parsed == value)
 }
 
-extension ISO_8824.UTF8String {
+enum `ISO_8824.UTF8String Tests` {}
+
+extension `ISO_8824.UTF8String Tests` {
     @Suite
     struct Test {}
 }
 
-extension ISO_8824.UTF8String.Test {
+extension `ISO_8824.UTF8String Tests`.Test {
     @Test
     func `encodes to the DER byte vector`() throws {
         var serializer = ISO_8825.DER.Serializer()
@@ -32,12 +34,14 @@ extension ISO_8824.UTF8String.Test {
     }
 }
 
-extension ISO_8824.TeletexString {
+enum `ISO_8824.TeletexString Tests` {}
+
+extension `ISO_8824.TeletexString Tests` {
     @Suite
     struct Test {}
 }
 
-extension ISO_8824.TeletexString.Test {
+extension `ISO_8824.TeletexString Tests`.Test {
     @Test
     func `encodes to the DER byte vector`() throws {
         var serializer = ISO_8825.DER.Serializer()
@@ -52,12 +56,14 @@ extension ISO_8824.TeletexString.Test {
     }
 }
 
-extension ISO_8824.PrintableString {
+enum `ISO_8824.PrintableString Tests` {}
+
+extension `ISO_8824.PrintableString Tests` {
     @Suite
     struct Test {}
 }
 
-extension ISO_8824.PrintableString.Test {
+extension `ISO_8824.PrintableString Tests`.Test {
     @Test
     func `encodes to the DER byte vector`() throws {
         var serializer = ISO_8825.DER.Serializer()
@@ -109,12 +115,14 @@ extension ISO_8824.PrintableString.Test {
     }
 }
 
-extension ISO_8824.VisibleString {
+enum `ISO_8824.VisibleString Tests` {}
+
+extension `ISO_8824.VisibleString Tests` {
     @Suite
     struct Test {}
 }
 
-extension ISO_8824.VisibleString.Test {
+extension `ISO_8824.VisibleString Tests`.Test {
     @Test
     func `encodes to the DER byte vector`() throws {
         var serializer = ISO_8825.DER.Serializer()
@@ -146,12 +154,14 @@ extension ISO_8824.VisibleString.Test {
     }
 }
 
-extension ISO_8824.IA5String {
+enum `ISO_8824.IA5String Tests` {}
+
+extension `ISO_8824.IA5String Tests` {
     @Suite
     struct Test {}
 }
 
-extension ISO_8824.IA5String.Test {
+extension `ISO_8824.IA5String Tests`.Test {
     @Test
     func `rejects invalid characters on the DER parse leg`() {
         let invalidBytes = (UInt8(128)...(UInt8.max))
@@ -169,12 +179,14 @@ extension ISO_8824.IA5String.Test {
     }
 }
 
-extension ISO_8824.UniversalString {
+enum `ISO_8824.UniversalString Tests` {}
+
+extension `ISO_8824.UniversalString Tests` {
     @Suite
     struct Test {}
 }
 
-extension ISO_8824.UniversalString.Test {
+extension `ISO_8824.UniversalString Tests`.Test {
     @Test
     func `encodes to the DER byte vector`() throws {
         var serializer = ISO_8825.DER.Serializer()
@@ -189,12 +201,14 @@ extension ISO_8824.UniversalString.Test {
     }
 }
 
-extension ISO_8824.BMPString {
+enum `ISO_8824.BMPString Tests` {}
+
+extension `ISO_8824.BMPString Tests` {
     @Suite
     struct Test {}
 }
 
-extension ISO_8824.BMPString.Test {
+extension `ISO_8824.BMPString Tests`.Test {
     @Test
     func `encodes to the DER byte vector`() throws {
         var serializer = ISO_8825.DER.Serializer()

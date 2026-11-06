@@ -3,12 +3,14 @@ import Testing
 
 @testable import ISO_8825
 
-extension ISO_8824.GeneralizedTime {
+enum `ISO_8824.GeneralizedTime Tests` {}
+
+extension `ISO_8824.GeneralizedTime Tests` {
     @Suite
     struct Test {}
 }
 
-extension ISO_8824.GeneralizedTime.Test {
+extension `ISO_8824.GeneralizedTime Tests`.Test {
     private func assertRoundTrips<
         ASN1Object: ISO_8825.DER.Parseable & ISO_8825.DER.Serializable & Equatable
     >(_ value: ASN1Object) throws(ISO_8824.Error) {
