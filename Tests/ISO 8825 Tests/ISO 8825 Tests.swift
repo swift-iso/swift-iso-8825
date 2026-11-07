@@ -3,8 +3,8 @@ import Testing
 
 @testable import ISO_8825
 
-@Suite("ISO 8825")
-struct ISO8825Tests {
+@Suite
+struct `ISO 8825` {
     @Test func simpleASN1P256SPKI() throws {
 
         let encodedSPKI =
