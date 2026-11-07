@@ -594,14 +594,14 @@ extension `ISO_8824.GeneralizedTime Tests`.Test {
         }
 
         let string = Substring("19851106210627.14159Z")
-        for distance in 0..<string.count {
+        (0..<string.count).forEach { distance in
             let sliced = string.prefix(distance)
             mustNotDeserialize(sliced)
         }
 
         deserializes(string)
 
-        for junkByteCount in 1...string.count {
+        (1...string.count).forEach { junkByteCount in
             let junked = string + string.prefix(junkByteCount)
             mustNotDeserialize(junked)
         }

@@ -195,7 +195,7 @@ extension ISO_8825.DER {
     }
 
     @inlinable
-    public static func optionalImplicitlyTagged<Result, E: Swift::Error>(
+    public static func optionalImplicitlyTagged<Result, E: Swift.Error>(
         _ nodes: inout ISO_8825.Node.Collection.Iterator,
         tagNumber: UInt,
         tagClass: ISO_8824.Identifier.Class,
@@ -437,7 +437,7 @@ extension ISO_8825.DER {
         }
 
         @inlinable
-        public mutating func appendPrimitiveNode<E: Swift::Error>(
+        public mutating func appendPrimitiveNode<E: Swift.Error>(
             identifier: ISO_8824.Identifier,
             _ contentWriter: (inout [UInt8]) throws(E) -> Void
         ) throws(E) {
@@ -448,7 +448,7 @@ extension ISO_8825.DER {
         }
 
         @inlinable
-        public mutating func appendConstructedNode<E: Swift::Error>(
+        public mutating func appendConstructedNode<E: Swift.Error>(
             identifier: ISO_8824.Identifier,
             _ contentWriter: (inout Serializer) throws(E) -> Void
         ) throws(E) {
@@ -503,7 +503,7 @@ extension ISO_8825.DER {
         }
 
         @inlinable
-        public mutating func serialize<E: Swift::Error>(
+        public mutating func serialize<E: Swift.Error>(
             explicitlyTaggedWithTagNumber tagNumber: UInt,
             tagClass: ISO_8824.Identifier.Class,
             _ block: (inout Serializer) throws(E) -> Void
@@ -516,7 +516,7 @@ extension ISO_8825.DER {
         }
 
         @inlinable
-        public mutating func serializeSequenceOf<Elements: Sequence>(
+        public mutating func serializeSequenceOf<Elements: Swift.Sequence>(
             _ elements: Elements,
             identifier: ISO_8824.Identifier = .sequence
         ) throws(ISO_8824.Error) where Elements.Element: ISO_8825.DER.Serializable {
@@ -529,7 +529,7 @@ extension ISO_8825.DER {
         }
 
         @inlinable
-        public mutating func serializeSetOf<Elements: Sequence>(
+        public mutating func serializeSetOf<Elements: Swift.Sequence>(
             _ elements: Elements,
             identifier: ISO_8824.Identifier = .set
         ) throws(ISO_8824.Error) where Elements.Element: ISO_8825.DER.Serializable {
@@ -582,13 +582,13 @@ extension ISO_8825.DER {
         }
 
         @inlinable
-        public mutating func serializeRawBytes<Bytes: Sequence>(_ bytes: Bytes)
+        public mutating func serializeRawBytes<Bytes: Swift.Sequence>(_ bytes: Bytes)
         where Bytes.Element == UInt8 {
             self._serializedBytes.append(contentsOf: bytes)
         }
 
         @inlinable
-        package mutating func _appendNode<E: Swift::Error>(
+        package mutating func _appendNode<E: Swift.Error>(
             identifier: ISO_8824.Identifier,
             constructed: Bool,
             _ contentWriter: (inout Serializer) throws(E) -> Void
@@ -623,7 +623,7 @@ extension ISO_8825.DER {
             self._serializedBytes[lengthIndex] = 0x80 | UInt8(lengthBytesNeeded - 1)
             var writeIndex = lengthIndex
 
-            for shift in (0..<(lengthBytesNeeded - 1)).reversed() {
+            (0..<(lengthBytesNeeded - 1)).reversed().forEach { shift in
 
                 self._serializedBytes.formIndex(after: &writeIndex)
                 self._serializedBytes[writeIndex] = UInt8(

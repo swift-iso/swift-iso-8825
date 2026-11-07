@@ -248,7 +248,7 @@ extension ISO_8825.TLV.Parser: Hashable {}
 
 extension ISO_8825 {
 
-    public struct LazySetOfSequence<T>: Sequence {
+    public struct LazySetOfSequence<T>: Swift.Sequence {
         public typealias Element = Result<T, ISO_8824.Error>
 
         @usableFromInline
@@ -316,7 +316,7 @@ extension ISO_8825.Node.Collection: Hashable {}
 
 extension ISO_8825.Node.Collection: Sendable {}
 
-extension ISO_8825.Node.Collection: Sequence {
+extension ISO_8825.Node.Collection: Swift.Sequence {
 
     public struct Iterator: IteratorProtocol, Sendable {
         @usableFromInline
