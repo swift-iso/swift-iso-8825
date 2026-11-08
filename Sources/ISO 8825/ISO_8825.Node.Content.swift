@@ -1,4 +1,4 @@
-public import ISO_8824
+import ISO_8824
 
 
 extension ISO_8825.Node {
