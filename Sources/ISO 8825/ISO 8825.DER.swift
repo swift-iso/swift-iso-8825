@@ -562,11 +562,12 @@ extension ISO_8825.DER {
             let identifier = node.identifier
             let constructed: Bool
 
-            constructed = if case .constructed = node.content {
-                true
-            } else {
-                false
-            }
+            constructed =
+                if case .constructed = node.content {
+                    true
+                } else {
+                    false
+                }
 
             self._appendNode(identifier: identifier, constructed: constructed) { coder in
                 switch node.content {
