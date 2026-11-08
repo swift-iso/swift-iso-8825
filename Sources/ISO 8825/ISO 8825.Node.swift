@@ -36,10 +36,8 @@ extension ISO_8825.EncodingRules {
 }
 
 extension ISO_8825 {
-
     @usableFromInline
     struct TLV {
-
         @usableFromInline
         var identifier: ISO_8824.Identifier
 
@@ -97,9 +95,6 @@ extension ISO_8825.TLV {
 extension ISO_8825.TLV {
     @usableFromInline
     struct Parser: Sendable {
-        @inlinable
-        static var _maximumNodeDepth: Int { 50 }
-
         @usableFromInline
         var nodes: ArraySlice<ISO_8825.TLV>
 
@@ -107,139 +102,143 @@ extension ISO_8825.TLV {
         init(_ nodes: ArraySlice<ISO_8825.TLV>) {
             self.nodes = nodes
         }
+    }
+}
 
-        @inlinable
-        static func parse(
-            _ data: ArraySlice<UInt8>,
-            encoding rules: ISO_8825.EncodingRules
-        ) throws(ISO_8824.Error) -> Parser {
-            var data = data
-            var nodes = [ISO_8825.TLV]()
-            nodes.reserveCapacity(16)
-            try _parseNode(from: &data, encoding: rules, depth: 1, into: &nodes)
-            guard data.count == 0 else {
-                throw ISO_8824.Error.invalidASN1Object(reason: "Trailing unparsed data is present")
-            }
-            return Parser(nodes[...])
+extension ISO_8825.TLV.Parser {
+    @inlinable
+    static var _maximumNodeDepth: Int { 50 }
+
+    @inlinable
+    static func parse(
+        _ data: ArraySlice<UInt8>,
+        encoding rules: ISO_8825.EncodingRules
+    ) throws(ISO_8824.Error) -> Parser {
+        var data = data
+        var nodes = [ISO_8825.TLV]()
+        nodes.reserveCapacity(16)
+        try _parseNode(from: &data, encoding: rules, depth: 1, into: &nodes)
+        guard data.count == 0 else {
+            throw ISO_8824.Error.invalidASN1Object(reason: "Trailing unparsed data is present")
+        }
+        return Parser(nodes[...])
+    }
+
+    @inlinable
+    static func _parseNode(
+        from data: inout ArraySlice<UInt8>,
+        encoding rules: ISO_8825.EncodingRules,
+        depth: Int,
+        into nodes: inout [ISO_8825.TLV]
+    ) throws(ISO_8824.Error) {
+        guard depth <= Parser._maximumNodeDepth else {
+            throw ISO_8824.Error.invalidASN1Object(reason: "Excessive stack depth was reached")
         }
 
-        @inlinable
-        static func _parseNode(
-            from data: inout ArraySlice<UInt8>,
-            encoding rules: ISO_8825.EncodingRules,
-            depth: Int,
-            into nodes: inout [ISO_8825.TLV]
-        ) throws(ISO_8824.Error) {
-            guard depth <= Parser._maximumNodeDepth else {
-                throw ISO_8824.Error.invalidASN1Object(reason: "Excessive stack depth was reached")
+        let originalData = data
+
+        guard let rawIdentifier = data.popFirst() else {
+            throw ISO_8824.Error.truncatedASN1Field()
+        }
+
+        let constructed = (rawIdentifier & 0x20) != 0
+        let identifier: ISO_8824.Identifier
+        if (rawIdentifier & 0x1f) == 0x1f {
+            let tagClass = ISO_8824.Identifier.Class(topByteInWireFormat: rawIdentifier)
+
+            let tagNumber = try data.readUIntUsing8BitBytesASN1Discipline()
+
+            guard tagNumber >= 0x1f else {
+                throw ISO_8824.Error.invalidASN1Object(
+                    reason: "ASN.1 tag incorrectly encoded in long form: \(tagNumber)"
+                )
+            }
+            identifier = ISO_8824.Identifier(tagWithNumber: tagNumber, tagClass: tagClass)
+        } else {
+            identifier = ISO_8824.Identifier(shortIdentifier: rawIdentifier)
+        }
+
+        guard let wideLength = try data._readLength(!rules.nonMinimalEncodedLengthsAllowed)
+        else {
+            throw ISO_8824.Error.truncatedASN1Field()
+        }
+
+        switch wideLength {
+        case .definite(let wideLength):
+            guard let length = Int(exactly: wideLength) else {
+                throw ISO_8824.Error.invalidASN1Object(
+                    reason: "Excessively large field: \(wideLength)"
+                )
             }
 
-            let originalData = data
+            var subData = data.prefix(length)
+            data = data.dropFirst(length)
 
-            guard let rawIdentifier = data.popFirst() else {
+            guard subData.count == length else {
                 throw ISO_8824.Error.truncatedASN1Field()
             }
 
-            let constructed = (rawIdentifier & 0x20) != 0
-            let identifier: ISO_8824.Identifier
-            if (rawIdentifier & 0x1f) == 0x1f {
-                let tagClass = ISO_8824.Identifier.Class(topByteInWireFormat: rawIdentifier)
+            let encodedBytes = originalData[..<subData.endIndex]
 
-                let tagNumber = try data.readUIntUsing8BitBytesASN1Discipline()
-
-                guard tagNumber >= 0x1f else {
-                    throw ISO_8824.Error.invalidASN1Object(
-                        reason: "ASN.1 tag incorrectly encoded in long form: \(tagNumber)"
-                    )
-                }
-                identifier = ISO_8824.Identifier(tagWithNumber: tagNumber, tagClass: tagClass)
-            } else {
-                identifier = ISO_8824.Identifier(shortIdentifier: rawIdentifier)
-            }
-
-            guard let wideLength = try data._readLength(!rules.nonMinimalEncodedLengthsAllowed)
-            else {
-                throw ISO_8824.Error.truncatedASN1Field()
-            }
-
-            switch wideLength {
-            case .definite(let wideLength):
-                guard let length = Int(exactly: wideLength) else {
-                    throw ISO_8824.Error.invalidASN1Object(
-                        reason: "Excessively large field: \(wideLength)"
-                    )
-                }
-
-                var subData = data.prefix(length)
-                data = data.dropFirst(length)
-
-                guard subData.count == length else {
-                    throw ISO_8824.Error.truncatedASN1Field()
-                }
-
-                let encodedBytes = originalData[..<subData.endIndex]
-
-                if constructed {
-                    nodes.append(
-                        ISO_8825.TLV(
-                            identifier: identifier,
-                            depth: depth,
-                            isConstructed: true,
-                            encodedBytes: encodedBytes
-                        )
-                    )
-                    while subData.count > 0 {
-                        try _parseNode(
-                            from: &subData,
-                            encoding: rules,
-                            depth: depth + 1,
-                            into: &nodes
-                        )
-                    }
-                } else {
-                    nodes.append(
-                        ISO_8825.TLV(
-                            identifier: identifier,
-                            depth: depth,
-                            isConstructed: false,
-                            encodedBytes: encodedBytes,
-                            dataBytes: subData
-                        )
-                    )
-                }
-
-            case .indefinite:
-                guard rules.indefiniteLengthAllowed == true else {
-
-                    throw ISO_8824.Error.unsupportedFieldLength(
-                        reason: "Indefinite form of field length not supported in DER."
-                    )
-                }
-
-                guard constructed == true else {
-                    throw ISO_8824.Error.unsupportedFieldLength(
-                        reason: "Indefinite-length field must have constructed identifier"
-                    )
-                }
-
+            if constructed {
                 nodes.append(
                     ISO_8825.TLV(
                         identifier: identifier,
                         depth: depth,
                         isConstructed: true,
-                        encodedBytes: []
+                        encodedBytes: encodedBytes
                     )
                 )
-                let lastIndex = nodes.endIndex - 1
-                repeat {
-                    try _parseNode(from: &data, encoding: rules, depth: depth + 1, into: &nodes)
-                } while data.count > 0 && nodes.last?.isEndMarker == false
-                guard let endMarker = nodes.popLast() else {
-                    preconditionFailure("Parsing a constructed indefinite-length TLV always appends nodes")
+                while subData.count > 0 {
+                    try _parseNode(
+                        from: &subData,
+                        encoding: rules,
+                        depth: depth + 1,
+                        into: &nodes
+                    )
                 }
-                let encodedBytes = originalData[..<endMarker.encodedBytes.endIndex]
-                nodes[lastIndex].encodedBytes = encodedBytes
+            } else {
+                nodes.append(
+                    ISO_8825.TLV(
+                        identifier: identifier,
+                        depth: depth,
+                        isConstructed: false,
+                        encodedBytes: encodedBytes,
+                        dataBytes: subData
+                    )
+                )
             }
+
+        case .indefinite:
+            guard rules.indefiniteLengthAllowed == true else {
+                throw ISO_8824.Error.unsupportedFieldLength(
+                    reason: "Indefinite form of field length not supported in DER."
+                )
+            }
+
+            guard constructed == true else {
+                throw ISO_8824.Error.unsupportedFieldLength(
+                    reason: "Indefinite-length field must have constructed identifier"
+                )
+            }
+
+            nodes.append(
+                ISO_8825.TLV(
+                    identifier: identifier,
+                    depth: depth,
+                    isConstructed: true,
+                    encodedBytes: []
+                )
+            )
+            let lastIndex = nodes.endIndex - 1
+            repeat {
+                try _parseNode(from: &data, encoding: rules, depth: depth + 1, into: &nodes)
+            } while data.count > 0 && nodes.last?.isEndMarker == false
+            guard let endMarker = nodes.popLast() else {
+                preconditionFailure("Parsing a constructed indefinite-length TLV always appends nodes")
+            }
+            let encodedBytes = originalData[..<endMarker.encodedBytes.endIndex]
+            nodes[lastIndex].encodedBytes = encodedBytes
         }
     }
 }
@@ -247,29 +246,9 @@ extension ISO_8825.TLV {
 extension ISO_8825.TLV.Parser: Hashable {}
 
 extension ISO_8825 {
-
     public struct LazySetOfSequence<T>: Swift.Sequence {
-        public typealias Element = Result<T, ISO_8824.Error>
-
-        @usableFromInline
-        package typealias Wrapped = LazyMapSequence<
             LazySequence<(ISO_8825.Node.Collection)>.Elements, Result<T, ISO_8824.Error>
         >
-
-        public struct Iterator: IteratorProtocol {
-            @usableFromInline
-            var wrapped: Wrapped.Iterator
-
-            @inlinable
-            public mutating func next() -> Element? {
-                wrapped.next()
-            }
-
-            @inlinable
-            package init(_ wrapped: Wrapped.Iterator) {
-                self.wrapped = wrapped
-            }
-        }
 
         @usableFromInline
         var wrapped: Wrapped
@@ -278,11 +257,33 @@ extension ISO_8825 {
         package init(_ wrapped: Wrapped) {
             self.wrapped = wrapped
         }
+    }
+}
+
+extension ISO_8825.LazySetOfSequence {
+    public typealias Element = Result<T, ISO_8824.Error>
+
+    @usableFromInline
+    package typealias Wrapped = LazyMapSequence<
+
+    public struct Iterator: IteratorProtocol {
+        @usableFromInline
+        var wrapped: Wrapped.Iterator
 
         @inlinable
-        public func makeIterator() -> Iterator {
-            .init(wrapped.makeIterator())
+        public mutating func next() -> Element? {
+            wrapped.next()
         }
+
+        @inlinable
+        package init(_ wrapped: Wrapped.Iterator) {
+            self.wrapped = wrapped
+        }
+    }
+
+    @inlinable
+    public func makeIterator() -> Iterator {
+        .init(wrapped.makeIterator())
     }
 }
 
@@ -317,7 +318,6 @@ extension ISO_8825.Node.Collection: Hashable {}
 extension ISO_8825.Node.Collection: Sendable {}
 
 extension ISO_8825.Node.Collection: Swift.Sequence {
-
     public struct Iterator: IteratorProtocol, Sendable {
         @usableFromInline
         var _nodes: ArraySlice<ISO_8825.TLV>
@@ -331,33 +331,6 @@ extension ISO_8825.Node.Collection: Swift.Sequence {
             self._nodes = nodes
             self._depth = depth
         }
-
-        @inlinable
-        public mutating func next() -> ISO_8825.Node? {
-            guard let nextNode = self._nodes.popFirst() else {
-                return nil
-            }
-
-            assert(nextNode.depth == self._depth + 1)
-            guard nextNode.isConstructed else {
-                guard let dataBytes = nextNode.dataBytes else {
-                    preconditionFailure("A primitive TLV always carries its data bytes")
-                }
-                return ISO_8825.Node(
-                    identifier: nextNode.identifier,
-                    content: .primitive(dataBytes),
-                    encodedBytes: nextNode.encodedBytes
-                )
-            }
-
-            let nodeCollection = self._nodes.prefix { $0.depth > nextNode.depth }
-            self._nodes = self._nodes.dropFirst(nodeCollection.count)
-            return ISO_8825.Node(
-                identifier: nextNode.identifier,
-                content: .constructed(.init(nodes: nodeCollection, depth: nextNode.depth)),
-                encodedBytes: nextNode.encodedBytes
-            )
-        }
     }
 
     @inlinable
@@ -366,9 +339,37 @@ extension ISO_8825.Node.Collection: Swift.Sequence {
     }
 }
 
+extension ISO_8825.Node.Collection.Iterator {
+    @inlinable
+    public mutating func next() -> ISO_8825.Node? {
+        guard let nextNode = self._nodes.popFirst() else {
+            return nil
+        }
+
+        assert(nextNode.depth == self._depth + 1)
+        guard nextNode.isConstructed else {
+            guard let dataBytes = nextNode.dataBytes else {
+                preconditionFailure("A primitive TLV always carries its data bytes")
+            }
+            return ISO_8825.Node(
+                identifier: nextNode.identifier,
+                content: .primitive(dataBytes),
+                encodedBytes: nextNode.encodedBytes
+            )
+        }
+
+        let nodeCollection = self._nodes.prefix { $0.depth > nextNode.depth }
+        self._nodes = self._nodes.dropFirst(nodeCollection.count)
+        return ISO_8825.Node(
+            identifier: nextNode.identifier,
+            content: .constructed(.init(nodes: nodeCollection, depth: nextNode.depth)),
+            encodedBytes: nextNode.encodedBytes
+        )
+    }
+}
+
 extension ISO_8825 {
     public struct Node: Hashable, Sendable {
-
         public var identifier: ISO_8824.Identifier
 
         public var content: Content
@@ -389,9 +390,7 @@ extension ISO_8825 {
 }
 
 extension ISO_8825.Node {
-
     public enum Content: Hashable, Sendable {
-
         case constructed(ISO_8825.Node.Collection)
 
         case primitive(ArraySlice<UInt8>)
@@ -427,7 +426,6 @@ extension ArraySlice where Element == UInt8 {
             let length = try UInt(bigEndianBytes: lengthBytes)
 
             if minimalEncoding {
-
                 let requiredBits = UInt.bitWidth - length.leadingZeroBitCount
                 switch requiredBits {
                 case 0...7:
@@ -489,7 +487,6 @@ extension FixedWidthInteger {
 extension Array where Element == UInt8 {
     @inlinable
     package mutating func _moveRange(offset: Int, range: Range<Index>) {
-
         precondition(offset > 0)
 
         let distanceFromEndOfRangeToEndOfSelf = self.distance(
@@ -497,7 +494,6 @@ extension Array where Element == UInt8 {
             to: self.endIndex
         )
         if distanceFromEndOfRangeToEndOfSelf < offset {
-
             for _ in 0..<(offset - distanceFromEndOfRangeToEndOfSelf) {
                 self.append(0)
             }
@@ -512,9 +508,7 @@ extension Array where Element == UInt8 {
 extension Int {
     @inlinable
     package var _bytesNeededToEncode: Int {
-
         guard self <= 0x7F else {
-
             return UInt(self).neededBytes &+ 1
         }
         return 1
@@ -522,7 +516,6 @@ extension Int {
 }
 
 extension FixedWidthInteger {
-
     @inlinable
     package var neededBytes: Int {
         let neededBits = self.bitWidth - self.leadingZeroBitCount
@@ -559,17 +552,14 @@ extension ISO_8825.Node.Collection {
 package func asn1SetElementLessThan(_ lhs: ArraySlice<UInt8>, _ rhs: ArraySlice<UInt8>) -> Bool {
     for (leftByte, rightByte) in zip(lhs, rhs) {
         if leftByte < rightByte {
-
             return true
         } else if rightByte < leftByte {
-
             return false
         }
     }
 
     let trailing = rhs.dropFirst(lhs.count)
     if trailing.allSatisfy({ $0 == 0 }) {
-
         return false
     }
     return true
@@ -580,6 +570,5 @@ package func asn1SetElementLessThanOrEqual(
     _ lhs: ArraySlice<UInt8>,
     _ rhs: ArraySlice<UInt8>
 ) -> Bool {
-
     !asn1SetElementLessThan(rhs, lhs)
 }
