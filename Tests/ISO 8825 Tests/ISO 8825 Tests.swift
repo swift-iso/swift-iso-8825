@@ -1110,6 +1110,29 @@ extension `ISO 8825 Tests` {
             }
         }
 
+        @Test func `BER optional implicitly tagged decodes with BER rules`() throws {
+            let bytes: [UInt8] = [0x30, 0x08, 0xA1, 0x06, 0x04, 0x01, 0xAB, 0x04, 0x01, 0xCD]
+            let tag = ISO_8824.Identifier(tagWithNumber: 1, tagClass: .contextSpecific)
+
+            let parsed = try ISO_8825.BER.parse(bytes)
+            let octetString: ISO_8824.OctetString? = try ISO_8825.BER.sequence(
+                parsed,
+                identifier: .sequence
+            ) { nodes throws(ISO_8824.Error) in
+                try ISO_8825.BER.optionalImplicitlyTagged(&nodes, tag: tag)
+            }
+            #expect(octetString == ISO_8824.OctetString(contentBytes: [0xAB, 0xCD]))
+
+            #expect(throws: ISO_8824.Error.self) {
+                let _: ISO_8824.OctetString? = try ISO_8825.DER.sequence(
+                    parsed,
+                    identifier: .sequence
+                ) { nodes throws(ISO_8824.Error) in
+                    try ISO_8825.DER.optionalImplicitlyTagged(&nodes, tag: tag)
+                }
+            }
+        }
+
         @Test func `constructed octet string`() throws {
             let weirdASN1: [UInt8] = [0x24, 0x06, 0x04, 0x01, 0xAB, 0x04, 0x01, 0xCD]
             let node = try ISO_8825.DER.parse(weirdASN1)

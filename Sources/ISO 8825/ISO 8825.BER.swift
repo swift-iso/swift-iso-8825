@@ -175,7 +175,7 @@ extension ISO_8825.BER {
 extension ISO_8825.BER {
 
     @inlinable
-    public static func optionalImplicitlyTagged<T: ISO_8825.DER.ImplicitlyTaggable>(
+    public static func optionalImplicitlyTagged<T: ISO_8825.BER.ImplicitlyTaggable>(
         _ nodes: inout ISO_8825.Node.Collection.Iterator,
         tag: ISO_8824.Identifier = T.defaultIdentifier
     ) throws(ISO_8824.Error) -> T? {
@@ -190,7 +190,7 @@ extension ISO_8825.BER {
             return nil
         }
 
-        return try T(derEncoded: &nodes, withIdentifier: tag)
+        return try T(berEncoded: &nodes, withIdentifier: tag)
     }
 
     @inlinable
