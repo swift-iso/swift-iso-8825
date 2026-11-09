@@ -53,11 +53,21 @@ extension ISO_8824.BitString: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.Impl
         }
 
         switch node.content {
-        case .constructed:
+        case .constructed(let segments):
+            var flattened: [UInt8] = []
+            var paddingBits = 0
+            for segment in segments {
+                guard paddingBits == 0 else {
+                    throw ISO_8824.Error.invalidASN1Object(
+                        reason: "Unused bits in a BitString segment other than the last"
+                    )
+                }
+                let substring = try ISO_8824.BitString(berEncoded: segment)
+                flattened += substring.bytes
+                paddingBits = substring.paddingBits
+            }
 
-            throw ISO_8824.Error.invalidASN1Object(
-                reason: "Constructed encoding of BitString not yet supported"
-            )
+            try self.init(bytes: flattened[...], paddingBits: paddingBits)
 
         case .primitive:
             self = try Self(derEncoded: node, withIdentifier: identifier)

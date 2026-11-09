@@ -1054,14 +1054,59 @@ extension `ISO 8825 Tests` {
         }
 
         @Test func `constructed bit string`() throws {
-            let weirdASN1: [UInt8] = [0x23, 0x08, 0x03, 0x02, 0x00, 0xAB, 0x03, 0x02, 0x04, 0xC]
-            let node = try ISO_8825.DER.parse(weirdASN1)
+            let constructedASN1: [UInt8] = [0x23, 0x08, 0x03, 0x02, 0x00, 0xAB, 0x03, 0x02, 0x04, 0xC0]
+            let node = try ISO_8825.DER.parse(constructedASN1)
 
+            #expect(
+                try ISO_8824.BitString(berEncoded: node)
+                    == ISO_8824.BitString(bytes: [0xAB, 0xC0], paddingBits: 4)
+            )
+            #expect(throws: ISO_8824.Error.self) {
+                try ISO_8824.BitString(derEncoded: node)
+            }
+        }
+
+        @Test func `indefinite length constructed bit string`() throws {
+            let constructedASN1: [UInt8] = [
+                0x23, 0x80,
+                0x03, 0x02, 0x00, 0xAB,
+                0x23, 0x80,
+                0x03, 0x02, 0x00, 0xCD,
+                0x00, 0x00,
+                0x03, 0x02, 0x01, 0xEE,
+                0x00, 0x00,
+            ]
+            let node = try ISO_8825.BER.parse(constructedASN1)
+
+            #expect(
+                try ISO_8824.BitString(berEncoded: node)
+                    == ISO_8824.BitString(bytes: [0xAB, 0xCD, 0xEE], paddingBits: 1)
+            )
+            #expect(throws: ISO_8824.Error.self) {
+                try ISO_8825.DER.parse(constructedASN1)
+            }
+        }
+
+        @Test func `empty constructed bit string`() throws {
+            let node = try ISO_8825.BER.parse([0x23, 0x00])
+            #expect(try ISO_8824.BitString(berEncoded: node) == ISO_8824.BitString(bytes: []))
+        }
+
+        @Test func `constructed bit string with unused bits in a non final segment`() throws {
+            let node = try ISO_8825.BER.parse([
+                0x23, 0x08, 0x03, 0x02, 0x04, 0xA0, 0x03, 0x02, 0x00, 0xCD,
+            ])
             #expect(throws: ISO_8824.Error.self) {
                 try ISO_8824.BitString(berEncoded: node)
             }
+        }
+
+        @Test func `constructed bit string with non zero unused bits`() throws {
+            let node = try ISO_8825.BER.parse([
+                0x23, 0x08, 0x03, 0x02, 0x00, 0xAB, 0x03, 0x02, 0x04, 0x0C,
+            ])
             #expect(throws: ISO_8824.Error.self) {
-                try ISO_8824.BitString(derEncoded: node)
+                try ISO_8824.BitString(berEncoded: node)
             }
         }
 
