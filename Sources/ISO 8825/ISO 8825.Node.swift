@@ -532,6 +532,24 @@ extension FixedWidthInteger {
 
 extension ISO_8825.Node.Collection {
     @inlinable
+    package func isOrderedAccordingToSetSemantics() -> Bool {
+        var iterator = self.makeIterator()
+        guard var previousElement = iterator.next() else {
+            return true
+        }
+
+        while let nextElement = iterator.next() {
+            guard previousElement.identifier._precedesInCanonicalOrder(nextElement.identifier)
+            else {
+                return false
+            }
+            previousElement = nextElement
+        }
+
+        return true
+    }
+
+    @inlinable
     package func isOrderedAccordingToSetOfSemantics() -> Bool {
         var iterator = self.makeIterator()
         guard let first = iterator.next() else {

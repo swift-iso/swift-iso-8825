@@ -13,6 +13,16 @@ extension ISO_8824.Identifier {
     }
 
     @inlinable
+    package func _precedesInCanonicalOrder(_ other: ISO_8824.Identifier) -> Bool {
+        let classOrder = self.tagClass._topByteFlags
+        let otherClassOrder = other.tagClass._topByteFlags
+        guard classOrder == otherClassOrder else {
+            return classOrder < otherClassOrder
+        }
+        return self.tagNumber < other.tagNumber
+    }
+
+    @inlinable
     package init(shortIdentifier: UInt8) {
         precondition(shortIdentifier & 0x1F != 0x1F)
         self.init(

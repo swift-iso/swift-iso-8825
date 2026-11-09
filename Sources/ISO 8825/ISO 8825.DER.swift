@@ -69,6 +69,15 @@ extension ISO_8825.DER {
         identifier: ISO_8824.Identifier,
         _ builder: (inout ISO_8825.Node.Collection.Iterator) throws(ISO_8824.Error) -> T
     ) throws(ISO_8824.Error) -> T {
+        guard node.identifier == identifier, case .constructed(let nodes) = node.content else {
+            throw ISO_8824.Error.unexpectedFieldType(node.identifier)
+        }
+
+        guard nodes.isOrderedAccordingToSetSemantics() else {
+            throw ISO_8824.Error.invalidASN1Object(
+                reason: "SET fields are not in canonical tag order"
+            )
+        }
 
         return try sequence(node, identifier: identifier, builder)
     }

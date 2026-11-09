@@ -1133,6 +1133,46 @@ extension `ISO 8825 Tests` {
             }
         }
 
+        @Test func `DER set accepts canonical tag order`() throws {
+            let parsed = try ISO_8825.DER.parse([0x31, 0x06, 0x02, 0x01, 0x05, 0x80, 0x01, 0x07])
+            let values = try ISO_8825.DER.set(parsed, identifier: .set) {
+                nodes throws(ISO_8824.Error) in
+                let integer = try Int(derEncoded: &nodes)
+                let tagged = try Int(
+                    derEncoded: &nodes,
+                    withIdentifier: .init(tagWithNumber: 0, tagClass: .contextSpecific)
+                )
+                return [integer, tagged]
+            }
+            #expect(values == [5, 7])
+        }
+
+        @Test func `DER set rejects non canonical tag order`() throws {
+            let parsed = try ISO_8825.DER.parse([0x31, 0x06, 0x80, 0x01, 0x07, 0x02, 0x01, 0x05])
+            let error = #expect(throws: ISO_8824.Error.self) {
+                try ISO_8825.DER.set(parsed, identifier: .set) { nodes throws(ISO_8824.Error) in
+                    let tagged = try Int(
+                        derEncoded: &nodes,
+                        withIdentifier: .init(tagWithNumber: 0, tagClass: .contextSpecific)
+                    )
+                    let integer = try Int(derEncoded: &nodes)
+                    return [tagged, integer]
+                }
+            }
+            #expect(error?.code == .invalidASN1Object)
+
+            let berValues = try ISO_8825.BER.set(parsed, identifier: .set) {
+                nodes throws(ISO_8824.Error) in
+                let tagged = try Int(
+                    berEncoded: &nodes,
+                    withIdentifier: .init(tagWithNumber: 0, tagClass: .contextSpecific)
+                )
+                let integer = try Int(berEncoded: &nodes)
+                return [tagged, integer]
+            }
+            #expect(berValues == [7, 5])
+        }
+
         @Test func `constructed octet string`() throws {
             let weirdASN1: [UInt8] = [0x24, 0x06, 0x04, 0x01, 0xAB, 0x04, 0x01, 0xCD]
             let node = try ISO_8825.DER.parse(weirdASN1)
