@@ -6,10 +6,8 @@ extension ISO_8824.UTF8String: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.Imp
         derEncoded node: ISO_8825.Node,
         withIdentifier identifier: ISO_8824.Identifier
     ) throws(ISO_8824.Error) {
-        try self.init(
-            contentBytes: try ISO_8824.OctetString(derEncoded: node, withIdentifier: identifier)
-                .bytes
-        )
+        let content = try ISO_8824.OctetString(derEncoded: node, withIdentifier: identifier).bytes
+        try self.init(contentBytes: content)
     }
 
     @inlinable
@@ -17,10 +15,8 @@ extension ISO_8824.UTF8String: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.Imp
         berEncoded node: ISO_8825.Node,
         withIdentifier identifier: ISO_8824.Identifier
     ) throws(ISO_8824.Error) {
-        try self.init(
-            contentBytes: try ISO_8824.OctetString(berEncoded: node, withIdentifier: identifier)
-                .bytes
-        )
+        let content = try ISO_8824.OctetString(berEncoded: node, withIdentifier: identifier).bytes
+        try self.init(contentBytes: content)
     }
 
     @inlinable
