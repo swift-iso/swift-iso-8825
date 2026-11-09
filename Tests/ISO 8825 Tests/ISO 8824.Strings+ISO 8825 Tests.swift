@@ -23,7 +23,7 @@ extension `ISO_8824.UTF8String Tests`.Test {
     @Test
     func `encodes to the DER byte vector`() throws {
         var serializer = ISO_8825.DER.Serializer()
-        let originalString = ISO_8824.UTF8String(contentBytes: [1, 2, 3, 4])
+        let originalString = try ISO_8824.UTF8String(contentBytes: [1, 2, 3, 4])
         try serializer.serialize(originalString)
         #expect(serializer.serializedBytes == [12, 4, 1, 2, 3, 4])
     }
