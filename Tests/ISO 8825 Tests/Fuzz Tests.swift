@@ -24,8 +24,8 @@ struct `Fuzz Tests` {
         var random = Fuzzing(state: 0xde4)
         for _ in 0..<50_000 {
             let bytes = random.bytes(upTo: 64)
-            _ = try? ISO_8825.DER.parse(bytes)
-            _ = try? ISO_8825.BER.parse(bytes)
+            _ = Result { try ISO.`8825`.DER.parse(bytes) }
+            _ = Result { try ISO.`8825`.BER.parse(bytes) }
         }
     }
 
@@ -33,9 +33,9 @@ struct `Fuzz Tests` {
     func `deep nesting and lengths larger than the input are refused, never crash`() {
         var deep: [UInt8] = []
         for _ in 0..<50_000 { deep += [0x30, 0x80] }
-        _ = try? ISO_8825.BER.parse(deep)
-        _ = try? ISO_8825.DER.parse(deep)
-        #expect(throws: (any Error).self) { try ISO_8825.DER.parse([0x04, 0x88, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]) }
-        #expect(throws: (any Error).self) { try ISO_8825.DER.parse([0x04, 0x84, 0x7f, 0xff, 0xff, 0xff, 0x00]) }
+        _ = Result { try ISO.`8825`.BER.parse(deep) }
+        _ = Result { try ISO.`8825`.DER.parse(deep) }
+        #expect(throws: (any Swift.Error).self) { try ISO.`8825`.DER.parse([0x04, 0x88, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]) }
+        #expect(throws: (any Swift.Error).self) { try ISO.`8825`.DER.parse([0x04, 0x84, 0x7f, 0xff, 0xff, 0xff, 0x00]) }
     }
 }

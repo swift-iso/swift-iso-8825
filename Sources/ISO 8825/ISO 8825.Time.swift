@@ -1,26 +1,26 @@
 public import ISO_8824
 
-extension ISO_8825 {
+extension ISO.`8825` {
 
     @usableFromInline
     enum Time {}
 }
 
 @available(*, unavailable)
-extension ISO_8825.Time: Sendable {}
+extension ISO.`8825`.Time: Sendable {}
 
-extension ISO_8825.Time {
+extension ISO.`8825`.Time {
     @inlinable
     static func generalizedTimeFromBytes(
         _ bytes: ArraySlice<UInt8>
-    ) throws(ISO_8824.Error) -> ISO_8824.GeneralizedTime {
+    ) throws(ISO.`8824`.Error) -> ISO.`8824`.GeneralizedTime {
         var bytes = bytes
 
         guard let rawYear = bytes._readFourDigitDecimalInteger(),
             let rawMonth = bytes._readTwoDigitDecimalInteger(),
             let rawDay = bytes._readTwoDigitDecimalInteger()
         else {
-            throw ISO_8824.Error.invalidASN1Object(
+            throw ISO.`8824`.Error.invalidASN1Object(
                 reason: "Unable to load year, month, and day for GeneralizedTime"
             )
         }
@@ -29,7 +29,7 @@ extension ISO_8825.Time {
             let rawMinutes = bytes._readTwoDigitDecimalInteger(),
             let rawSeconds = bytes._readTwoDigitDecimalInteger()
         else {
-            throw ISO_8824.Error.invalidASN1Object(
+            throw ISO.`8824`.Error.invalidASN1Object(
                 reason: "Unable to load hour, minutes, and seconds for GeneralizedTime"
             )
         }
@@ -41,14 +41,14 @@ extension ISO_8825.Time {
         }
 
         guard bytes.popFirst() == UInt8(ascii: "Z") else {
-            throw ISO_8824.Error.invalidASN1Object(reason: "Invalid time zone in GeneralizedTime")
+            throw ISO.`8824`.Error.invalidASN1Object(reason: "Invalid time zone in GeneralizedTime")
         }
 
         guard bytes.count == 0 else {
-            throw ISO_8824.Error.invalidASN1Object(reason: "Trailing bytes in GeneralizedTime")
+            throw ISO.`8824`.Error.invalidASN1Object(reason: "Trailing bytes in GeneralizedTime")
         }
 
-        return try ISO_8824.GeneralizedTime(
+        return try ISO.`8824`.GeneralizedTime(
             year: rawYear,
             month: rawMonth,
             day: rawDay,
@@ -62,14 +62,14 @@ extension ISO_8825.Time {
     @inlinable
     static func utcTimeFromBytes(
         _ bytes: ArraySlice<UInt8>
-    ) throws(ISO_8824.Error) -> ISO_8824.UTCTime {
+    ) throws(ISO.`8824`.Error) -> ISO.`8824`.UTCTime {
         var bytes = bytes
 
         guard let rawYear = bytes._readTwoDigitDecimalInteger(),
             let rawMonth = bytes._readTwoDigitDecimalInteger(),
             let rawDay = bytes._readTwoDigitDecimalInteger()
         else {
-            throw ISO_8824.Error.invalidASN1Object(
+            throw ISO.`8824`.Error.invalidASN1Object(
                 reason: "Unable to load year, month, and day for UTCTime"
             )
         }
@@ -78,22 +78,22 @@ extension ISO_8825.Time {
             let rawMinutes = bytes._readTwoDigitDecimalInteger(),
             let rawSeconds = bytes._readTwoDigitDecimalInteger()
         else {
-            throw ISO_8824.Error.invalidASN1Object(
+            throw ISO.`8824`.Error.invalidASN1Object(
                 reason: "Unable to load hour, minutes, and seconds for UTCTime"
             )
         }
 
         guard bytes.popFirst() == UInt8(ascii: "Z") else {
-            throw ISO_8824.Error.invalidASN1Object(reason: "Invalid time zone in UTCTime")
+            throw ISO.`8824`.Error.invalidASN1Object(reason: "Invalid time zone in UTCTime")
         }
 
         guard bytes.count == 0 else {
-            throw ISO_8824.Error.invalidASN1Object(reason: "Trailing bytes in UTCTime")
+            throw ISO.`8824`.Error.invalidASN1Object(reason: "Trailing bytes in UTCTime")
         }
 
         let actualYear = rawYear < 50 ? rawYear &+ 2000 : rawYear &+ 1900
 
-        return try ISO_8824.UTCTime(
+        return try ISO.`8824`.UTCTime(
             year: actualYear,
             month: rawMonth,
             day: rawDay,
@@ -134,17 +134,17 @@ extension ArraySlice where Element == UInt8 {
     }
 
     @inlinable
-    package mutating func _readRawFractionalSeconds() throws(ISO_8824.Error) -> ArraySlice<UInt8> {
+    package mutating func _readRawFractionalSeconds() throws(ISO.`8824`.Error) -> ArraySlice<UInt8> {
         guard
             let nonDecimalASCIIIndex = self.firstIndex(where: { Int(fromDecimalASCII: $0) == nil })
         else {
-            throw ISO_8824.Error.invalidASN1Object(
+            throw ISO.`8824`.Error.invalidASN1Object(
                 reason: "Invalid fractional seconds"
             )
         }
 
         if nonDecimalASCIIIndex == self.startIndex {
-            throw ISO_8824.Error.invalidASN1Object(
+            throw ISO.`8824`.Error.invalidASN1Object(
                 reason: "Invalid fractional seconds"
             )
         }
@@ -157,7 +157,7 @@ extension ArraySlice where Element == UInt8 {
 
 extension Array where Element == UInt8 {
     @inlinable
-    package mutating func append(_ generalizedTime: ISO_8824.GeneralizedTime) {
+    package mutating func append(_ generalizedTime: ISO.`8824`.GeneralizedTime) {
         self._appendFourDigitDecimal(generalizedTime.year)
         self._appendTwoDigitDecimal(generalizedTime.month)
         self._appendTwoDigitDecimal(generalizedTime.day)
@@ -174,7 +174,7 @@ extension Array where Element == UInt8 {
     }
 
     @inlinable
-    package mutating func append(_ utcTime: ISO_8824.UTCTime) {
+    package mutating func append(_ utcTime: ISO.`8824`.UTCTime) {
         precondition((1950..<2050).contains(utcTime.year))
         if utcTime.year >= 2000 {
             self._appendTwoDigitDecimal(utcTime.year &- 2000)

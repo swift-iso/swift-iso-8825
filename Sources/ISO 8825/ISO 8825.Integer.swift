@@ -1,55 +1,55 @@
 public import ISO_8824
 
-extension ISO_8825 {
+extension ISO.`8825` {
 
     public enum Integer {}
 }
 
 @available(*, unavailable)
-extension ISO_8825.Integer: Sendable {}
+extension ISO.`8825`.Integer: Sendable {}
 
-extension ISO_8825.Integer {
+extension ISO.`8825`.Integer {
 
-    public protocol Representable: ISO_8824.Integer.Representable, ISO_8825.DER.ImplicitlyTaggable,
-        ISO_8825.BER.ImplicitlyTaggable
+    public protocol Representable: ISO.`8824`.Integer.Representable, ISO.`8825`.DER.ImplicitlyTaggable,
+        ISO.`8825`.BER.ImplicitlyTaggable
     {
 
-        init(derIntegerBytes: ArraySlice<UInt8>) throws(ISO_8824.Error)
+        init(derIntegerBytes: ArraySlice<UInt8>) throws(ISO.`8824`.Error)
 
-        init(berIntegerBytes: ArraySlice<UInt8>) throws(ISO_8824.Error)
+        init(berIntegerBytes: ArraySlice<UInt8>) throws(ISO.`8824`.Error)
     }
 }
 
-extension ISO_8825.Integer.Representable {
+extension ISO.`8825`.Integer.Representable {
     @inlinable
-    public static var defaultIdentifier: ISO_8824.Identifier {
+    public static var defaultIdentifier: ISO.`8824`.Identifier {
         .integer
     }
 
     @inlinable
     public init(
-        derEncoded node: ISO_8825.Node,
-        withIdentifier identifier: ISO_8824.Identifier
-    ) throws(ISO_8824.Error) {
+        derEncoded node: ISO.`8825`.Node,
+        withIdentifier identifier: ISO.`8824`.Identifier
+    ) throws(ISO.`8824`.Error) {
         guard node.identifier == identifier else {
-            throw ISO_8824.Error.unexpectedFieldType(node.identifier)
+            throw ISO.`8824`.Error.unexpectedFieldType(node.identifier)
         }
 
         guard case .primitive(var dataBytes) = node.content else {
-            throw ISO_8824.Error.invalidASN1Object(
+            throw ISO.`8824`.Error.invalidASN1Object(
                 reason: "INTEGER encoded with constructed encoding"
             )
         }
 
         guard dataBytes.count > 0 else {
-            throw ISO_8824.Error.invalidASN1IntegerEncoding(
+            throw ISO.`8824`.Error.invalidASN1IntegerEncoding(
                 reason: "INTEGER encoded with zero bytes"
             )
         }
 
         if let first = dataBytes.first, let second = dataBytes.dropFirst().first {
             if (first == 0xFF) && second._topBitSet || (first == 0x00) && !second._topBitSet {
-                throw ISO_8824.Error.invalidASN1IntegerEncoding(
+                throw ISO.`8824`.Error.invalidASN1IntegerEncoding(
                     reason: "INTEGER not encoded in fewest number of octets"
                 )
             }
@@ -59,7 +59,7 @@ extension ISO_8825.Integer.Representable {
             if first == 0x00 {
                 dataBytes = dataBytes.dropFirst()
             } else if first & 0x80 == 0x80 {
-                throw ISO_8824.Error.invalidASN1IntegerEncoding(
+                throw ISO.`8824`.Error.invalidASN1IntegerEncoding(
                     reason: "INTEGER encoded with top bit set!"
                 )
             }
@@ -70,21 +70,21 @@ extension ISO_8825.Integer.Representable {
 
     @inlinable
     public init(
-        berEncoded node: ISO_8825.Node,
-        withIdentifier identifier: ISO_8824.Identifier
-    ) throws(ISO_8824.Error) {
+        berEncoded node: ISO.`8825`.Node,
+        withIdentifier identifier: ISO.`8824`.Identifier
+    ) throws(ISO.`8824`.Error) {
         guard node.identifier == identifier else {
-            throw ISO_8824.Error.unexpectedFieldType(node.identifier)
+            throw ISO.`8824`.Error.unexpectedFieldType(node.identifier)
         }
 
         guard case .primitive(var dataBytes) = node.content else {
-            throw ISO_8824.Error.invalidASN1Object(
+            throw ISO.`8824`.Error.invalidASN1Object(
                 reason: "INTEGER encoded with constructed encoding"
             )
         }
 
         guard dataBytes.count > 0 else {
-            throw ISO_8824.Error.invalidASN1IntegerEncoding(
+            throw ISO.`8824`.Error.invalidASN1IntegerEncoding(
                 reason: "INTEGER encoded with zero bytes"
             )
         }
@@ -93,7 +93,7 @@ extension ISO_8825.Integer.Representable {
             if first == 0x00 {
                 dataBytes = dataBytes.dropFirst()
             } else if first & 0x80 == 0x80 {
-                throw ISO_8824.Error.invalidASN1IntegerEncoding(
+                throw ISO.`8824`.Error.invalidASN1IntegerEncoding(
                     reason: "INTEGER encoded with top bit set!"
                 )
             }
@@ -104,9 +104,9 @@ extension ISO_8825.Integer.Representable {
 
     @inlinable
     public func serialize(
-        into coder: inout ISO_8825.DER.Serializer,
-        withIdentifier identifier: ISO_8824.Identifier
-    ) throws(ISO_8824.Error) {
+        into coder: inout ISO.`8825`.DER.Serializer,
+        withIdentifier identifier: ISO.`8824`.Identifier
+    ) throws(ISO.`8824`.Error) {
         coder.appendPrimitiveNode(identifier: identifier) { bytes in
             self.withBigEndianIntegerBytes { integerBytes in
 
@@ -127,9 +127,9 @@ extension ISO_8825.Integer.Representable {
     }
 }
 
-extension ISO_8825.Integer.Representable where Self: FixedWidthInteger {
+extension ISO.`8825`.Integer.Representable where Self: FixedWidthInteger {
     @inlinable
-    public init(derIntegerBytes bytes: ArraySlice<UInt8>) throws(ISO_8824.Error) {
+    public init(derIntegerBytes bytes: ArraySlice<UInt8>) throws(ISO.`8824`.Error) {
 
         self = try Self(bigEndianBytes: bytes)
 
@@ -145,31 +145,31 @@ extension ISO_8825.Integer.Representable where Self: FixedWidthInteger {
     }
 
     @inlinable
-    public init(berIntegerBytes bytes: ArraySlice<UInt8>) throws(ISO_8824.Error) {
+    public init(berIntegerBytes bytes: ArraySlice<UInt8>) throws(ISO.`8824`.Error) {
         self = try .init(derIntegerBytes: bytes)
     }
 
 }
 
-extension Int8: ISO_8825.Integer.Representable {}
+extension Int8: ISO.`8825`.Integer.Representable {}
 
-extension UInt8: ISO_8825.Integer.Representable {}
+extension UInt8: ISO.`8825`.Integer.Representable {}
 
-extension Int16: ISO_8825.Integer.Representable {}
+extension Int16: ISO.`8825`.Integer.Representable {}
 
-extension UInt16: ISO_8825.Integer.Representable {}
+extension UInt16: ISO.`8825`.Integer.Representable {}
 
-extension Int32: ISO_8825.Integer.Representable {}
+extension Int32: ISO.`8825`.Integer.Representable {}
 
-extension UInt32: ISO_8825.Integer.Representable {}
+extension UInt32: ISO.`8825`.Integer.Representable {}
 
-extension Int64: ISO_8825.Integer.Representable {}
+extension Int64: ISO.`8825`.Integer.Representable {}
 
-extension UInt64: ISO_8825.Integer.Representable {}
+extension UInt64: ISO.`8825`.Integer.Representable {}
 
-extension Int: ISO_8825.Integer.Representable {}
+extension Int: ISO.`8825`.Integer.Representable {}
 
-extension UInt: ISO_8825.Integer.Representable {}
+extension UInt: ISO.`8825`.Integer.Representable {}
 
 extension RandomAccessCollection where Element == UInt8 {
     @inlinable

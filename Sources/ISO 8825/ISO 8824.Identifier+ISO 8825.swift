@@ -1,6 +1,6 @@
 public import ISO_8824
 
-extension ISO_8824.Identifier {
+extension ISO.`8824`.Identifier {
 
     @inlinable
     package var _shortForm: UInt8? {
@@ -13,7 +13,7 @@ extension ISO_8824.Identifier {
     }
 
     @inlinable
-    package func _precedesInCanonicalOrder(_ other: ISO_8824.Identifier) -> Bool {
+    package func _precedesInCanonicalOrder(_ other: ISO.`8824`.Identifier) -> Bool {
         let classOrder = self.tagClass._topByteFlags
         let otherClassOrder = other.tagClass._topByteFlags
         guard classOrder == otherClassOrder else {
@@ -27,12 +27,12 @@ extension ISO_8824.Identifier {
         precondition(shortIdentifier & 0x1F != 0x1F)
         self.init(
             tagWithNumber: UInt(shortIdentifier & 0x1f),
-            tagClass: ISO_8824.Identifier.Class(topByteInWireFormat: shortIdentifier)
+            tagClass: ISO.`8824`.Identifier.Class(topByteInWireFormat: shortIdentifier)
         )
     }
 }
 
-extension ISO_8824.Identifier.Class {
+extension ISO.`8824`.Identifier.Class {
 
     @inlinable
     package init(topByteInWireFormat topByte: UInt8) {
@@ -75,7 +75,7 @@ extension ISO_8824.Identifier.Class {
 extension Array where Element == UInt8 {
 
     @inlinable
-    package mutating func writeIdentifier(_ identifier: ISO_8824.Identifier, constructed: Bool) {
+    package mutating func writeIdentifier(_ identifier: ISO.`8824`.Identifier, constructed: Bool) {
         if var shortForm = identifier._shortForm {
             if constructed {
                 shortForm |= 0x20

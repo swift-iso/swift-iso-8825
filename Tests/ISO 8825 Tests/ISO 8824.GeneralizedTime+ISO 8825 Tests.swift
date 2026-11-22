@@ -3,18 +3,18 @@ import Testing
 
 @testable import ISO_8825
 
-enum `ISO_8824.GeneralizedTime Tests` {}
+enum `ISO.8824.GeneralizedTime Tests` {}
 
-extension `ISO_8824.GeneralizedTime Tests` {
+extension `ISO.8824.GeneralizedTime Tests` {
     @Suite
     struct Test {}
 }
 
-extension `ISO_8824.GeneralizedTime Tests`.Test {
+extension `ISO.8824.GeneralizedTime Tests`.Test {
     private func assertRoundTrips<
-        ASN1Object: ISO_8825.DER.Parseable & ISO_8825.DER.Serializable & Equatable
-    >(_ value: ASN1Object) throws(ISO_8824.Error) {
-        var serializer = ISO_8825.DER.Serializer()
+        ASN1Object: ISO.`8825`.DER.Parseable & ISO.`8825`.DER.Serializable & Equatable
+    >(_ value: ASN1Object) throws(ISO.`8824`.Error) {
+        var serializer = ISO.`8825`.DER.Serializer()
         try serializer.serialize(value)
         let parsed = try ASN1Object(derEncoded: serializer.serializedBytes)
         #expect(parsed == value)
@@ -23,7 +23,7 @@ extension `ISO_8824.GeneralizedTime Tests`.Test {
     @Test
     func `simple generalized time test vectors`() throws {
 
-        let vectors: [(String, ISO_8824.GeneralizedTime?)] = [
+        let vectors: [(String, ISO.`8824`.GeneralizedTime?)] = [
 
             (
                 "19920521000000Z",
@@ -555,13 +555,13 @@ extension `ISO_8824.GeneralizedTime Tests`.Test {
 
         for (stringRepresentation, expectedResult) in vectors {
             var serialized = [UInt8]()
-            serialized.writeIdentifier(ISO_8824.Identifier.generalizedTime, constructed: false)
+            serialized.writeIdentifier(ISO.`8824`.Identifier.generalizedTime, constructed: false)
             serialized.append(UInt8(stringRepresentation.utf8.count))
             serialized.append(contentsOf: stringRepresentation.utf8)
 
-            let result: ISO_8824.GeneralizedTime?
-            do throws(ISO_8824.Error) {
-                result = try ISO_8824.GeneralizedTime(derEncoded: serialized)
+            let result: ISO.`8824`.GeneralizedTime?
+            do throws(ISO.`8824`.Error) {
+                result = try ISO.`8824`.GeneralizedTime(derEncoded: serialized)
             } catch { result = nil }
             #expect(result == expectedResult)
 
@@ -575,22 +575,22 @@ extension `ISO_8824.GeneralizedTime Tests`.Test {
     func `truncated representations rejected`() throws {
         func mustNotDeserialize(_ stringRepresentation: Substring) {
             var serialized = [UInt8]()
-            serialized.writeIdentifier(ISO_8824.Identifier.generalizedTime, constructed: false)
+            serialized.writeIdentifier(ISO.`8824`.Identifier.generalizedTime, constructed: false)
             serialized.append(UInt8(stringRepresentation.utf8.count))
             serialized.append(contentsOf: stringRepresentation.utf8)
 
-            #expect(throws: ISO_8824.Error.self) {
-                try ISO_8824.GeneralizedTime(derEncoded: serialized)
+            #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8824`.GeneralizedTime(derEncoded: serialized)
             }
         }
 
         func deserializes(_ stringRepresentation: Substring) {
             var serialized = [UInt8]()
-            serialized.writeIdentifier(ISO_8824.Identifier.generalizedTime, constructed: false)
+            serialized.writeIdentifier(ISO.`8824`.Identifier.generalizedTime, constructed: false)
             serialized.append(UInt8(stringRepresentation.utf8.count))
             serialized.append(contentsOf: stringRepresentation.utf8)
 
-            #expect(throws: Never.self) { try ISO_8824.GeneralizedTime(derEncoded: serialized) }
+            #expect(throws: Never.self) { try ISO.`8824`.GeneralizedTime(derEncoded: serialized) }
         }
 
         let string = Substring("19851106210627.14159Z")
@@ -612,12 +612,12 @@ extension `ISO_8824.GeneralizedTime Tests`.Test {
         let rawValue = "19920521000000Z".utf8
         var invalidBytes = [UInt8]()
 
-        invalidBytes.writeIdentifier(ISO_8824.Identifier.integer, constructed: false)
+        invalidBytes.writeIdentifier(ISO.`8824`.Identifier.integer, constructed: false)
         invalidBytes.append(UInt8(rawValue.count))
         invalidBytes.append(contentsOf: rawValue)
 
-        #expect(throws: ISO_8824.Error.self) {
-            try ISO_8824.GeneralizedTime(derEncoded: invalidBytes)
+        #expect(throws: ISO.`8824`.Error.self) {
+            try ISO.`8824`.GeneralizedTime(derEncoded: invalidBytes)
         }
     }
 }

@@ -4,77 +4,77 @@ import Testing
 @testable import ISO_8825
 
 private func assertRoundTrips<
-    ASN1Object: ISO_8825.DER.Parseable & ISO_8825.DER.Serializable & Equatable
->(_ value: ASN1Object) throws(ISO_8824.Error) {
-    var serializer = ISO_8825.DER.Serializer()
+    ASN1Object: ISO.`8825`.DER.Parseable & ISO.`8825`.DER.Serializable & Equatable
+>(_ value: ASN1Object) throws(ISO.`8824`.Error) {
+    var serializer = ISO.`8825`.DER.Serializer()
     try serializer.serialize(value)
     let parsed = try ASN1Object(derEncoded: serializer.serializedBytes)
     #expect(parsed == value)
 }
 
-enum `ISO_8824.UTF8String Tests` {}
+enum `ISO.8824.UTF8String Tests` {}
 
-extension `ISO_8824.UTF8String Tests` {
+extension `ISO.8824.UTF8String Tests` {
     @Suite
     struct Test {}
 }
 
-extension `ISO_8824.UTF8String Tests`.Test {
+extension `ISO.8824.UTF8String Tests`.Test {
     @Test
     func `encodes to the DER byte vector`() throws {
-        var serializer = ISO_8825.DER.Serializer()
-        let originalString = try ISO_8824.UTF8String(contentBytes: [1, 2, 3, 4])
+        var serializer = ISO.`8825`.DER.Serializer()
+        let originalString = try ISO.`8824`.UTF8String(contentBytes: [1, 2, 3, 4])
         try serializer.serialize(originalString)
         #expect(serializer.serializedBytes == [12, 4, 1, 2, 3, 4])
     }
 
     @Test
     func `round-trips through the DER serializer`() throws {
-        try assertRoundTrips(ISO_8824.UTF8String(contentBytes: [1, 2, 3, 4]))
+        try assertRoundTrips(ISO.`8824`.UTF8String(contentBytes: [1, 2, 3, 4]))
     }
 }
 
-enum `ISO_8824.TeletexString Tests` {}
+enum `ISO.8824.TeletexString Tests` {}
 
-extension `ISO_8824.TeletexString Tests` {
+extension `ISO.8824.TeletexString Tests` {
     @Suite
     struct Test {}
 }
 
-extension `ISO_8824.TeletexString Tests`.Test {
+extension `ISO.8824.TeletexString Tests`.Test {
     @Test
     func `encodes to the DER byte vector`() throws {
-        var serializer = ISO_8825.DER.Serializer()
-        let originalString = ISO_8824.TeletexString(contentBytes: [1, 2, 3, 4])
+        var serializer = ISO.`8825`.DER.Serializer()
+        let originalString = ISO.`8824`.TeletexString(contentBytes: [1, 2, 3, 4])
         try serializer.serialize(originalString)
         #expect(serializer.serializedBytes == [20, 4, 1, 2, 3, 4])
     }
 
     @Test
     func `round-trips through the DER serializer`() throws {
-        try assertRoundTrips(ISO_8824.TeletexString(contentBytes: [1, 2, 3, 4]))
+        try assertRoundTrips(ISO.`8824`.TeletexString(contentBytes: [1, 2, 3, 4]))
     }
 }
 
-enum `ISO_8824.PrintableString Tests` {}
+enum `ISO.8824.PrintableString Tests` {}
 
-extension `ISO_8824.PrintableString Tests` {
+extension `ISO.8824.PrintableString Tests` {
     @Suite
     struct Test {}
 }
 
-extension `ISO_8824.PrintableString Tests`.Test {
+extension `ISO.8824.PrintableString Tests`.Test {
     @Test
     func `encodes to the DER byte vector`() throws {
-        var serializer = ISO_8825.DER.Serializer()
-        let originalString = try ISO_8824.PrintableString(contentBytes: [0x54, 0x65, 0x73, 0x74])
+        var serializer = ISO.`8825`.DER.Serializer()
+        let originalString = try ISO.`8824`.PrintableString(contentBytes: [0x54, 0x65, 0x73, 0x74])
         try serializer.serialize(originalString)
         #expect(serializer.serializedBytes == [19, 4, 0x54, 0x65, 0x73, 0x74])
     }
 
     @Test
     func `round-trips through the DER serializer`() throws {
-        try assertRoundTrips(try ISO_8824.PrintableString(contentBytes: [0x54, 0x65, 0x73, 0x74]))
+        try assertRoundTrips(try ISO.`8824`.PrintableString(contentBytes: [0x54, 0x65, 0x73, 0x74]))
     }
 
     @Test
@@ -102,38 +102,38 @@ extension `ISO_8824.PrintableString Tests`.Test {
         let validBytes = allBytes.filter { !invalidBytes.contains($0) }
 
         for byte in invalidBytes {
-            #expect(throws: ISO_8824.Error.self) {
-                try ISO_8824.PrintableString(derEncoded: [0x13, 1, byte])
+            #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8824`.PrintableString(derEncoded: [0x13, 1, byte])
             }
         }
 
         for byte in validBytes {
             #expect(throws: Never.self) {
-                try ISO_8824.PrintableString(derEncoded: [0x13, 1, byte])
+                try ISO.`8824`.PrintableString(derEncoded: [0x13, 1, byte])
             }
         }
     }
 }
 
-enum `ISO_8824.VisibleString Tests` {}
+enum `ISO.8824.VisibleString Tests` {}
 
-extension `ISO_8824.VisibleString Tests` {
+extension `ISO.8824.VisibleString Tests` {
     @Suite
     struct Test {}
 }
 
-extension `ISO_8824.VisibleString Tests`.Test {
+extension `ISO.8824.VisibleString Tests`.Test {
     @Test
     func `encodes to the DER byte vector`() throws {
-        var serializer = ISO_8825.DER.Serializer()
-        let originalString = try ISO_8824.VisibleString(contentBytes: [0x20, 0x30, 0x7a, 0x7e])
+        var serializer = ISO.`8825`.DER.Serializer()
+        let originalString = try ISO.`8824`.VisibleString(contentBytes: [0x20, 0x30, 0x7a, 0x7e])
         try serializer.serialize(originalString)
         #expect(serializer.serializedBytes == [26, 4, 0x20, 0x30, 0x7a, 0x7e])
     }
 
     @Test
     func `round-trips through the DER serializer`() throws {
-        try assertRoundTrips(try ISO_8824.VisibleString(contentBytes: [0x20, 0x30, 0x7a, 0x7e]))
+        try assertRoundTrips(try ISO.`8824`.VisibleString(contentBytes: [0x20, 0x30, 0x7a, 0x7e]))
     }
 
     @Test
@@ -143,83 +143,83 @@ extension `ISO_8824.VisibleString Tests`.Test {
         let validBytes = allBytes.filter { !invalidBytes.contains($0) }
 
         for byte in invalidBytes {
-            #expect(throws: ISO_8824.Error.self) {
-                try ISO_8824.VisibleString(derEncoded: [0x1a, 1, byte])
+            #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8824`.VisibleString(derEncoded: [0x1a, 1, byte])
             }
         }
 
         for byte in validBytes {
-            #expect(throws: Never.self) { try ISO_8824.VisibleString(derEncoded: [0x1a, 1, byte]) }
+            #expect(throws: Never.self) { try ISO.`8824`.VisibleString(derEncoded: [0x1a, 1, byte]) }
         }
     }
 }
 
-enum `ISO_8824.IA5String Tests` {}
+enum `ISO.8824.IA5String Tests` {}
 
-extension `ISO_8824.IA5String Tests` {
+extension `ISO.8824.IA5String Tests` {
     @Suite
     struct Test {}
 }
 
-extension `ISO_8824.IA5String Tests`.Test {
+extension `ISO.8824.IA5String Tests`.Test {
     @Test
     func `rejects invalid characters on the DER parse leg`() {
         let invalidBytes = (UInt8(128)...(UInt8.max))
         let validBytes = (UInt8(0)..<UInt8(128))
 
         for byte in invalidBytes {
-            #expect(throws: ISO_8824.Error.self) {
-                try ISO_8824.IA5String(derEncoded: [0x16, 1, byte])
+            #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8824`.IA5String(derEncoded: [0x16, 1, byte])
             }
         }
 
         for byte in validBytes {
-            #expect(throws: Never.self) { try ISO_8824.IA5String(derEncoded: [0x16, 1, byte]) }
+            #expect(throws: Never.self) { try ISO.`8824`.IA5String(derEncoded: [0x16, 1, byte]) }
         }
     }
 }
 
-enum `ISO_8824.UniversalString Tests` {}
+enum `ISO.8824.UniversalString Tests` {}
 
-extension `ISO_8824.UniversalString Tests` {
+extension `ISO.8824.UniversalString Tests` {
     @Suite
     struct Test {}
 }
 
-extension `ISO_8824.UniversalString Tests`.Test {
+extension `ISO.8824.UniversalString Tests`.Test {
     @Test
     func `encodes to the DER byte vector`() throws {
-        var serializer = ISO_8825.DER.Serializer()
-        let originalString = ISO_8824.UniversalString(contentBytes: [1, 2, 3, 4])
+        var serializer = ISO.`8825`.DER.Serializer()
+        let originalString = ISO.`8824`.UniversalString(contentBytes: [1, 2, 3, 4])
         try serializer.serialize(originalString)
         #expect(serializer.serializedBytes == [28, 4, 1, 2, 3, 4])
     }
 
     @Test
     func `round-trips through the DER serializer`() throws {
-        try assertRoundTrips(ISO_8824.UniversalString(contentBytes: [1, 2, 3, 4]))
+        try assertRoundTrips(ISO.`8824`.UniversalString(contentBytes: [1, 2, 3, 4]))
     }
 }
 
-enum `ISO_8824.BMPString Tests` {}
+enum `ISO.8824.BMPString Tests` {}
 
-extension `ISO_8824.BMPString Tests` {
+extension `ISO.8824.BMPString Tests` {
     @Suite
     struct Test {}
 }
 
-extension `ISO_8824.BMPString Tests`.Test {
+extension `ISO.8824.BMPString Tests`.Test {
     @Test
     func `encodes to the DER byte vector`() throws {
-        var serializer = ISO_8825.DER.Serializer()
-        let originalString = ISO_8824.BMPString(contentBytes: [1, 2, 3, 4])
+        var serializer = ISO.`8825`.DER.Serializer()
+        let originalString = ISO.`8824`.BMPString(contentBytes: [1, 2, 3, 4])
         try serializer.serialize(originalString)
         #expect(serializer.serializedBytes == [30, 4, 1, 2, 3, 4])
     }
 
     @Test
     func `round-trips through the DER serializer`() throws {
-        try assertRoundTrips(ISO_8824.BMPString(contentBytes: [1, 2, 3, 4]))
+        try assertRoundTrips(ISO.`8824`.BMPString(contentBytes: [1, 2, 3, 4]))
     }
 
     @Test
@@ -242,9 +242,9 @@ extension `ISO_8824.BMPString Tests`.Test {
         ]
 
         for testCase in testCases {
-            let string = ISO_8824.BMPString(stringLiteral: testCase.literal)
+            let string = ISO.`8824`.BMPString(stringLiteral: testCase.literal)
 
-            var serializer = ISO_8825.DER.Serializer()
+            var serializer = ISO.`8825`.DER.Serializer()
             try serializer.serialize(string)
             #expect(serializer.serializedBytes == testCase.asn1)
         }

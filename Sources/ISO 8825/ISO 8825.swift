@@ -1,4 +1,7 @@
-public enum ISO_8825 {}
+public import ISO
+extension ISO {
+    public enum `8825` {}
+}
 
 @available(*, unavailable)
-extension ISO_8825: Sendable {}
+extension ISO.`8825`: Sendable {}

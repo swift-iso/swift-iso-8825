@@ -3,14 +3,14 @@ import Testing
 
 @testable import ISO_8825
 
-enum `ISO_8825.Integer Tests` {}
+enum `ISO.8825.Integer Tests` {}
 
-extension `ISO_8825.Integer Tests` {
+extension `ISO.8825.Integer Tests` {
     @Suite
     struct Test {}
 }
 
-extension `ISO_8825.Integer Tests`.Test {
+extension `ISO.8825.Integer Tests`.Test {
     @Test
     func `ArraySlice round-trips as INTEGER content bytes`() throws {
 
@@ -18,11 +18,11 @@ extension `ISO_8825.Integer Tests`.Test {
             0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A,
         ]
 
-        var serializer = ISO_8825.DER.Serializer()
+        var serializer = ISO.`8825`.DER.Serializer()
         try serializer.serialize(integerBytes)
         #expect(serializer.serializedBytes == [0x02, 0x0A] + integerBytes)
 
-        let parsed = try ISO_8825.DER.parse(serializer.serializedBytes)
+        let parsed = try ISO.`8825`.DER.parse(serializer.serializedBytes)
         let roundTripped = try ArraySlice<UInt8>(derEncoded: parsed)
         #expect(roundTripped == integerBytes)
     }
@@ -34,11 +34,11 @@ extension `ISO_8825.Integer Tests`.Test {
             0xFF, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A,
         ]
 
-        var serializer = ISO_8825.DER.Serializer()
+        var serializer = ISO.`8825`.DER.Serializer()
         try serializer.serialize(integerBytes)
         #expect(serializer.serializedBytes == [0x02, 0x0B, 0x00] + integerBytes)
 
-        let parsed = try ISO_8825.DER.parse(serializer.serializedBytes)
+        let parsed = try ISO.`8825`.DER.parse(serializer.serializedBytes)
         let roundTripped = try ArraySlice<UInt8>(derEncoded: parsed)
         #expect(roundTripped == integerBytes)
     }

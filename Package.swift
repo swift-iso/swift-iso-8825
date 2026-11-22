@@ -15,6 +15,7 @@ let package = Package(
         .library(name: "ISO 8825", targets: ["ISO 8825"])
     ],
     dependencies: [
+        .package(url: "https://github.com/swift-iso/swift-iso.git", branch: "main"),
         .package(url: "https://github.com/swift-iso/swift-iso-8824.git", branch: "main"),
         .package(
             url: "https://github.com/swift-atoms/swift-byte.git",
@@ -29,6 +30,7 @@ let package = Package(
         .target(
             name: "ISO 8825",
             dependencies: [
+                .product(name: "ISO", package: "swift-iso"),
                 .product(name: "ISO 8824", package: "swift-iso-8824"),
                 .product(name: "Byte", package: "swift-byte"),
                 .product(

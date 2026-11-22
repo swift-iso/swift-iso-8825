@@ -1,30 +1,30 @@
 public import ISO_8824
 
-extension ISO_8824.GeneralizedTime: ISO_8825.DER.ImplicitlyTaggable, ISO_8825.BER.ImplicitlyTaggable {
+extension ISO.`8824`.GeneralizedTime: ISO.`8825`.DER.ImplicitlyTaggable, ISO.`8825`.BER.ImplicitlyTaggable {
     @inlinable
     public init(
-        derEncoded node: ISO_8825.Node,
-        withIdentifier identifier: ISO_8824.Identifier
-    ) throws(ISO_8824.Error) {
-        let content = try ISO_8824.OctetString(derEncoded: node, withIdentifier: identifier).bytes
-        self = try ISO_8825.Time.generalizedTimeFromBytes(content)
+        derEncoded node: ISO.`8825`.Node,
+        withIdentifier identifier: ISO.`8824`.Identifier
+    ) throws(ISO.`8824`.Error) {
+        let content = try ISO.`8824`.OctetString(derEncoded: node, withIdentifier: identifier).bytes
+        self = try ISO.`8825`.Time.generalizedTimeFromBytes(content)
     }
 
     @inlinable
     public init(
-        berEncoded node: ISO_8825.Node,
-        withIdentifier identifier: ISO_8824.Identifier
-    ) throws(ISO_8824.Error) {
+        berEncoded node: ISO.`8825`.Node,
+        withIdentifier identifier: ISO.`8824`.Identifier
+    ) throws(ISO.`8824`.Error) {
 
-        let content = try ISO_8824.OctetString(berEncoded: node, withIdentifier: identifier).bytes
-        self = try ISO_8825.Time.generalizedTimeFromBytes(content)
+        let content = try ISO.`8824`.OctetString(berEncoded: node, withIdentifier: identifier).bytes
+        self = try ISO.`8825`.Time.generalizedTimeFromBytes(content)
     }
 
     @inlinable
     public func serialize(
-        into coder: inout ISO_8825.DER.Serializer,
-        withIdentifier identifier: ISO_8824.Identifier
-    ) throws(ISO_8824.Error) {
+        into coder: inout ISO.`8825`.DER.Serializer,
+        withIdentifier identifier: ISO.`8824`.Identifier
+    ) throws(ISO.`8824`.Error) {
         coder.appendPrimitiveNode(identifier: identifier) { bytes in
             bytes.append(self)
         }

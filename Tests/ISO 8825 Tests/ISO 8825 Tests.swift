@@ -18,13 +18,13 @@ extension `ISO 8825 Tests` {
                 "BNmnTK3Ru2lH2R+e2nihRTNNXT55MQtfEnEW+GeqaDAYCbWJVbXfZcut1Eb+e2VtDXLNS4mQe1gE297L7vtXOx0="
             let expectedKeyBytes = Array(base64Decoding: encodedExpectedKeyBytes)
 
-            let result = try ISO_8825.DER.parse(decodedSPKI)
+            let result = try ISO.`8825`.DER.parse(decodedSPKI)
             let spki = try SubjectPublicKeyInfo(derEncoded: result)
 
             #expect(spki.algorithmIdentifier == .ecdsaP256)
             unsafe spki.key.withUnsafeBytes { #expect(unsafe Array($0) == expectedKeyBytes) }
 
-            var serializer = ISO_8825.DER.Serializer()
+            var serializer = ISO.`8825`.DER.Serializer()
             try serializer.serialize(spki)
             #expect(serializer.serializedBytes == decodedSPKI)
 
@@ -40,13 +40,13 @@ extension `ISO 8825 Tests` {
                 "BHAa9EzZoGoH9crHJBAP91yxsdmpoM3h4wwWURKoQiFQay4SIiEeM6yfHamnf2PsyNh7vEyFG680v3YhaRaBNGGCgU32DAgFLWlrjG9aGgXRc1rC32EksxfjjdcniQra6A=="
             let expectedKeyBytes = Array(base64Decoding: encodedExpectedKeyBytes)
 
-            let result = try ISO_8825.DER.parse(decodedSPKI)
+            let result = try ISO.`8825`.DER.parse(decodedSPKI)
             let spki = try SubjectPublicKeyInfo(derEncoded: result)
 
             #expect(spki.algorithmIdentifier == .ecdsaP384)
             unsafe spki.key.withUnsafeBytes { #expect(unsafe Array($0) == expectedKeyBytes) }
 
-            var serializer = ISO_8825.DER.Serializer()
+            var serializer = ISO.`8825`.DER.Serializer()
             try serializer.serialize(spki)
             #expect(serializer.serializedBytes == decodedSPKI)
         }
@@ -60,13 +60,13 @@ extension `ISO 8825 Tests` {
                 "BAFPEwllNGv01wqYPuJN5fuh9yDPvsk9MgNc4cV9LW1kd30/S4B4r8BHDAN2xCkgoK+a1o7g7nageqZzN2tHAa2scgFROpo7DYWp2Kq3R9FCO73AfVeLiHy7SHzQzKZQzSxsBDvSMcJ5XRLSYZwlLy3ed8/6ot6zfSHb3t099XdIuwuDww=="
             let expectedKeyBytes = Array(base64Decoding: encodedExpectedKeyBytes)
 
-            let result = try ISO_8825.DER.parse(decodedSPKI)
+            let result = try ISO.`8825`.DER.parse(decodedSPKI)
             let spki = try SubjectPublicKeyInfo(derEncoded: result)
 
             #expect(spki.algorithmIdentifier == .ecdsaP521)
             unsafe spki.key.withUnsafeBytes { #expect(unsafe Array($0) == expectedKeyBytes) }
 
-            var serializer = ISO_8825.DER.Serializer()
+            var serializer = ISO.`8825`.DER.Serializer()
             try serializer.serialize(spki)
             #expect(serializer.serializedBytes == decodedSPKI)
         }
@@ -83,14 +83,14 @@ extension `ISO 8825 Tests` {
                 "BNznnffF9IR5sx5ppoLX+awFRL9IyHh+tSutT+VMogqM5/n8/ppZgcsL5bolbxEYk/VmQnd7ZDz1sGyK/mtHZ8A="
             let publicKeyBytes = Array(base64Decoding: encodedPublicKeyBytes)
 
-            let result = try ISO_8825.DER.parse(decodedPrivateKey)
+            let result = try ISO.`8825`.DER.parse(decodedPrivateKey)
             let pkey = try SEC1PrivateKey(derEncoded: result)
 
             #expect(pkey.algorithm == .ecdsaP256)
             unsafe pkey.privateKey.withUnsafeBytes { #expect(unsafe Array($0) == privateKeyBytes) }
             unsafe pkey.publicKey!.withUnsafeBytes { #expect(unsafe Array($0) == publicKeyBytes) }
 
-            var serializer = ISO_8825.DER.Serializer()
+            var serializer = ISO.`8825`.DER.Serializer()
             try serializer.serialize(pkey)
             #expect(serializer.serializedBytes == decodedPrivateKey)
         }
@@ -108,14 +108,14 @@ extension `ISO 8825 Tests` {
                 "BDPQEGYzF46PlfBMvUbh+pNg7ZQCJitQyLGJEWUUpVjkjqMCCIRZ01ua17yjp0HKjQ2jlijIMd0brfvG+7MZpZ34hPkugEBVW/cCAvdqjd0DhpWGbpjPobr/ajdfsAf31w=="
             let publicKeyBytes = Array(base64Decoding: encodedPublicKeyBytes)
 
-            let result = try ISO_8825.DER.parse(decodedPrivateKey)
+            let result = try ISO.`8825`.DER.parse(decodedPrivateKey)
             let pkey = try SEC1PrivateKey(derEncoded: result)
 
             #expect(pkey.algorithm == .ecdsaP384)
             unsafe pkey.privateKey.withUnsafeBytes { #expect(unsafe Array($0) == privateKeyBytes) }
             unsafe pkey.publicKey!.withUnsafeBytes { #expect(unsafe Array($0) == publicKeyBytes) }
 
-            var serializer = ISO_8825.DER.Serializer()
+            var serializer = ISO.`8825`.DER.Serializer()
             try serializer.serialize(pkey)
             #expect(serializer.serializedBytes == decodedPrivateKey)
         }
@@ -133,14 +133,14 @@ extension `ISO 8825 Tests` {
                 "BAAzsbWlHXjMkaSQTBnBKcyPDy/x0nk+VlkYQJXkh+lPJSVEYLbrUZ1LdbfM9mGE7HpgyyELNRHy/BD1JdNnAVPemAC5VQjeGKbezrxz7D5iZNiZiQFVYtMBU3XSsuJrPWVSjBF7xIkOr06k2xg1qlOoXQ66EPHQlwEYJ3xATNKk8K2jlQ=="
             let publicKeyBytes = Array(base64Decoding: encodedPublicKeyBytes)
 
-            let result = try ISO_8825.DER.parse(decodedPrivateKey)
+            let result = try ISO.`8825`.DER.parse(decodedPrivateKey)
             let pkey = try SEC1PrivateKey(derEncoded: result)
 
             #expect(pkey.algorithm == .ecdsaP521)
             unsafe pkey.privateKey.withUnsafeBytes { #expect(unsafe Array($0) == privateKeyBytes) }
             unsafe pkey.publicKey!.withUnsafeBytes { #expect(unsafe Array($0) == publicKeyBytes) }
 
-            var serializer = ISO_8825.DER.Serializer()
+            var serializer = ISO.`8825`.DER.Serializer()
             try serializer.serialize(pkey)
             #expect(serializer.serializedBytes == decodedPrivateKey)
         }
@@ -157,7 +157,7 @@ extension `ISO 8825 Tests` {
                 "BMNcSPeO+IC3ODHhucxr/TzW/4Vduns7kPUq0pV2N75yR6MZUti5goTgul/mOid5+LrC2gJz+xYeVsuI1Xk8QH0="
             let publicKeyBytes = Array(base64Decoding: encodedPublicKeyBytes)
 
-            let result = try ISO_8825.DER.parse(decodedPrivateKey)
+            let result = try ISO.`8825`.DER.parse(decodedPrivateKey)
             let pkey = try PKCS8PrivateKey(derEncoded: result)
 
             #expect(pkey.algorithm == .ecdsaP256)
@@ -169,7 +169,7 @@ extension `ISO 8825 Tests` {
                 #expect(unsafe Array($0) == publicKeyBytes)
             }
 
-            var serializer = ISO_8825.DER.Serializer()
+            var serializer = ISO.`8825`.DER.Serializer()
             try serializer.serialize(pkey)
             #expect(serializer.serializedBytes == decodedPrivateKey)
         }
@@ -187,7 +187,7 @@ extension `ISO 8825 Tests` {
                 "BLnpHNeIs7li8UjSqH/5P0OE5d+Sbcr+MlJQCpX+E/QVSUhRHzbhwVV0wxADVLXTSYROzF1PRAOpQYCKcxNQFLKT3L6NHfcXD8DTrxlBGWpMJrROFLS/DEqEz8zi+Fh4MQ=="
             let publicKeyBytes = Array(base64Decoding: encodedPublicKeyBytes)
 
-            let result = try ISO_8825.DER.parse(decodedPrivateKey)
+            let result = try ISO.`8825`.DER.parse(decodedPrivateKey)
             let pkey = try PKCS8PrivateKey(derEncoded: result)
 
             #expect(pkey.algorithm == .ecdsaP384)
@@ -199,7 +199,7 @@ extension `ISO 8825 Tests` {
                 #expect(unsafe Array($0) == publicKeyBytes)
             }
 
-            var serializer = ISO_8825.DER.Serializer()
+            var serializer = ISO.`8825`.DER.Serializer()
             try serializer.serialize(pkey)
             #expect(serializer.serializedBytes == decodedPrivateKey)
         }
@@ -217,7 +217,7 @@ extension `ISO 8825 Tests` {
                 "BADrY6IBU4t8BjSIvDWA4VrLILdUOFemM2G8phpJWlGpEO8Qmk28w5pdLD2j3chBvg0xBBi2k9Ked9L43R4E3+gPCAA3CY8v01xlA6npJvdAK0/Md4mY+p65Ehua95jXnSwrpF66+Q/se2ODvZPhXGKBvttxrKyBr9htmkAUv9Sdah+dWQ=="
             let publicKeyBytes = Array(base64Decoding: encodedPublicKeyBytes)
 
-            let result = try ISO_8825.DER.parse(decodedPrivateKey)
+            let result = try ISO.`8825`.DER.parse(decodedPrivateKey)
             let pkey = try PKCS8PrivateKey(derEncoded: result)
 
             #expect(pkey.algorithm == .ecdsaP521)
@@ -229,7 +229,7 @@ extension `ISO 8825 Tests` {
                 #expect(unsafe Array($0) == publicKeyBytes)
             }
 
-            var serializer = ISO_8825.DER.Serializer()
+            var serializer = ISO.`8825`.DER.Serializer()
             try serializer.serialize(pkey)
             #expect(serializer.serializedBytes == decodedPrivateKey)
         }
@@ -243,8 +243,8 @@ extension `ISO 8825 Tests` {
             for index in decodedSPKI.indices {
                 let expectSuccessfulParse = index == decodedSPKI.endIndex
 
-                do throws(ISO_8824.Error) {
-                    _ = try ISO_8825.DER.parse(decodedSPKI[..<index])
+                do throws(ISO.`8824`.Error) {
+                    _ = try ISO.`8825`.DER.parse(decodedSPKI[..<index])
                     if !expectSuccessfulParse {
                         Issue.record("Unexpected successful parse with: \(decodedSPKI[...])")
                     }
@@ -260,34 +260,34 @@ extension `ISO 8825 Tests` {
 
             let base64Node = "CQUDMUUtMQ=="
             let decodedReal = Array(base64Decoding: base64Node)
-            let parsed = try ISO_8825.DER.parse(decodedReal)
+            let parsed = try ISO.`8825`.DER.parse(decodedReal)
 
             do {
-                let error = #expect(throws: ISO_8824.Error.self) {
-                    try ISO_8824.ObjectIdentifier(derEncoded: parsed)
+                let error = #expect(throws: ISO.`8824`.Error.self) {
+                    try ISO.`8824`.ObjectIdentifier(derEncoded: parsed)
                 }
                 #expect(error?.code == .unexpectedFieldType)
             }
             do {
-                let error = #expect(throws: ISO_8824.Error.self) {
-                    try ISO_8825.DER.sequence(parsed, identifier: .sequence, { _ in })
+                let error = #expect(throws: ISO.`8824`.Error.self) {
+                    try ISO.`8825`.DER.sequence(parsed, identifier: .sequence, { _ in })
                 }
                 #expect(error?.code == .unexpectedFieldType)
             }
             do {
-                let error = #expect(throws: ISO_8824.Error.self) {
-                    try ISO_8824.OctetString(derEncoded: parsed)
+                let error = #expect(throws: ISO.`8824`.Error.self) {
+                    try ISO.`8824`.OctetString(derEncoded: parsed)
                 }
                 #expect(error?.code == .unexpectedFieldType)
             }
             do {
-                let error = #expect(throws: ISO_8824.Error.self) {
-                    try ISO_8824.BitString(derEncoded: parsed)
+                let error = #expect(throws: ISO.`8824`.Error.self) {
+                    try ISO.`8824`.BitString(derEncoded: parsed)
                 }
                 #expect(error?.code == .unexpectedFieldType)
             }
             do {
-                let error = #expect(throws: ISO_8824.Error.self) {
+                let error = #expect(throws: ISO.`8824`.Error.self) {
                     try Int(derEncoded: parsed)
                 }
                 #expect(error?.code == .unexpectedFieldType)
@@ -298,8 +298,8 @@ extension `ISO 8825 Tests` {
 
             let base64Node = "CQUDMUUtMQkFAzFFLTE="
             let decodedReal = Array(base64Decoding: base64Node)
-            let error = #expect(throws: ISO_8824.Error.self) {
-                try ISO_8825.DER.parse(decodedReal)
+            let error = #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8825`.DER.parse(decodedReal)
             }
             #expect(error?.code == .invalidASN1Object)
         }
@@ -308,15 +308,15 @@ extension `ISO 8825 Tests` {
 
             let base64Node = "AgEBAA=="
             let decodedInteger = Array(base64Decoding: base64Node)
-            let error = #expect(throws: ISO_8824.Error.self) {
-                try ISO_8825.DER.parse(decodedInteger)
+            let error = #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8825`.DER.parse(decodedInteger)
             }
             #expect(error?.code == .invalidASN1Object)
         }
 
         @Test func `empty strings dont decode`() throws {
-            let error = #expect(throws: ISO_8824.Error.self) {
-                try ISO_8825.DER.parse([])
+            let error = #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8825`.DER.parse([])
             }
             #expect(error?.code == .truncatedASN1Field)
         }
@@ -325,10 +325,10 @@ extension `ISO 8825 Tests` {
 
             let base64Node = "vzcDAgEB"
             let decodedInteger = Array(base64Decoding: base64Node)
-            let result = try ISO_8825.DER.parse(decodedInteger)
+            let result = try ISO.`8825`.DER.parse(decodedInteger)
 
             #expect(
-                result.identifier == ISO_8824.Identifier(tagWithNumber: 55, tagClass: .contextSpecific)
+                result.identifier == ISO.`8824`.Identifier(tagWithNumber: 55, tagClass: .contextSpecific)
             )
         }
 
@@ -336,10 +336,10 @@ extension `ISO 8825 Tests` {
 
             let base64Node = "vx8DAgEB"
             let decodedInteger = Array(base64Decoding: base64Node)
-            let result = try ISO_8825.DER.parse(decodedInteger)
+            let result = try ISO.`8825`.DER.parse(decodedInteger)
 
             #expect(
-                result.identifier == ISO_8824.Identifier(tagWithNumber: 31, tagClass: .contextSpecific)
+                result.identifier == ISO.`8824`.Identifier(tagWithNumber: 31, tagClass: .contextSpecific)
             )
         }
 
@@ -347,8 +347,8 @@ extension `ISO 8825 Tests` {
 
             let base64Node = "vx4DAgEB"
             let decodedInteger = Array(base64Decoding: base64Node)
-            let error = #expect(throws: ISO_8824.Error.self) {
-                try ISO_8825.DER.parse(decodedInteger)
+            let error = #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8825`.DER.parse(decodedInteger)
             }
             #expect(error?.code == .invalidASN1Object)
         }
@@ -357,8 +357,8 @@ extension `ISO 8825 Tests` {
 
             let base64Node = "v4GAgICAgICAgAADAgEB"
             let decodedInteger = Array(base64Decoding: base64Node)
-            let error = #expect(throws: ISO_8824.Error.self) {
-                try ISO_8825.DER.parse(decodedInteger)
+            let error = #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8825`.DER.parse(decodedInteger)
             }
             #expect(error?.code == .invalidASN1Object)
         }
@@ -367,11 +367,11 @@ extension `ISO 8825 Tests` {
 
             let base64Node = "v///////////fwMCAQE="
             let decodedInteger = Array(base64Decoding: base64Node)
-            let result = try ISO_8825.DER.parse(decodedInteger)
+            let result = try ISO.`8825`.DER.parse(decodedInteger)
 
             #expect(
                 result.identifier
-                    == ISO_8824.Identifier(tagWithNumber: (1 << 63) - 1, tagClass: .contextSpecific)
+                    == ISO.`8824`.Identifier(tagWithNumber: (1 << 63) - 1, tagClass: .contextSpecific)
             )
         }
 
@@ -380,8 +380,8 @@ extension `ISO 8825 Tests` {
             let base64Node = "v4A3AwIBAQ=="
             let decodedInteger = Array(base64Decoding: base64Node)
 
-            let error = #expect(throws: ISO_8824.Error.self) {
-                try ISO_8825.DER.parse(decodedInteger)
+            let error = #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8825`.DER.parse(decodedInteger)
             }
             #expect(error?.code == .invalidASN1Object)
         }
@@ -390,13 +390,13 @@ extension `ISO 8825 Tests` {
 
             let base64Sequence = "MAwEBEFCQ0QEBEVGR0g="
             let decodedSequence = Array(base64Decoding: base64Sequence)
-            let parsed = try ISO_8825.DER.parse(decodedSequence)
+            let parsed = try ISO.`8825`.DER.parse(decodedSequence)
 
-            do throws(ISO_8824.Error) {
-                try ISO_8825.DER.sequence(parsed, identifier: .sequence) {
-                    nodes throws(ISO_8824.Error) in
+            do throws(ISO.`8824`.Error) {
+                try ISO.`8825`.DER.sequence(parsed, identifier: .sequence) {
+                    nodes throws(ISO.`8824`.Error) in
 
-                    _ = try ISO_8824.OctetString(derEncoded: &nodes)
+                    _ = try ISO.`8824`.OctetString(derEncoded: &nodes)
                 }
             } catch {
                 #expect(error.code == .invalidASN1Object)
@@ -404,21 +404,21 @@ extension `ISO 8825 Tests` {
         }
 
         @Test func `nodes error if there is insufficient data`() throws {
-            struct Stub: ISO_8825.DER.Parseable {
-                init(derEncoded node: ISO_8825.Node) throws(ISO_8824.Error) {
+            struct Stub: ISO.`8825`.DER.Parseable {
+                init(derEncoded node: ISO.`8825`.Node) throws(ISO.`8824`.Error) {
                     Issue.record("Must not be called")
                 }
             }
 
             let base64Sequence = "MAwEBEFCQ0QEBEVGR0g="
             let decodedSequence = Array(base64Decoding: base64Sequence)
-            let parsed = try ISO_8825.DER.parse(decodedSequence)
+            let parsed = try ISO.`8825`.DER.parse(decodedSequence)
 
-            do throws(ISO_8824.Error) {
-                try ISO_8825.DER.sequence(parsed, identifier: .sequence) {
-                    nodes throws(ISO_8824.Error) in
-                    _ = try ISO_8824.OctetString(derEncoded: &nodes)
-                    _ = try ISO_8824.OctetString(derEncoded: &nodes)
+            do throws(ISO.`8824`.Error) {
+                try ISO.`8825`.DER.sequence(parsed, identifier: .sequence) {
+                    nodes throws(ISO.`8824`.Error) in
+                    _ = try ISO.`8824`.OctetString(derEncoded: &nodes)
+                    _ = try ISO.`8824`.OctetString(derEncoded: &nodes)
                     _ = try Stub(derEncoded: &nodes)
                 }
             } catch {
@@ -428,8 +428,8 @@ extension `ISO 8825 Tests` {
 
         @Test func `rejects indefinite length form`() throws {
 
-            let error = #expect(throws: ISO_8824.Error.self) {
-                try ISO_8825.DER.parse([0xe7, 0x80])
+            let error = #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8825`.DER.parse([0xe7, 0x80])
             }
             #expect(error?.code == .unsupportedFieldLength)
         }
@@ -438,10 +438,10 @@ extension `ISO 8825 Tests` {
 
             let badBase64 = "BgJWhw=="
             let badNode = Array(base64Decoding: badBase64)
-            let parsed = try ISO_8825.DER.parse(badNode)
+            let parsed = try ISO.`8825`.DER.parse(badNode)
 
-            let error = #expect(throws: ISO_8824.Error.self) {
-                try ISO_8824.ObjectIdentifier(derEncoded: parsed)
+            let error = #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8824`.ObjectIdentifier(derEncoded: parsed)
             }
             #expect(error?.code == .invalidASN1Object)
         }
@@ -450,9 +450,9 @@ extension `ISO 8825 Tests` {
 
             let badBase64 = "AgkB//////////4="
             let badNode = Array(base64Decoding: badBase64)
-            let parsed = try ISO_8825.DER.parse(badNode)
+            let parsed = try ISO.`8825`.DER.parse(badNode)
 
-            let error = #expect(throws: ISO_8824.Error.self) {
+            let error = #expect(throws: ISO.`8824`.Error.self) {
                 try Int(derEncoded: parsed)
             }
             #expect(error?.code == .invalidASN1Object)
@@ -461,16 +461,16 @@ extension `ISO 8825 Tests` {
         @Test func `allow single component OI ds`() throws {
 
             let singleComponentOID: [UInt8] = [0x06, 0x01, 0x00]
-            let parsed = try ISO_8824.ObjectIdentifier(derEncoded: singleComponentOID)
+            let parsed = try ISO.`8824`.ObjectIdentifier(derEncoded: singleComponentOID)
             #expect(parsed == [0, 0])
         }
 
         @Test func `reject zero component OI ds`() throws {
 
             let zeroComponentOID: [UInt8] = [0x06, 0x00]
-            let parsed = try ISO_8825.DER.parse(zeroComponentOID)
-            let error = #expect(throws: ISO_8824.Error.self) {
-                try ISO_8824.ObjectIdentifier(derEncoded: parsed)
+            let parsed = try ISO.`8825`.DER.parse(zeroComponentOID)
+            let error = #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8824`.ObjectIdentifier(derEncoded: parsed)
             }
             #expect(error?.code == .invalidASN1Object)
         }
@@ -479,8 +479,8 @@ extension `ISO 8825 Tests` {
             for i in 1..<8 {
                 let lastByte = (UInt8.max << i)
                 let weirdBitString = [0x03, 0x02, UInt8(i), lastByte]
-                let parsed = try ISO_8825.DER.parse(weirdBitString)
-                let string = try ISO_8824.BitString(derEncoded: parsed)
+                let parsed = try ISO.`8825`.DER.parse(weirdBitString)
+                let string = try ISO.`8824`.BitString(derEncoded: parsed)
                 #expect(string.paddingBits == i)
                 #expect(string.bytes == [lastByte])
             }
@@ -489,9 +489,9 @@ extension `ISO 8825 Tests` {
         @Test func `bitstring with padding bits set to 1`() throws {
             for i in 1..<8 {
                 let weirdBitString = [0x03, 0x02, UInt8(i), 0xFF]
-                let parsed = try ISO_8825.DER.parse(weirdBitString)
-                let error = #expect(throws: ISO_8824.Error.self) {
-                    try ISO_8824.BitString(derEncoded: parsed)
+                let parsed = try ISO.`8825`.DER.parse(weirdBitString)
+                let error = #expect(throws: ISO.`8824`.Error.self) {
+                    try ISO.`8824`.BitString(derEncoded: parsed)
                 }
                 #expect(error?.code == .invalidASN1Object)
             }
@@ -500,9 +500,9 @@ extension `ISO 8825 Tests` {
         @Test func `bitstring with no content`() throws {
 
             let weirdBitString: [UInt8] = [0x03, 0x00]
-            let parsed = try ISO_8825.DER.parse(weirdBitString)
-            let error = #expect(throws: ISO_8824.Error.self) {
-                try ISO_8824.BitString(derEncoded: parsed)
+            let parsed = try ISO.`8825`.DER.parse(weirdBitString)
+            let error = #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8824`.BitString(derEncoded: parsed)
             }
             #expect(error?.code == .invalidASN1Object)
         }
@@ -510,15 +510,15 @@ extension `ISO 8825 Tests` {
         @Test func `empty bitstring`() throws {
 
             var bitString: [UInt8] = [0x03, 0x01, 0x00]
-            let parsed = try ISO_8825.DER.parse(bitString)
-            let bs = try ISO_8824.BitString(derEncoded: parsed)
+            let parsed = try ISO.`8825`.DER.parse(bitString)
+            let bs = try ISO.`8824`.BitString(derEncoded: parsed)
             #expect(bs.bytes == [])
 
             for i in 1..<8 {
                 bitString[2] = UInt8(i)
-                let parsed = try ISO_8825.DER.parse(bitString)
-                let error = #expect(throws: ISO_8824.Error.self) {
-                    try ISO_8824.BitString(derEncoded: parsed)
+                let parsed = try ISO.`8825`.DER.parse(bitString)
+                let error = #expect(throws: ISO.`8824`.Error.self) {
+                    try ISO.`8824`.BitString(derEncoded: parsed)
                 }
                 #expect(error?.code == .invalidASN1Object)
             }
@@ -527,8 +527,8 @@ extension `ISO 8825 Tests` {
         @Test func `integer zero requires a zero byte`() throws {
 
             let weirdZero: [UInt8] = [0x02, 0x00]
-            let parsed = try ISO_8825.DER.parse(weirdZero)
-            let error = #expect(throws: ISO_8824.Error.self) {
+            let parsed = try ISO.`8825`.DER.parse(weirdZero)
+            let error = #expect(throws: ISO.`8824`.Error.self) {
                 try Int(derEncoded: parsed)
             }
             #expect(error?.code == .invalidASN1IntegerEncoding)
@@ -537,8 +537,8 @@ extension `ISO 8825 Tests` {
         @Test func `leading zero`() throws {
 
             let overlongOne: [UInt8] = [0x02, 0x02, 0x00, 0x01]
-            let parsed = try ISO_8825.DER.parse(overlongOne)
-            let error = #expect(throws: ISO_8824.Error.self) {
+            let parsed = try ISO.`8825`.DER.parse(overlongOne)
+            let error = #expect(throws: ISO.`8824`.Error.self) {
                 try Int(derEncoded: parsed)
             }
             #expect(error?.code == .invalidASN1IntegerEncoding)
@@ -547,8 +547,8 @@ extension `ISO 8825 Tests` {
         @Test func `leading ones`() throws {
 
             let overlongOneTwoSeven: [UInt8] = [0x02, 0x02, 0xFF, 0x81]
-            let parsed = try ISO_8825.DER.parse(overlongOneTwoSeven)
-            let error = #expect(throws: ISO_8824.Error.self) {
+            let parsed = try ISO.`8825`.DER.parse(overlongOneTwoSeven)
+            let error = #expect(throws: ISO.`8824`.Error.self) {
                 try Int(derEncoded: parsed)
             }
             #expect(error?.code == .invalidASN1IntegerEncoding)
@@ -563,10 +563,10 @@ extension `ISO 8825 Tests` {
                 0x02, 0x01, 0x01,
 
             ]
-            let parsed = try ISO_8825.DER.parse(weirdASN1)
-            try ISO_8825.DER.sequence(parsed, identifier: .sequence) { nodes in
-                let error = #expect(throws: ISO_8824.Error.self) {
-                    try ISO_8825.DER.optionalExplicitlyTagged(
+            let parsed = try ISO.`8825`.DER.parse(weirdASN1)
+            try ISO.`8825`.DER.sequence(parsed, identifier: .sequence) { nodes in
+                let error = #expect(throws: ISO.`8824`.Error.self) {
+                    try ISO.`8825`.DER.optionalExplicitlyTagged(
                         &nodes,
                         tagNumber: 2,
                         tagClass: .contextSpecific,
@@ -584,10 +584,10 @@ extension `ISO 8825 Tests` {
                 0x82, 0x03,
                 0x02, 0x01, 0x00,
             ]
-            let parsed = try ISO_8825.DER.parse(weirdASN1)
-            try ISO_8825.DER.sequence(parsed, identifier: .sequence) { nodes in
-                let error = #expect(throws: ISO_8824.Error.self) {
-                    try ISO_8825.DER.optionalExplicitlyTagged(
+            let parsed = try ISO.`8825`.DER.parse(weirdASN1)
+            try ISO.`8825`.DER.sequence(parsed, identifier: .sequence) { nodes in
+                let error = #expect(throws: ISO.`8824`.Error.self) {
+                    try ISO.`8825`.DER.optionalExplicitlyTagged(
                         &nodes,
                         tagNumber: 2,
                         tagClass: .contextSpecific,
@@ -604,16 +604,16 @@ extension `ISO 8825 Tests` {
                 "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDQEcP8qgwq5JhGgl1mKMeOWbb0WFKkJKj4Tvm4RFWGKDYg/p+Fm8vHwPSICqU9HJ+dHF2Ty0M6WVwVlf6RJdJGsrp1s9cbxfc/74PdQUssIhUjhlBO2RFlQECbgNpw5UleRB9FLnEDp33qMgdr7nwXiYCTjd04QSkdU3mXJYrFfwIDAQAB"
             let decodedSPKI = Array(base64Decoding: rsaSPKI)
 
-            var serializer = ISO_8825.DER.Serializer()
+            var serializer = ISO.`8825`.DER.Serializer()
             serializer.appendPrimitiveNode(identifier: .null) { _ in }
             let null = serializer.serializedBytes
 
-            let parsed = try ISO_8825.DER.parse(decodedSPKI)
+            let parsed = try ISO.`8825`.DER.parse(decodedSPKI)
             let spki = try SubjectPublicKeyInfo(derEncoded: parsed)
 
             #expect(spki.algorithmIdentifier.algorithm == [1, 2, 840, 113549, 1, 1, 1])
 
-            serializer = ISO_8825.DER.Serializer()
+            serializer = ISO.`8825`.DER.Serializer()
             try serializer.serialize(spki.algorithmIdentifier.parameters!)
             #expect(serializer.serializedBytes == null)
 
@@ -638,11 +638,11 @@ extension `ISO 8825 Tests` {
                 "MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEzN09Sbb+mhMIlUbOdoIoND8lNcoQPd/yZDjQi1IDyDQEvVvz1yhi5J0FPLAlM3hE2o/a+rASUz2UP4fX5Cpnxw=="
             let decodedSPKI = Array(base64Decoding: b64SPKI)
 
-            let parsed = try ISO_8825.DER.parse(decodedSPKI)
+            let parsed = try ISO.`8825`.DER.parse(decodedSPKI)
             let spki = try SubjectPublicKeyInfo(derEncoded: parsed)
             #expect(spki.algorithmIdentifier.algorithm == .AlgorithmIdentifier.idEcPublicKey)
             #expect(
-                try ISO_8824.ObjectIdentifier(asn1Any: spki.algorithmIdentifier.parameters!) == [
+                try ISO.`8824`.ObjectIdentifier(asn1Any: spki.algorithmIdentifier.parameters!) == [
                     1, 3, 132, 0, 10,
                 ]
             )
@@ -661,8 +661,8 @@ extension `ISO 8825 Tests` {
 
             let weirdSEC1: [UInt8] = [0x30, 0x03, 0x02, 0x01, 0x05]
 
-            let parsed = try ISO_8825.DER.parse(weirdSEC1)
-            let error = #expect(throws: ISO_8824.Error.self) {
+            let parsed = try ISO.`8825`.DER.parse(weirdSEC1)
+            let error = #expect(throws: ISO.`8824`.Error.self) {
                 try SEC1PrivateKey(derEncoded: parsed)
             }
             #expect(error?.code == .invalidASN1Object)
@@ -674,8 +674,8 @@ extension `ISO 8825 Tests` {
                 "MHQCAQEEINIuVmNF7g1wNCJWXDpgL+09jATtaS1n0SxqqQneHi+woAcGBSuBBAAKoUQDQgAEB7v/p7gvuV0aDx02EF6a+pr563p+FzRJXI+COWHdr+XRcjg6vEi4n3Jj7ksmEg4t1x6E1xFyTvF3eV/B/XVXbw=="
             let decodedSEC1 = Array(base64Decoding: b64SEC1)
 
-            let parsed = try ISO_8825.DER.parse(decodedSEC1)
-            let error = #expect(throws: ISO_8824.Error.self) {
+            let parsed = try ISO.`8825`.DER.parse(decodedSEC1)
+            let error = #expect(throws: ISO.`8824`.Error.self) {
                 try SEC1PrivateKey(derEncoded: parsed)
             }
             #expect(error?.code == .invalidASN1Object)
@@ -683,23 +683,23 @@ extension `ISO 8825 Tests` {
 
         @Test func `pkcs 8 key with non matching key OIDS`() throws {
 
-            var serializer = ISO_8825.DER.Serializer()
+            var serializer = ISO.`8825`.DER.Serializer()
             try serializer.appendConstructedNode(identifier: .sequence) { coder in
                 try coder.serialize(0)
                 try coder.serialize(RFC5480AlgorithmIdentifier.ecdsaP256)
 
-                var subCoder = ISO_8825.DER.Serializer()
+                var subCoder = ISO.`8825`.DER.Serializer()
 
                 try subCoder.serialize(
                     SEC1PrivateKey(privateKey: [], algorithm: .ecdsaP384, publicKey: [])
                 )
-                let serializedKey = ISO_8824.OctetString(contentBytes: subCoder.serializedBytes[...])
+                let serializedKey = ISO.`8824`.OctetString(contentBytes: subCoder.serializedBytes[...])
 
                 try coder.serialize(serializedKey)
             }
 
-            let parsed = try ISO_8825.DER.parse(serializer.serializedBytes)
-            let error = #expect(throws: ISO_8824.Error.self) {
+            let parsed = try ISO.`8825`.DER.parse(serializer.serializedBytes)
+            let error = #expect(throws: ISO.`8824`.Error.self) {
                 try PKCS8PrivateKey(derEncoded: parsed)
             }
             #expect(error?.code == .invalidASN1Object)
@@ -711,7 +711,7 @@ extension `ISO 8825 Tests` {
                 "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDQEcP8qgwq5JhGgl1mKMeOWbb0WFKkJKj4Tvm4RFWGKDYg/p+Fm8vHwPSICqU9HJ+dHF2Ty0M6WVwVlf6RJdJGsrp1s9cbxfc/74PdQUssIhUjhlBO2RFlQECbgNpw5UleRB9FLnEDp33qMgdr7nwXiYCTjd04QSkdU3mXJYrFfwIDAQAB"
             let decodedSPKI = Array(base64Decoding: rsaSPKI)
 
-            let parsed = try ISO_8825.DER.parse(decodedSPKI)
+            let parsed = try ISO.`8825`.DER.parse(decodedSPKI)
             #expect(parsed.encodedBytes == decodedSPKI[...])
 
             guard case .constructed(let firstLayerChildren) = parsed.content else {
@@ -746,48 +746,48 @@ extension `ISO 8825 Tests` {
         }
 
         @Test func `optional implicitly tagged with custom tag`() throws {
-            var serializer = ISO_8825.DER.Serializer()
+            var serializer = ISO.`8825`.DER.Serializer()
             try serializer.appendConstructedNode(identifier: .sequence) { serializer in
                 try serializer.serializeOptionalImplicitlyTagged(
                     1,
-                    withIdentifier: ISO_8824.Identifier(tagWithNumber: 1, tagClass: .contextSpecific)
+                    withIdentifier: ISO.`8824`.Identifier(tagWithNumber: 1, tagClass: .contextSpecific)
                 )
             }
             let bytes = serializer.serializedBytes
 
             #expect(bytes == [0x30, 0x03, 0x81, 0x1, 0x1])
 
-            let parseResult = try ISO_8825.DER.parse(bytes)
-            let int: Int? = try ISO_8825.DER.sequence(parseResult, identifier: .sequence) {
-                nodes throws(ISO_8824.Error) in
-                try ISO_8825.DER.optionalImplicitlyTagged(
+            let parseResult = try ISO.`8825`.DER.parse(bytes)
+            let int: Int? = try ISO.`8825`.DER.sequence(parseResult, identifier: .sequence) {
+                nodes throws(ISO.`8824`.Error) in
+                try ISO.`8825`.DER.optionalImplicitlyTagged(
                     &nodes,
-                    tag: ISO_8824.Identifier(tagWithNumber: 1, tagClass: .contextSpecific)
+                    tag: ISO.`8824`.Identifier(tagWithNumber: 1, tagClass: .contextSpecific)
                 )
             }
             #expect(int == 1)
         }
 
         @Test func `optional implicitly tagged with builder`() throws {
-            var serializer = ISO_8825.DER.Serializer()
+            var serializer = ISO.`8825`.DER.Serializer()
             try serializer.appendConstructedNode(identifier: .sequence) { serializer in
                 try serializer.serializeOptionalImplicitlyTagged(
                     1,
-                    withIdentifier: ISO_8824.Identifier(tagWithNumber: 1, tagClass: .contextSpecific)
+                    withIdentifier: ISO.`8824`.Identifier(tagWithNumber: 1, tagClass: .contextSpecific)
                 )
             }
             let bytes = serializer.serializedBytes
 
             #expect(bytes == [0x30, 0x03, 0x81, 0x1, 0x1])
 
-            let parseResult = try ISO_8825.DER.parse(bytes)
-            let int = try ISO_8825.DER.sequence(parseResult, identifier: .sequence) {
-                nodes throws(ISO_8824.Error) in
-                try ISO_8825.DER.optionalImplicitlyTagged(
+            let parseResult = try ISO.`8825`.DER.parse(bytes)
+            let int = try ISO.`8825`.DER.sequence(parseResult, identifier: .sequence) {
+                nodes throws(ISO.`8824`.Error) in
+                try ISO.`8825`.DER.optionalImplicitlyTagged(
                     &nodes,
                     tagNumber: 1,
                     tagClass: .contextSpecific
-                ) { node throws(ISO_8824.Error) in
+                ) { node throws(ISO.`8824`.Error) in
                     try Int(
                         derEncoded: node,
                         withIdentifier: .init(tagWithNumber: 1, tagClass: .contextSpecific)
@@ -798,44 +798,44 @@ extension `ISO 8825 Tests` {
         }
 
         @Test func `printing OI ds`() {
-            let oid: ISO_8824.ObjectIdentifier = [1, 2, 865, 11241, 3]
+            let oid: ISO.`8824`.ObjectIdentifier = [1, 2, 865, 11241, 3]
             let s = String(describing: oid)
             #expect(s == "1.2.865.11241.3")
         }
 
         @Test func `printing ASN 1 any`() throws {
-            let any = try ISO_8825.`Any`(erasing: ISO_8824.Null())
+            let any = try ISO.`8825`.`Any`(erasing: ISO.`8824`.Null())
             let s = String(describing: any)
-            #expect(s == "ISO_8825.`Any`([5, 0])")
+            #expect(s == "ISO.8825.`Any`([5, 0])")
         }
 
         @Test func `oid array initializer`() throws {
-            let oidArray = try ISO_8824.ObjectIdentifier(elements: [1, 2, 865, 11241, 3])
+            let oidArray = try ISO.`8824`.ObjectIdentifier(elements: [1, 2, 865, 11241, 3])
             #expect(oidArray.oidComponents == [1, 2, 865, 11241, 3])
 
-            let anotherOidArray = try ISO_8824.ObjectIdentifier(elements: [1, 2, 865])
+            let anotherOidArray = try ISO.`8824`.ObjectIdentifier(elements: [1, 2, 865])
             #expect(anotherOidArray.oidComponents == [1, 2, 865])
         }
 
         @Test func `oid array initializer invalid`() {
             do {
-                let error = #expect(throws: ISO_8824.Error.self) {
-                    try ISO_8824.ObjectIdentifier(elements: [1])
+                let error = #expect(throws: ISO.`8824`.Error.self) {
+                    try ISO.`8824`.ObjectIdentifier(elements: [1])
                 }
                 #expect(error?.code == .tooFewOIDComponents)
             }
 
             do {
-                let error = #expect(throws: ISO_8824.Error.self) {
-                    try ISO_8824.ObjectIdentifier(elements: [])
+                let error = #expect(throws: ISO.`8824`.Error.self) {
+                    try ISO.`8824`.ObjectIdentifier(elements: [])
                 }
                 #expect(error?.code == .tooFewOIDComponents)
             }
         }
 
         @Test func `oid string initializer`() {
-            let oidFromString: ISO_8824.ObjectIdentifier = "1.2.865.11241.3"
-            let oidFromArrayLiteral: ISO_8824.ObjectIdentifier = [1, 2, 865, 11241, 3]
+            let oidFromString: ISO.`8824`.ObjectIdentifier = "1.2.865.11241.3"
+            let oidFromArrayLiteral: ISO.`8824`.ObjectIdentifier = [1, 2, 865, 11241, 3]
 
             #expect(oidFromString == oidFromArrayLiteral)
             #expect(oidFromString.oidComponents == [1, 2, 865, 11241, 3])
@@ -843,110 +843,110 @@ extension `ISO 8825 Tests` {
 
         @Test func `oid string initializer invalid`() {
             do {
-                let error = #expect(throws: ISO_8824.Error.self) {
-                    try ISO_8824.ObjectIdentifier(dotRepresentation: "1..2.865.11241.3")
+                let error = #expect(throws: ISO.`8824`.Error.self) {
+                    try ISO.`8824`.ObjectIdentifier(dotRepresentation: "1..2.865.11241.3")
                 }
                 #expect(error?.code == .invalidStringRepresentation)
             }
 
             do {
-                let error = #expect(throws: ISO_8824.Error.self) {
-                    try ISO_8824.ObjectIdentifier(dotRepresentation: "1.2.<invalid>.11241.3")
+                let error = #expect(throws: ISO.`8824`.Error.self) {
+                    try ISO.`8824`.ObjectIdentifier(dotRepresentation: "1.2.<invalid>.11241.3")
                 }
                 #expect(error?.code == .invalidStringRepresentation)
             }
 
             do {
-                let error = #expect(throws: ISO_8824.Error.self) {
-                    try ISO_8824.ObjectIdentifier(dotRepresentation: "25")
+                let error = #expect(throws: ISO.`8824`.Error.self) {
+                    try ISO.`8824`.ObjectIdentifier(dotRepresentation: "25")
                 }
                 #expect(error?.code == .tooFewOIDComponents)
             }
         }
 
         @Test func `set of single element`() throws {
-            var serializer = ISO_8825.DER.Serializer()
+            var serializer = ISO.`8825`.DER.Serializer()
             try serializer.serializeSetOf([
-                ISO_8824.BitString(bytes: [1])
+                ISO.`8824`.BitString(bytes: [1])
             ])
             #expect(serializer.serializedBytes == [49, 4, 3, 2, 0, 1])
-            let bitStrings = try ISO_8825.DER.set(
-                of: ISO_8824.BitString.self,
+            let bitStrings = try ISO.`8825`.DER.set(
+                of: ISO.`8824`.BitString.self,
                 identifier: .set,
-                rootNode: try ISO_8825.DER.parse(serializer.serializedBytes)
+                rootNode: try ISO.`8825`.DER.parse(serializer.serializedBytes)
             )
             try #expect(
                 bitStrings == [
-                    ISO_8824.BitString(bytes: [1])
+                    ISO.`8824`.BitString(bytes: [1])
                 ]
             )
         }
 
         @Test func `set of two elements in order`() throws {
-            var serializer = ISO_8825.DER.Serializer()
+            var serializer = ISO.`8825`.DER.Serializer()
             try serializer.serializeSetOf([
-                ISO_8824.BitString(bytes: [1]),
-                ISO_8824.BitString(bytes: [2]),
+                ISO.`8824`.BitString(bytes: [1]),
+                ISO.`8824`.BitString(bytes: [2]),
             ])
             #expect(serializer.serializedBytes == [49, 8, 3, 2, 0, 1, 3, 2, 0, 2])
 
-            let bitStrings = try ISO_8825.DER.set(
-                of: ISO_8824.BitString.self,
+            let bitStrings = try ISO.`8825`.DER.set(
+                of: ISO.`8824`.BitString.self,
                 identifier: .set,
-                rootNode: try ISO_8825.DER.parse(serializer.serializedBytes)
+                rootNode: try ISO.`8825`.DER.parse(serializer.serializedBytes)
             )
             try #expect(
                 bitStrings == [
-                    ISO_8824.BitString(bytes: [1]),
-                    ISO_8824.BitString(bytes: [2]),
+                    ISO.`8824`.BitString(bytes: [1]),
+                    ISO.`8824`.BitString(bytes: [2]),
                 ]
             )
         }
 
         @Test func `set of two element not in order`() throws {
-            var serializer = ISO_8825.DER.Serializer()
+            var serializer = ISO.`8825`.DER.Serializer()
             try serializer.serializeSetOf([
-                ISO_8824.BitString(bytes: [2]),
-                ISO_8824.BitString(bytes: [1]),
+                ISO.`8824`.BitString(bytes: [2]),
+                ISO.`8824`.BitString(bytes: [1]),
             ])
             #expect(serializer.serializedBytes == [49, 8, 3, 2, 0, 1, 3, 2, 0, 2])
 
-            let bitStrings = try ISO_8825.DER.set(
-                of: ISO_8824.BitString.self,
+            let bitStrings = try ISO.`8825`.DER.set(
+                of: ISO.`8824`.BitString.self,
                 identifier: .set,
-                rootNode: try ISO_8825.DER.parse(serializer.serializedBytes)
+                rootNode: try ISO.`8825`.DER.parse(serializer.serializedBytes)
             )
             try #expect(
                 bitStrings == [
-                    ISO_8824.BitString(bytes: [1]),
-                    ISO_8824.BitString(bytes: [2]),
+                    ISO.`8824`.BitString(bytes: [1]),
+                    ISO.`8824`.BitString(bytes: [2]),
                 ]
             )
         }
         @Test func `set of two equal elements`() throws {
-            var serializer = ISO_8825.DER.Serializer()
+            var serializer = ISO.`8825`.DER.Serializer()
             try serializer.serializeSetOf([
-                ISO_8824.BitString(bytes: [1]),
-                ISO_8824.BitString(bytes: [1]),
+                ISO.`8824`.BitString(bytes: [1]),
+                ISO.`8824`.BitString(bytes: [1]),
             ])
             #expect(serializer.serializedBytes == [49, 8, 3, 2, 0, 1, 3, 2, 0, 1])
 
-            let bitStrings = try ISO_8825.DER.set(
-                of: ISO_8824.BitString.self,
+            let bitStrings = try ISO.`8825`.DER.set(
+                of: ISO.`8824`.BitString.self,
                 identifier: .set,
-                rootNode: try ISO_8825.DER.parse(serializer.serializedBytes)
+                rootNode: try ISO.`8825`.DER.parse(serializer.serializedBytes)
             )
             try #expect(
                 bitStrings == [
-                    ISO_8824.BitString(bytes: [1]),
-                    ISO_8824.BitString(bytes: [1]),
+                    ISO.`8824`.BitString(bytes: [1]),
+                    ISO.`8824`.BitString(bytes: [1]),
                 ]
             )
         }
         @Test func `set of two elements ordered incorrectly`() throws {
-            let rootNode = try ISO_8825.DER.parse([49, 8, 3, 2, 0, 2, 3, 2, 0, 1])
-            let error = #expect(throws: ISO_8824.Error.self) {
-                try ISO_8825.DER.set(of: ISO_8824.BitString.self, identifier: .set, rootNode: rootNode)
+            let rootNode = try ISO.`8825`.DER.parse([49, 8, 3, 2, 0, 2, 3, 2, 0, 1])
+            let error = #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8825`.DER.set(of: ISO.`8824`.BitString.self, identifier: .set, rootNode: rootNode)
             }
             #expect(error?.code == .invalidASN1Object)
         }
@@ -972,12 +972,12 @@ extension `ISO 8825 Tests` {
         }
 
         @Test func `serializing raw bytes`() {
-            var serializer = ISO_8825.DER.Serializer()
+            var serializer = ISO.`8825`.DER.Serializer()
             serializer.serializeRawBytes([1, 2, 3, 4])
 
             #expect(serializer.serializedBytes == [1, 2, 3, 4])
 
-            serializer = ISO_8825.DER.Serializer()
+            serializer = ISO.`8825`.DER.Serializer()
             serializer.appendConstructedNode(identifier: .sequence) { serializer in
                 serializer.serialize(explicitlyTaggedWithTagNumber: 1, tagClass: .contextSpecific) {
                     serializer in
@@ -1000,16 +1000,16 @@ extension `ISO 8825 Tests` {
                 "MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCAuQwggLgMIIChqADAgECAhABIEfn+B9M5cVAee4myiEiMAoGCCqGSM49BAMCME0xKTAnBgNVBAMMIEFwcGxlIENvcnBvcmF0ZSBTaWduaW5nIEVDQyBDQSAxMRMwEQYDVQQKDApBcHBsZSBJbmMuMQswCQYDVQQGEwJVUzAeFw0yMzA3MTcyMjM0MDVaFw0yMzA4MDcyMjQ0MDVaMC8xEzARBgNVBAoMCkFwcGxlIEluYy4xGDAWBgNVBAMMD2R6ZWNoQGFwcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABIWQLS6NnPfb8TjlkUU/uRN7FFWIAi7gMRmvA78bUUudor7UGWJ6NB9y1C8TFXpEp5VG+2OSW4D6epwrG6mpaCOjggFkMIIBYDAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFEJi3AGoy1MCpVzt8IjG9uFJdhE9MHMGCCsGAQUFBwEBBGcwZTAvBggrBgEFBQcwAoYjaHR0cDovL2NlcnRzLmFwcGxlLmNvbS9hY3NlY2NhMS5kZXIwMgYIKwYBBQUHMAGGJmh0dHA6Ly9vY3NwLmFwcGxlLmNvbS9vY3NwMDMtYWNzZWNjMTA0MBoGA1UdEQQTMBGBD2R6ZWNoQGFwcGxlLmNvbTAUBgNVHSUEDTALBgkqhkiG92NkBBQwMgYDVR0fBCswKTAnoCWgI4YhaHR0cDovL2NybC5hcHBsZS5jb20vYWNzZWNjYTEuY3JsMB0GA1UdDgQWBBTQgwTEnqIhsk9OoQOYYmhj0g7RVTAOBgNVHQ8BAf8EBAMCB4AwJQYDVR0gBB4wHDAMBgoqhkiG92NkBRQBMAwGCiqGSIb3Y2QFFAIwCgYIKoZIzj0EAwIDSAAwRQIhAOd9mU6wS6FLR8TTo8q7qBDbatEevBWXAm5/Ek7nWVU6AiA8oa8GQ6h+OxioJy0Frq2p++UzEdAIw2MLtGN218HuUTGCATgwggE0AgEBMGEwTTEpMCcGA1UEAwwgQXBwbGUgQ29ycG9yYXRlIFNpZ25pbmcgRUNDIENBIDExEzARBgNVBAoMCkFwcGxlIEluYy4xCzAJBgNVBAYTAlVTAhABIEfn+B9M5cVAee4myiEiMA0GCWCGSAFlAwQCAQUAoGkwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjMwNzIwMjMyMzA5WjAvBgkqhkiG9w0BCQQxIgQgWJG1tSLV3whtD/CxEPvZ0hu0/HFjrzTQgoai6Eb2vgMwCQYHKoZIzj0CAQRHMEUCIQDc9v1VYHfMws7VJpHF0W8wN77QPzYiCtGSfuGKlLiZ3AIgHaPdG8dUuQeiJhO57mhqbJXiKK9tg4dise9HrjBYHPEAAAAAAAA="
 
             let decodedCMSContentInfo = Array(base64Decoding: encodedCMSContentInfo)
-            let result = try ISO_8825.BER.parse(decodedCMSContentInfo)
-            let pkcs7OID = ISO_8824.ObjectIdentifier(arrayLiteral: 1, 2, 840, 113549, 1, 7, 2)
+            let result = try ISO.`8825`.BER.parse(decodedCMSContentInfo)
+            let pkcs7OID = ISO.`8824`.ObjectIdentifier(arrayLiteral: 1, 2, 840, 113549, 1, 7, 2)
 
             let cmsContentInfo = try CMSContentInfo(berEncoded: result)
             #expect(cmsContentInfo.contentType == pkcs7OID)
 
-            let error = #expect(throws: ISO_8824.Error.self) {
-                try ISO_8825.DER.parse(decodedCMSContentInfo)
+            let error = #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8825`.DER.parse(decodedCMSContentInfo)
             }
-            #expect(error?.code == ISO_8824.Error.Code.unsupportedFieldLength)
+            #expect(error?.code == ISO.`8824`.Error.Code.unsupportedFieldLength)
         }
 
         @Test func `parse BER encoded octet string`() throws {
@@ -1022,47 +1022,47 @@ extension `ISO 8825 Tests` {
                 0x04, 0x02, 0xfa, 0xce,
                 0x00, 0x00,
             ]
-            let asn1OctetString = try ISO_8824.OctetString(
-                berEncoded: try ISO_8825.BER.parse(berOctetString)
+            let asn1OctetString = try ISO.`8824`.OctetString(
+                berEncoded: try ISO.`8825`.BER.parse(berOctetString)
             )
             #expect(asn1OctetString.bytes == [0xFE, 0xED, 0xFA, 0xCE])
-            #expect(throws: ISO_8824.Error.self) {
-                try ISO_8825.DER.parse(berOctetString)
+            #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8825`.DER.parse(berOctetString)
             }
         }
 
         @Test func `constructed boolean`() throws {
             let weirdASN1: [UInt8] = [0x21, 0x00]
-            let node = try ISO_8825.DER.parse(weirdASN1)
-            #expect(throws: ISO_8824.Error.self) {
+            let node = try ISO.`8825`.DER.parse(weirdASN1)
+            #expect(throws: ISO.`8824`.Error.self) {
                 try Bool(berEncoded: node)
             }
-            #expect(throws: ISO_8824.Error.self) {
+            #expect(throws: ISO.`8824`.Error.self) {
                 try Bool(derEncoded: node)
             }
         }
 
         @Test func `constructed integer`() throws {
             let weirdASN1: [UInt8] = [0x22, 0x00]
-            let node = try ISO_8825.DER.parse(weirdASN1)
-            #expect(throws: ISO_8824.Error.self) {
+            let node = try ISO.`8825`.DER.parse(weirdASN1)
+            #expect(throws: ISO.`8824`.Error.self) {
                 try Int(berEncoded: node)
             }
-            #expect(throws: ISO_8824.Error.self) {
+            #expect(throws: ISO.`8824`.Error.self) {
                 try Int(derEncoded: node)
             }
         }
 
         @Test func `constructed bit string`() throws {
             let constructedASN1: [UInt8] = [0x23, 0x08, 0x03, 0x02, 0x00, 0xAB, 0x03, 0x02, 0x04, 0xC0]
-            let node = try ISO_8825.DER.parse(constructedASN1)
+            let node = try ISO.`8825`.DER.parse(constructedASN1)
 
             #expect(
-                try ISO_8824.BitString(berEncoded: node)
-                    == ISO_8824.BitString(bytes: [0xAB, 0xC0], paddingBits: 4)
+                try ISO.`8824`.BitString(berEncoded: node)
+                    == ISO.`8824`.BitString(bytes: [0xAB, 0xC0], paddingBits: 4)
             )
-            #expect(throws: ISO_8824.Error.self) {
-                try ISO_8824.BitString(derEncoded: node)
+            #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8824`.BitString(derEncoded: node)
             }
         }
 
@@ -1076,67 +1076,67 @@ extension `ISO 8825 Tests` {
                 0x03, 0x02, 0x01, 0xEE,
                 0x00, 0x00,
             ]
-            let node = try ISO_8825.BER.parse(constructedASN1)
+            let node = try ISO.`8825`.BER.parse(constructedASN1)
 
             #expect(
-                try ISO_8824.BitString(berEncoded: node)
-                    == ISO_8824.BitString(bytes: [0xAB, 0xCD, 0xEE], paddingBits: 1)
+                try ISO.`8824`.BitString(berEncoded: node)
+                    == ISO.`8824`.BitString(bytes: [0xAB, 0xCD, 0xEE], paddingBits: 1)
             )
-            #expect(throws: ISO_8824.Error.self) {
-                try ISO_8825.DER.parse(constructedASN1)
+            #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8825`.DER.parse(constructedASN1)
             }
         }
 
         @Test func `empty constructed bit string`() throws {
-            let node = try ISO_8825.BER.parse([0x23, 0x00])
-            #expect(try ISO_8824.BitString(berEncoded: node) == ISO_8824.BitString(bytes: []))
+            let node = try ISO.`8825`.BER.parse([0x23, 0x00])
+            #expect(try ISO.`8824`.BitString(berEncoded: node) == ISO.`8824`.BitString(bytes: []))
         }
 
         @Test func `constructed bit string with unused bits in a non final segment`() throws {
-            let node = try ISO_8825.BER.parse([
+            let node = try ISO.`8825`.BER.parse([
                 0x23, 0x08, 0x03, 0x02, 0x04, 0xA0, 0x03, 0x02, 0x00, 0xCD,
             ])
-            #expect(throws: ISO_8824.Error.self) {
-                try ISO_8824.BitString(berEncoded: node)
+            #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8824`.BitString(berEncoded: node)
             }
         }
 
         @Test func `constructed bit string with non zero unused bits`() throws {
-            let node = try ISO_8825.BER.parse([
+            let node = try ISO.`8825`.BER.parse([
                 0x23, 0x08, 0x03, 0x02, 0x00, 0xAB, 0x03, 0x02, 0x04, 0x0C,
             ])
-            #expect(throws: ISO_8824.Error.self) {
-                try ISO_8824.BitString(berEncoded: node)
+            #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8824`.BitString(berEncoded: node)
             }
         }
 
         @Test func `BER optional implicitly tagged decodes with BER rules`() throws {
             let bytes: [UInt8] = [0x30, 0x08, 0xA1, 0x06, 0x04, 0x01, 0xAB, 0x04, 0x01, 0xCD]
-            let tag = ISO_8824.Identifier(tagWithNumber: 1, tagClass: .contextSpecific)
+            let tag = ISO.`8824`.Identifier(tagWithNumber: 1, tagClass: .contextSpecific)
 
-            let parsed = try ISO_8825.BER.parse(bytes)
-            let octetString: ISO_8824.OctetString? = try ISO_8825.BER.sequence(
+            let parsed = try ISO.`8825`.BER.parse(bytes)
+            let octetString: ISO.`8824`.OctetString? = try ISO.`8825`.BER.sequence(
                 parsed,
                 identifier: .sequence
-            ) { nodes throws(ISO_8824.Error) in
-                try ISO_8825.BER.optionalImplicitlyTagged(&nodes, tag: tag)
+            ) { nodes throws(ISO.`8824`.Error) in
+                try ISO.`8825`.BER.optionalImplicitlyTagged(&nodes, tag: tag)
             }
-            #expect(octetString == ISO_8824.OctetString(contentBytes: [0xAB, 0xCD]))
+            #expect(octetString == ISO.`8824`.OctetString(contentBytes: [0xAB, 0xCD]))
 
-            #expect(throws: ISO_8824.Error.self) {
-                let _: ISO_8824.OctetString? = try ISO_8825.DER.sequence(
+            #expect(throws: ISO.`8824`.Error.self) {
+                let _: ISO.`8824`.OctetString? = try ISO.`8825`.DER.sequence(
                     parsed,
                     identifier: .sequence
-                ) { nodes throws(ISO_8824.Error) in
-                    try ISO_8825.DER.optionalImplicitlyTagged(&nodes, tag: tag)
+                ) { nodes throws(ISO.`8824`.Error) in
+                    try ISO.`8825`.DER.optionalImplicitlyTagged(&nodes, tag: tag)
                 }
             }
         }
 
         @Test func `DER set accepts canonical tag order`() throws {
-            let parsed = try ISO_8825.DER.parse([0x31, 0x06, 0x02, 0x01, 0x05, 0x80, 0x01, 0x07])
-            let values = try ISO_8825.DER.set(parsed, identifier: .set) {
-                nodes throws(ISO_8824.Error) in
+            let parsed = try ISO.`8825`.DER.parse([0x31, 0x06, 0x02, 0x01, 0x05, 0x80, 0x01, 0x07])
+            let values = try ISO.`8825`.DER.set(parsed, identifier: .set) {
+                nodes throws(ISO.`8824`.Error) in
                 let integer = try Int(derEncoded: &nodes)
                 let tagged = try Int(
                     derEncoded: &nodes,
@@ -1148,9 +1148,9 @@ extension `ISO 8825 Tests` {
         }
 
         @Test func `DER set rejects non canonical tag order`() throws {
-            let parsed = try ISO_8825.DER.parse([0x31, 0x06, 0x80, 0x01, 0x07, 0x02, 0x01, 0x05])
-            let error = #expect(throws: ISO_8824.Error.self) {
-                try ISO_8825.DER.set(parsed, identifier: .set) { nodes throws(ISO_8824.Error) in
+            let parsed = try ISO.`8825`.DER.parse([0x31, 0x06, 0x80, 0x01, 0x07, 0x02, 0x01, 0x05])
+            let error = #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8825`.DER.set(parsed, identifier: .set) { nodes throws(ISO.`8824`.Error) in
                     let tagged = try Int(
                         derEncoded: &nodes,
                         withIdentifier: .init(tagWithNumber: 0, tagClass: .contextSpecific)
@@ -1161,8 +1161,8 @@ extension `ISO 8825 Tests` {
             }
             #expect(error?.code == .invalidASN1Object)
 
-            let berValues = try ISO_8825.BER.set(parsed, identifier: .set) {
-                nodes throws(ISO_8824.Error) in
+            let berValues = try ISO.`8825`.BER.set(parsed, identifier: .set) {
+                nodes throws(ISO.`8824`.Error) in
                 let tagged = try Int(
                     berEncoded: &nodes,
                     withIdentifier: .init(tagWithNumber: 0, tagClass: .contextSpecific)
@@ -1175,35 +1175,35 @@ extension `ISO 8825 Tests` {
 
         @Test func `constructed octet string`() throws {
             let weirdASN1: [UInt8] = [0x24, 0x06, 0x04, 0x01, 0xAB, 0x04, 0x01, 0xCD]
-            let node = try ISO_8825.DER.parse(weirdASN1)
+            let node = try ISO.`8825`.DER.parse(weirdASN1)
             #expect(
-                try ISO_8824.OctetString(berEncoded: node)
-                    == ISO_8824.OctetString(contentBytes: [0xAB, 0xCD])
+                try ISO.`8824`.OctetString(berEncoded: node)
+                    == ISO.`8824`.OctetString(contentBytes: [0xAB, 0xCD])
             )
-            #expect(throws: ISO_8824.Error.self) {
-                try ISO_8824.OctetString(derEncoded: node)
+            #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8824`.OctetString(derEncoded: node)
             }
         }
 
         @Test func `constructed null`() throws {
             let weirdASN1: [UInt8] = [0x25, 0x00]
-            let node = try ISO_8825.DER.parse(weirdASN1)
-            #expect(throws: ISO_8824.Error.self) {
-                try ISO_8824.Null(berEncoded: node)
+            let node = try ISO.`8825`.DER.parse(weirdASN1)
+            #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8824`.Null(berEncoded: node)
             }
-            #expect(throws: ISO_8824.Error.self) {
-                try ISO_8824.Null(derEncoded: node)
+            #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8824`.Null(derEncoded: node)
             }
         }
 
         @Test func `constructed OID`() throws {
             let weirdASN1: [UInt8] = [0x26, 0x03, 0x02, 0x01, 0x00]
-            let node = try ISO_8825.DER.parse(weirdASN1)
-            #expect(throws: ISO_8824.Error.self) {
-                try ISO_8824.ObjectIdentifier(berEncoded: node)
+            let node = try ISO.`8825`.DER.parse(weirdASN1)
+            #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8824`.ObjectIdentifier(berEncoded: node)
             }
-            #expect(throws: ISO_8824.Error.self) {
-                try ISO_8824.ObjectIdentifier(derEncoded: node)
+            #expect(throws: ISO.`8824`.Error.self) {
+                try ISO.`8824`.ObjectIdentifier(derEncoded: node)
             }
         }
     }

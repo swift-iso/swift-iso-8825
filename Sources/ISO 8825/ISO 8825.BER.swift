@@ -1,31 +1,31 @@
 public import ISO_8824
 
-extension ISO_8825 {
+extension ISO.`8825` {
 
     public enum BER {}
 }
 
 @available(*, unavailable)
-extension ISO_8825.BER: Sendable {}
+extension ISO.`8825`.BER: Sendable {}
 
-extension ISO_8825.BER {
+extension ISO.`8825`.BER {
     @inlinable
-    public static func parse(_ data: [UInt8]) throws(ISO_8824.Error) -> ISO_8825.Node {
+    public static func parse(_ data: [UInt8]) throws(ISO.`8824`.Error) -> ISO.`8825`.Node {
         return try parse(data[...])
     }
 
     @inlinable
-    public static func parse(_ data: ArraySlice<UInt8>) throws(ISO_8824.Error) -> ISO_8825.Node {
-        var result = try ISO_8825.TLV.Parser.parse(data, encoding: .basic)
+    public static func parse(_ data: ArraySlice<UInt8>) throws(ISO.`8824`.Error) -> ISO.`8825`.Node {
+        var result = try ISO.`8825`.TLV.Parser.parse(data, encoding: .basic)
 
         let firstNode = result.nodes.removeFirst()
 
-        let rootNode: ISO_8825.Node
+        let rootNode: ISO.`8825`.Node
         if firstNode.isConstructed {
 
             let nodeCollection = result.nodes.prefix { $0.depth > firstNode.depth }
             result.nodes = result.nodes.dropFirst(nodeCollection.count)
-            rootNode = ISO_8825.Node(
+            rootNode = ISO.`8825`.Node(
                 identifier: firstNode.identifier,
                 content: .constructed(.init(nodes: nodeCollection, depth: firstNode.depth)),
                 encodedBytes: firstNode.encodedBytes
@@ -34,7 +34,7 @@ extension ISO_8825.BER {
             guard let dataBytes = firstNode.dataBytes else {
                 preconditionFailure("A primitive TLV always carries its data bytes")
             }
-            rootNode = ISO_8825.Node(
+            rootNode = ISO.`8825`.Node(
                 identifier: firstNode.identifier,
                 content: .primitive(dataBytes),
                 encodedBytes: firstNode.encodedBytes
@@ -43,49 +43,49 @@ extension ISO_8825.BER {
 
         precondition(
             result.nodes.count == 0,
-            "ISO_8825.TLV.Parser unexpectedly allowed multiple root nodes"
+            "ISO.8825.TLV.Parser unexpectedly allowed multiple root nodes"
         )
 
         return rootNode
     }
 }
 
-extension ISO_8825.BER {
+extension ISO.`8825`.BER {
 
     @inlinable
     public static func sequence<T>(
-        _ node: ISO_8825.Node,
-        identifier: ISO_8824.Identifier,
-        _ builder: (inout ISO_8825.Node.Collection.Iterator) throws(ISO_8824.Error) -> T
-    ) throws(ISO_8824.Error) -> T {
-        return try ISO_8825.DER.sequence(node, identifier: identifier, builder)
+        _ node: ISO.`8825`.Node,
+        identifier: ISO.`8824`.Identifier,
+        _ builder: (inout ISO.`8825`.Node.Collection.Iterator) throws(ISO.`8824`.Error) -> T
+    ) throws(ISO.`8824`.Error) -> T {
+        return try ISO.`8825`.DER.sequence(node, identifier: identifier, builder)
     }
 
     @inlinable
-    public static func sequence<T: ISO_8825.BER.Parseable>(
+    public static func sequence<T: ISO.`8825`.BER.Parseable>(
         of: T.Type = T.self,
-        identifier: ISO_8824.Identifier,
-        rootNode: ISO_8825.Node
-    ) throws(ISO_8824.Error) -> [T] {
+        identifier: ISO.`8824`.Identifier,
+        rootNode: ISO.`8825`.Node
+    ) throws(ISO.`8824`.Error) -> [T] {
         guard rootNode.identifier == identifier, case .constructed(let nodes) = rootNode.content
         else {
-            throw ISO_8824.Error.unexpectedFieldType(rootNode.identifier)
+            throw ISO.`8824`.Error.unexpectedFieldType(rootNode.identifier)
         }
 
-        return try nodes.map { (node: ISO_8825.Node) throws(ISO_8824.Error) -> T in
+        return try nodes.map { (node: ISO.`8825`.Node) throws(ISO.`8824`.Error) -> T in
             try T(berEncoded: node)
         }
     }
 
     @inlinable
-    public static func sequence<T: ISO_8825.BER.Parseable>(
+    public static func sequence<T: ISO.`8825`.BER.Parseable>(
         of: T.Type = T.self,
-        identifier: ISO_8824.Identifier,
-        nodes: inout ISO_8825.Node.Collection.Iterator
-    ) throws(ISO_8824.Error) -> [T] {
+        identifier: ISO.`8824`.Identifier,
+        nodes: inout ISO.`8825`.Node.Collection.Iterator
+    ) throws(ISO.`8824`.Error) -> [T] {
         guard let node = nodes.next() else {
 
-            throw ISO_8824.Error.invalidASN1Object(
+            throw ISO.`8824`.Error.invalidASN1Object(
                 reason: "No sequence node available for \(T.self) and identifier \(identifier)"
             )
         }
@@ -95,23 +95,23 @@ extension ISO_8825.BER {
 
     @inlinable
     public static func set<T>(
-        _ node: ISO_8825.Node,
-        identifier: ISO_8824.Identifier,
-        _ builder: (inout ISO_8825.Node.Collection.Iterator) throws(ISO_8824.Error) -> T
-    ) throws(ISO_8824.Error) -> T {
+        _ node: ISO.`8825`.Node,
+        identifier: ISO.`8824`.Identifier,
+        _ builder: (inout ISO.`8825`.Node.Collection.Iterator) throws(ISO.`8824`.Error) -> T
+    ) throws(ISO.`8824`.Error) -> T {
 
         return try sequence(node, identifier: identifier, builder)
     }
 
     @inlinable
-    public static func set<T: ISO_8825.BER.Parseable>(
+    public static func set<T: ISO.`8825`.BER.Parseable>(
         of: T.Type = T.self,
-        identifier: ISO_8824.Identifier,
-        nodes: inout ISO_8825.Node.Collection.Iterator
-    ) throws(ISO_8824.Error) -> [T] {
+        identifier: ISO.`8824`.Identifier,
+        nodes: inout ISO.`8825`.Node.Collection.Iterator
+    ) throws(ISO.`8824`.Error) -> [T] {
         guard let node = nodes.next() else {
 
-            throw ISO_8824.Error.invalidASN1Object(
+            throw ISO.`8824`.Error.invalidASN1Object(
                 reason: "No set node available for \(T.self) and identifier \(identifier)"
             )
         }
@@ -120,50 +120,50 @@ extension ISO_8825.BER {
     }
 
     @inlinable
-    public static func set<T: ISO_8825.BER.Parseable>(
+    public static func set<T: ISO.`8825`.BER.Parseable>(
         of type: T.Type = T.self,
-        identifier: ISO_8824.Identifier,
-        rootNode: ISO_8825.Node
-    ) throws(ISO_8824.Error) -> [T] {
+        identifier: ISO.`8824`.Identifier,
+        rootNode: ISO.`8825`.Node
+    ) throws(ISO.`8824`.Error) -> [T] {
         try self.lazySet(of: type, identifier: identifier, rootNode: rootNode)
-            .map { (element: Result<T, ISO_8824.Error>) throws(ISO_8824.Error) -> T in
+            .map { (element: Result<T, ISO.`8824`.Error>) throws(ISO.`8824`.Error) -> T in
                 try element.get()
             }
     }
 
     @inlinable
-    public static func lazySet<T: ISO_8825.BER.Parseable>(
+    public static func lazySet<T: ISO.`8825`.BER.Parseable>(
         of: T.Type = T.self,
-        identifier: ISO_8824.Identifier,
-        rootNode: ISO_8825.Node
-    ) throws(ISO_8824.Error) -> ISO_8825.BER.LazySetOfSequence<T> {
+        identifier: ISO.`8824`.Identifier,
+        rootNode: ISO.`8825`.Node
+    ) throws(ISO.`8824`.Error) -> ISO.`8825`.BER.LazySetOfSequence<T> {
         guard rootNode.identifier == identifier, case .constructed(let nodes) = rootNode.content
         else {
-            throw ISO_8824.Error.unexpectedFieldType(rootNode.identifier)
+            throw ISO.`8824`.Error.unexpectedFieldType(rootNode.identifier)
         }
 
         return .init(
             nodes.lazy.map { node in
-                Result { () throws(ISO_8824.Error) -> T in try T(berEncoded: node) }
+                Result { () throws(ISO.`8824`.Error) -> T in try T(berEncoded: node) }
             }
         )
     }
 }
 
-extension ISO_8825.BER {
-    public typealias LazySetOfSequence = ISO_8825.LazySetOfSequence
+extension ISO.`8825`.BER {
+    public typealias LazySetOfSequence = ISO.`8825`.LazySetOfSequence
 }
 
-extension ISO_8825.BER {
+extension ISO.`8825`.BER {
 
     @inlinable
     public static func optionalExplicitlyTagged<T>(
-        _ nodes: inout ISO_8825.Node.Collection.Iterator,
+        _ nodes: inout ISO.`8825`.Node.Collection.Iterator,
         tagNumber: UInt,
-        tagClass: ISO_8824.Identifier.Class,
-        _ builder: (ISO_8825.Node) throws(ISO_8824.Error) -> T
-    ) throws(ISO_8824.Error) -> T? {
-        return try ISO_8825.DER.optionalExplicitlyTagged(
+        tagClass: ISO.`8824`.Identifier.Class,
+        _ builder: (ISO.`8825`.Node) throws(ISO.`8824`.Error) -> T
+    ) throws(ISO.`8824`.Error) -> T? {
+        return try ISO.`8825`.DER.optionalExplicitlyTagged(
             &nodes,
             tagNumber: tagNumber,
             tagClass: tagClass,
@@ -172,13 +172,13 @@ extension ISO_8825.BER {
     }
 }
 
-extension ISO_8825.BER {
+extension ISO.`8825`.BER {
 
     @inlinable
-    public static func optionalImplicitlyTagged<T: ISO_8825.BER.ImplicitlyTaggable>(
-        _ nodes: inout ISO_8825.Node.Collection.Iterator,
-        tag: ISO_8824.Identifier = T.defaultIdentifier
-    ) throws(ISO_8824.Error) -> T? {
+    public static func optionalImplicitlyTagged<T: ISO.`8825`.BER.ImplicitlyTaggable>(
+        _ nodes: inout ISO.`8825`.Node.Collection.Iterator,
+        tag: ISO.`8824`.Identifier = T.defaultIdentifier
+    ) throws(ISO.`8824`.Error) -> T? {
         var localNodesCopy = nodes
         guard let node = localNodesCopy.next() else {
 
@@ -195,12 +195,12 @@ extension ISO_8825.BER {
 
     @inlinable
     public static func optionalImplicitlyTagged<Result, E: Swift::Error>(
-        _ nodes: inout ISO_8825.Node.Collection.Iterator,
+        _ nodes: inout ISO.`8825`.Node.Collection.Iterator,
         tagNumber: UInt,
-        tagClass: ISO_8824.Identifier.Class,
-        _ builder: (ISO_8825.Node) throws(E) -> Result
+        tagClass: ISO.`8824`.Identifier.Class,
+        _ builder: (ISO.`8825`.Node) throws(E) -> Result
     ) throws(E) -> Result? {
-        return try ISO_8825.DER.optionalImplicitlyTagged(
+        return try ISO.`8825`.DER.optionalImplicitlyTagged(
             &nodes,
             tagNumber: tagNumber,
             tagClass: tagClass,
@@ -209,15 +209,15 @@ extension ISO_8825.BER {
     }
 }
 
-extension ISO_8825.BER {
+extension ISO.`8825`.BER {
 
     @inlinable
-    public static func decodeDefault<T: ISO_8825.BER.Parseable & Equatable>(
-        _ nodes: inout ISO_8825.Node.Collection.Iterator,
-        identifier: ISO_8824.Identifier,
+    public static func decodeDefault<T: ISO.`8825`.BER.Parseable & Equatable>(
+        _ nodes: inout ISO.`8825`.Node.Collection.Iterator,
+        identifier: ISO.`8824`.Identifier,
         defaultValue: T,
-        _ builder: (ISO_8825.Node) throws(ISO_8824.Error) -> T
-    ) throws(ISO_8824.Error) -> T {
+        _ builder: (ISO.`8825`.Node) throws(ISO.`8824`.Error) -> T
+    ) throws(ISO.`8824`.Error) -> T {
 
         var localNodesCopy = nodes
         guard let node = localNodesCopy.next() else {
@@ -236,22 +236,22 @@ extension ISO_8825.BER {
     }
 
     @inlinable
-    public static func decodeDefault<T: ISO_8825.BER.Parseable & Equatable>(
-        _ nodes: inout ISO_8825.Node.Collection.Iterator,
-        identifier: ISO_8824.Identifier,
+    public static func decodeDefault<T: ISO.`8825`.BER.Parseable & Equatable>(
+        _ nodes: inout ISO.`8825`.Node.Collection.Iterator,
+        identifier: ISO.`8824`.Identifier,
         defaultValue: T
-    ) throws(ISO_8824.Error) -> T {
+    ) throws(ISO.`8824`.Error) -> T {
         return try Self.decodeDefault(&nodes, identifier: identifier, defaultValue: defaultValue) {
-            (node: ISO_8825.Node) throws(ISO_8824.Error) -> T in
+            (node: ISO.`8825`.Node) throws(ISO.`8824`.Error) -> T in
             try T(berEncoded: node)
         }
     }
 
     @inlinable
-    public static func decodeDefault<T: ISO_8825.BER.ImplicitlyTaggable & Equatable>(
-        _ nodes: inout ISO_8825.Node.Collection.Iterator,
+    public static func decodeDefault<T: ISO.`8825`.BER.ImplicitlyTaggable & Equatable>(
+        _ nodes: inout ISO.`8825`.Node.Collection.Iterator,
         defaultValue: T
-    ) throws(ISO_8824.Error) -> T {
+    ) throws(ISO.`8824`.Error) -> T {
         return try Self.decodeDefault(
             &nodes,
             identifier: T.defaultIdentifier,
@@ -260,13 +260,13 @@ extension ISO_8825.BER {
     }
 
     @inlinable
-    public static func decodeDefaultExplicitlyTagged<T: ISO_8825.BER.Parseable & Equatable>(
-        _ nodes: inout ISO_8825.Node.Collection.Iterator,
+    public static func decodeDefaultExplicitlyTagged<T: ISO.`8825`.BER.Parseable & Equatable>(
+        _ nodes: inout ISO.`8825`.Node.Collection.Iterator,
         tagNumber: UInt,
-        tagClass: ISO_8824.Identifier.Class,
+        tagClass: ISO.`8824`.Identifier.Class,
         defaultValue: T,
-        _ builder: (ISO_8825.Node) throws(ISO_8824.Error) -> T
-    ) throws(ISO_8824.Error) -> T {
+        _ builder: (ISO.`8825`.Node) throws(ISO.`8824`.Error) -> T
+    ) throws(ISO.`8824`.Error) -> T {
         guard
             let result = try optionalExplicitlyTagged(
                 &nodes,
@@ -282,33 +282,33 @@ extension ISO_8825.BER {
     }
 
     @inlinable
-    public static func decodeDefaultExplicitlyTagged<T: ISO_8825.BER.Parseable & Equatable>(
-        _ nodes: inout ISO_8825.Node.Collection.Iterator,
+    public static func decodeDefaultExplicitlyTagged<T: ISO.`8825`.BER.Parseable & Equatable>(
+        _ nodes: inout ISO.`8825`.Node.Collection.Iterator,
         tagNumber: UInt,
-        tagClass: ISO_8824.Identifier.Class,
+        tagClass: ISO.`8824`.Identifier.Class,
         defaultValue: T
-    ) throws(ISO_8824.Error) -> T {
+    ) throws(ISO.`8824`.Error) -> T {
         return try Self.decodeDefaultExplicitlyTagged(
             &nodes,
             tagNumber: tagNumber,
             tagClass: tagClass,
             defaultValue: defaultValue
-        ) { (node: ISO_8825.Node) throws(ISO_8824.Error) -> T in
+        ) { (node: ISO.`8825`.Node) throws(ISO.`8824`.Error) -> T in
             try T(berEncoded: node)
         }
     }
 }
 
-extension ISO_8825.BER {
+extension ISO.`8825`.BER {
 
     @inlinable
     public static func explicitlyTagged<T>(
-        _ nodes: inout ISO_8825.Node.Collection.Iterator,
+        _ nodes: inout ISO.`8825`.Node.Collection.Iterator,
         tagNumber: UInt,
-        tagClass: ISO_8824.Identifier.Class,
-        _ builder: (ISO_8825.Node) throws(ISO_8824.Error) -> T
-    ) throws(ISO_8824.Error) -> T {
-        return try ISO_8825.DER.explicitlyTagged(
+        tagClass: ISO.`8824`.Identifier.Class,
+        _ builder: (ISO.`8825`.Node) throws(ISO.`8824`.Error) -> T
+    ) throws(ISO.`8824`.Error) -> T {
+        return try ISO.`8825`.DER.explicitlyTagged(
             &nodes,
             tagNumber: tagNumber,
             tagClass: tagClass,
@@ -318,26 +318,26 @@ extension ISO_8825.BER {
 
     @inlinable
     public static func explicitlyTagged<T>(
-        _ node: ISO_8825.Node,
+        _ node: ISO.`8825`.Node,
         tagNumber: UInt,
-        tagClass: ISO_8824.Identifier.Class,
-        _ builder: (ISO_8825.Node) throws(ISO_8824.Error) -> T
-    ) throws(ISO_8824.Error) -> T {
-        let expectedNodeID = ISO_8824.Identifier(tagWithNumber: tagNumber, tagClass: tagClass)
+        tagClass: ISO.`8824`.Identifier.Class,
+        _ builder: (ISO.`8825`.Node) throws(ISO.`8824`.Error) -> T
+    ) throws(ISO.`8824`.Error) -> T {
+        let expectedNodeID = ISO.`8824`.Identifier(tagWithNumber: tagNumber, tagClass: tagClass)
         guard node.identifier == expectedNodeID else {
 
-            throw ISO_8824.Error.unexpectedFieldType(node.identifier)
+            throw ISO.`8824`.Error.unexpectedFieldType(node.identifier)
         }
 
         guard case .constructed(let nodes) = node.content else {
-            throw ISO_8824.Error.invalidASN1Object(
+            throw ISO.`8824`.Error.invalidASN1Object(
                 reason: "Explicit tag \(expectedNodeID) for \(T.self) is primitive"
             )
         }
 
         var nodeIterator = nodes.makeIterator()
         guard let child = nodeIterator.next(), nodeIterator.next() == nil else {
-            throw ISO_8824.Error.invalidASN1Object(
+            throw ISO.`8824`.Error.invalidASN1Object(
                 reason:
                     "Invalid number of child nodes for explicit tag \(expectedNodeID) for \(T.self)"
             )
@@ -347,26 +347,26 @@ extension ISO_8825.BER {
     }
 }
 
-extension ISO_8825.BER {
-    public protocol Parseable: ISO_8825.DER.Parseable {
+extension ISO.`8825`.BER {
+    public protocol Parseable: ISO.`8825`.DER.Parseable {
 
-        init(berEncoded node: ISO_8825.Node) throws(ISO_8824.Error)
+        init(berEncoded node: ISO.`8825`.Node) throws(ISO.`8824`.Error)
     }
 }
 
-extension ISO_8825.BER.Parseable {
+extension ISO.`8825`.BER.Parseable {
 
     @inlinable
-    public init(berEncoded node: ISO_8825.Node) throws(ISO_8824.Error) {
+    public init(berEncoded node: ISO.`8825`.Node) throws(ISO.`8824`.Error) {
         self = try .init(derEncoded: node)
     }
 
     @inlinable
     public init(
-        berEncoded sequenceNodeIterator: inout ISO_8825.Node.Collection.Iterator
-    ) throws(ISO_8824.Error) {
+        berEncoded sequenceNodeIterator: inout ISO.`8825`.Node.Collection.Iterator
+    ) throws(ISO.`8824`.Error) {
         guard let node = sequenceNodeIterator.next() else {
-            throw ISO_8824.Error.invalidASN1Object(
+            throw ISO.`8824`.Error.invalidASN1Object(
                 reason: "Unable to decode \(Self.self), no ASN.1 nodes to decode"
             )
         }
@@ -375,45 +375,45 @@ extension ISO_8825.BER.Parseable {
     }
 
     @inlinable
-    public init(berEncoded: [UInt8]) throws(ISO_8824.Error) {
-        self = try .init(berEncoded: ISO_8825.BER.parse(berEncoded))
+    public init(berEncoded: [UInt8]) throws(ISO.`8824`.Error) {
+        self = try .init(berEncoded: ISO.`8825`.BER.parse(berEncoded))
     }
 
     @inlinable
-    public init(berEncoded: ArraySlice<UInt8>) throws(ISO_8824.Error) {
-        self = try .init(berEncoded: ISO_8825.BER.parse(berEncoded))
+    public init(berEncoded: ArraySlice<UInt8>) throws(ISO.`8824`.Error) {
+        self = try .init(berEncoded: ISO.`8825`.BER.parse(berEncoded))
     }
 }
 
-extension ISO_8825.BER {
-    public protocol Serializable: ISO_8825.DER.Serializable {
+extension ISO.`8825`.BER {
+    public protocol Serializable: ISO.`8825`.DER.Serializable {
     }
 }
 
-extension ISO_8825.BER {
+extension ISO.`8825`.BER {
 
-    public protocol ImplicitlyTaggable: ISO_8825.BER.Parseable, ISO_8825.BER.Serializable, ISO_8825
+    public protocol ImplicitlyTaggable: ISO.`8825`.BER.Parseable, ISO.`8825`.BER.Serializable, ISO.`8825`
             .DER.ImplicitlyTaggable
     {
 
-        static var defaultIdentifier: ISO_8824.Identifier { get }
+        static var defaultIdentifier: ISO.`8824`.Identifier { get }
 
         init(
-            berEncoded: ISO_8825.Node,
-            withIdentifier identifier: ISO_8824.Identifier
-        ) throws(ISO_8824.Error)
+            berEncoded: ISO.`8825`.Node,
+            withIdentifier identifier: ISO.`8824`.Identifier
+        ) throws(ISO.`8824`.Error)
     }
 }
 
-extension ISO_8825.BER.ImplicitlyTaggable {
+extension ISO.`8825`.BER.ImplicitlyTaggable {
 
     @inlinable
     public init(
-        berEncoded sequenceNodeIterator: inout ISO_8825.Node.Collection.Iterator,
-        withIdentifier identifier: ISO_8824.Identifier = Self.defaultIdentifier
-    ) throws(ISO_8824.Error) {
+        berEncoded sequenceNodeIterator: inout ISO.`8825`.Node.Collection.Iterator,
+        withIdentifier identifier: ISO.`8824`.Identifier = Self.defaultIdentifier
+    ) throws(ISO.`8824`.Error) {
         guard let node = sequenceNodeIterator.next() else {
-            throw ISO_8824.Error.invalidASN1Object(
+            throw ISO.`8824`.Error.invalidASN1Object(
                 reason: "Unable to decode \(Self.self), no ASN.1 nodes to decode"
             )
         }
@@ -424,21 +424,21 @@ extension ISO_8825.BER.ImplicitlyTaggable {
     @inlinable
     public init(
         berEncoded: [UInt8],
-        withIdentifier identifier: ISO_8824.Identifier = Self.defaultIdentifier
-    ) throws(ISO_8824.Error) {
-        self = try .init(berEncoded: ISO_8825.BER.parse(berEncoded), withIdentifier: identifier)
+        withIdentifier identifier: ISO.`8824`.Identifier = Self.defaultIdentifier
+    ) throws(ISO.`8824`.Error) {
+        self = try .init(berEncoded: ISO.`8825`.BER.parse(berEncoded), withIdentifier: identifier)
     }
 
     @inlinable
     public init(
         berEncoded: ArraySlice<UInt8>,
-        withIdentifier identifier: ISO_8824.Identifier = Self.defaultIdentifier
-    ) throws(ISO_8824.Error) {
-        self = try .init(berEncoded: ISO_8825.BER.parse(berEncoded), withIdentifier: identifier)
+        withIdentifier identifier: ISO.`8824`.Identifier = Self.defaultIdentifier
+    ) throws(ISO.`8824`.Error) {
+        self = try .init(berEncoded: ISO.`8825`.BER.parse(berEncoded), withIdentifier: identifier)
     }
 
     @inlinable
-    public init(berEncoded: ISO_8825.Node) throws(ISO_8824.Error) {
+    public init(berEncoded: ISO.`8825`.Node) throws(ISO.`8824`.Error) {
         try self.init(berEncoded: berEncoded, withIdentifier: Self.defaultIdentifier)
     }
 }
